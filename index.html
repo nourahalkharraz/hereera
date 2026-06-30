@@ -119,6 +119,37 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 .success-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.8px;margin-bottom:10px}
 .success-msg{font-size:15px;color:var(--ink-2);line-height:1.65;max-width:340px}
 .success-back{margin-top:28px;padding:11px 26px;border:1.5px solid var(--border);border-radius:10px;background:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer}
+.track-id-box{background:var(--accent-light);border:1.5px dashed var(--accent);border-radius:14px;padding:18px 22px;margin:18px 0;text-align:center;width:100%}
+.track-id-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px}
+.track-id-value{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--ink);letter-spacing:1px;margin-bottom:10px}
+.track-copy-btn{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.track-btn-header{padding:6px 12px;background:none;border:1px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--tr)}
+.track-btn-header:hover{border-color:var(--ink);color:var(--ink)}
+#track-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);z-index:310;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+#track-overlay.open{opacity:1;pointer-events:all}
+.track-card{background:var(--surface);border-radius:20px;padding:36px 32px;width:100%;max-width:380px;position:relative}
+.track-card-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg);border:none;color:var(--ink-2);cursor:pointer;font-size:14px}
+.track-card h3{font-family:'Sora',sans-serif;font-size:19px;font-weight:700;margin-bottom:6px;letter-spacing:-.4px}
+.track-card p.sub{font-size:13px;color:var(--ink-2);margin-bottom:20px}
+.track-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;text-align:center;letter-spacing:1px;outline:none;margin-bottom:12px;text-transform:uppercase}
+.track-input:focus{border-color:var(--accent)}
+.track-check-btn{width:100%;padding:12px;background:var(--ink);color:white;border:none;border-radius:10px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.track-result{margin-top:18px;padding-top:18px;border-top:1px solid var(--border);display:none}
+.track-result.show{display:block}
+.track-status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.track-not-found{font-size:13px;color:#EF4444;text-align:center;display:none;margin-top:10px}
+.req-card{background:#1A1A1E;border:1px solid #1E1E24;border-radius:12px;overflow:hidden;margin-bottom:10px}
+.req-hd{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer}
+.req-id{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:#A8A0FF;background:rgba(74,58,255,.12);padding:3px 9px;border-radius:6px;flex-shrink:0}
+.req-svc{font-size:12px;color:#888;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.req-status-pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.req-body{padding:0 14px 14px;display:none;border-top:1px solid #2A2A30}
+.req-field-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #1A1A1E;font-size:12px}
+.req-field-row .lbl{color:#555;flex-shrink:0}
+.req-field-row .val{color:#D0D0D0;text-align:right}
+.req-status-select{width:100%;margin-top:10px;padding:8px 10px;background:#111;border:1px solid #2A2A30;border-radius:8px;color:#E0E0E0;font-family:'Inter',sans-serif;font-size:12px}
+.reqs-refresh{width:100%;padding:9px;background:#1A1A1E;border:1px solid #2A2A30;border-radius:9px;color:#888;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+.reqs-empty{text-align:center;padding:30px;color:#444;font-size:12px}
 
 /* ═══════════════════════════════════════
    DASHBOARD — NEW CLEAN DESIGN
@@ -301,6 +332,10 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
         <span class="user-role" id="hdr-role"></span>
       </div>
       <button class="logout-btn" id="logout-btn" onclick="doLogout()" style="display:none">Sign Out</button>
+      <button class="track-btn-header" onclick="openTrackModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Track Request
+      </button>
       <button class="logout-btn" id="admin-login-btn" onclick="openAdminLogin()" style="display:flex;align-items:center;gap:6px">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM6 21v-1a4 4 0 014-4h4a4 4 0 014 4v1"/></svg>
         Admin Login
@@ -334,12 +369,31 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
       <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
       <div class="success-title">Brief Received!</div>
       <p class="success-msg">Thank you for reaching out. We'll review your brief and get back to you within <strong>24 hours</strong>.</p>
+      <div class="track-id-box">
+        <div class="track-id-label">Your tracking ID</div>
+        <div class="track-id-value" id="success-track-id">HE-XXXXXX</div>
+        <button class="track-copy-btn" onclick="copyTrackId()">Copy ID</button>
+        <p style="font-size:11px;color:var(--ink-3);margin-top:8px">Save this to check your request status anytime</p>
+      </div>
       <button class="success-back" onclick="closeModal()">Back to Services</button>
     </div>
     <div class="modal-footer" id="modal-footer">
       <button class="submit-btn" onclick="submitForm()">Send Brief →</button>
       <p class="form-note">We'll respond within 24 hours. All information is confidential.</p>
     </div>
+  </div>
+</div>
+
+<!-- TRACK REQUEST MODAL -->
+<div id="track-overlay" onclick="if(event.target===this)closeTrackModal()">
+  <div class="track-card">
+    <button class="track-card-close" onclick="closeTrackModal()">✕</button>
+    <h3>Track your request</h3>
+    <p class="sub">Enter the tracking ID you received after submitting a brief.</p>
+    <input type="text" class="track-input" id="track-input" placeholder="HE-XXXXXX" onkeydown="if(event.key==='Enter')checkTrackStatus()">
+    <button class="track-check-btn" onclick="checkTrackStatus()">Check Status</button>
+    <p class="track-not-found" id="track-not-found">No request found with that ID. Please check and try again.</p>
+    <div class="track-result" id="track-result"></div>
   </div>
 </div>
 
@@ -356,6 +410,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
   <div id="adm-tabs">
     <button class="adm-tab active" onclick="switchTab('look',this)">✦ Appearance</button>
     <button class="adm-tab" onclick="switchTab('content',this)">✏️ Content</button>
+    <button class="adm-tab" onclick="switchTab('reqs',this)">📋 Requests</button>
     <button class="adm-tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
   </div>
   <div id="adm-body">
@@ -444,6 +499,18 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 
     </div>
 
+    <!-- REQUESTS TAB -->
+    <div class="adm-tab-pane" id="tab-reqs">
+      <div class="adm-section">
+        <div class="adm-sec-title">Incoming requests</div>
+        <button class="reqs-refresh" onclick="renderRequestsTab(true)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Refresh
+        </button>
+        <div id="reqs-list"></div>
+      </div>
+    </div>
+
     <!-- SETTINGS TAB -->
     <div class="adm-tab-pane" id="tab-settings">
 
@@ -465,6 +532,20 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
           <div id="sync-msg" style="font-size:12px;margin-bottom:10px;display:none;padding:8px 10px;border-radius:8px;text-align:center"></div>
           <button onclick="connectSync()" style="width:100%;padding:10px;background:#4A3AFF;border:none;border-radius:9px;color:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s">Connect & Test →</button>
         </div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">📋 Requests cloud (separate bin)</div>
+        <div style="background:rgba(168,160,255,.08);border:1px solid rgba(168,160,255,.2);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#A8A0FF;line-height:1.5">
+          Use a <strong>second, separate</strong> JSONBin bin just for incoming requests — keeps orders independent from your theme settings. Same steps as above: create another bin with <code style="background:#111;padding:1px 5px;border-radius:4px">[]</code> as content (an empty array, not <code style="background:#111;padding:1px 5px;border-radius:4px">{}</code>), make it Public, then paste its ID and key below.
+        </div>
+        <div class="sync-card">
+          <div class="adm-field"><label>Requests Bin ID</label><input type="text" id="reqsync-bin" placeholder="64a1b2c3d4e5f6g7h8..."></div>
+          <div class="adm-field"><label>Requests API Key</label><input type="password" id="reqsync-key" placeholder="$2a$10$..."></div>
+          <div id="reqsync-msg" style="font-size:12px;margin-bottom:10px;display:none;padding:8px 10px;border-radius:8px;text-align:center"></div>
+          <button onclick="connectReqSync()" style="width:100%;padding:10px;background:#4A3AFF;border:none;border-radius:9px;color:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s">Connect & Test →</button>
+        </div>
+        <p style="font-size:11px;color:#333;margin-top:8px;line-height:1.5">⚠️ For visitors on OTHER devices to submit requests that reach you, these credentials need to be baked into the live site (not just saved in your browser). After connecting, share the Bin ID and Key so they can be embedded in the next deploy.</p>
       </div>
 
       <div class="adm-section">
@@ -621,6 +702,111 @@ function updateSyncUI(){
   const cfg=getSyncCfg();
   if(cfg&&cfg.bin){document.getElementById('sync-bin').value=cfg.bin;if(cfg.key)document.getElementById('sync-key').value=cfg.key;document.getElementById('sync-status-txt').textContent='Synced to cloud';document.getElementById('sync-dot').className='synced';}
 }
+function updateReqSyncUI(){
+  try{const cfg=JSON.parse(localStorage.getItem('studioReqSync')||'null');if(cfg&&cfg.bin){document.getElementById('reqsync-bin').value=cfg.bin;if(cfg.key)document.getElementById('reqsync-key').value=cfg.key;}}catch(e){}
+}
+
+/* ═══════════════════ REQUESTS SYSTEM ═══════════════════ */
+const BAKED_REQ_SYNC={bin:'',key:''};
+function getReqSyncCfg(){
+  try{const local=JSON.parse(localStorage.getItem('studioReqSync')||'null');if(local&&local.bin)return local}catch(e){}
+  return BAKED_REQ_SYNC.bin?BAKED_REQ_SYNC:null;
+}
+function saveReqSyncCfg(b,k){localStorage.setItem('studioReqSync',JSON.stringify({bin:b,key:k}))}
+async function loadRequests(){
+  const cfg=getReqSyncCfg();
+  if(cfg&&cfg.bin){
+    try{
+      const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}/latest`,{headers:cfg.key?{'X-Master-Key':cfg.key,'X-Bin-Meta':false}:{}});
+      if(res.ok){const d=await res.json();if(Array.isArray(d.record)){localStorage.setItem('studioRequests',JSON.stringify(d.record));return d.record}}
+    }catch(e){}
+  }
+  try{return JSON.parse(localStorage.getItem('studioRequests')||'[]')}catch(e){return[]}
+}
+async function saveRequestsArr(arr){
+  localStorage.setItem('studioRequests',JSON.stringify(arr));
+  const cfg=getReqSyncCfg();
+  if(cfg&&cfg.bin&&cfg.key){
+    try{const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':cfg.key},body:JSON.stringify(arr)});return res.ok}catch(e){return false}
+  }
+  return false;
+}
+async function connectReqSync(){
+  const bin=document.getElementById('reqsync-bin').value.trim(),key=document.getElementById('reqsync-key').value.trim();
+  if(!bin||!key){showMsg('reqsync-msg','Enter both Bin ID and API Key.','err');return}
+  showMsg('reqsync-msg','Testing connection...','ok');
+  saveReqSyncCfg(bin,key);
+  const arr=await loadRequests();
+  const ok=await saveRequestsArr(arr);
+  if(ok){showMsg('reqsync-msg','✓ Connected! Requests will now sync.','ok');renderRequestsTab(true)}
+  else{showMsg('reqsync-msg','Connection failed. Check your Bin ID and API Key (and that the bin starts with [] not {}).','err')}
+}
+function genTrackId(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s='';for(let i=0;i<6;i++)s+=chars[Math.floor(Math.random()*chars.length)];
+  return 'HE-'+s;
+}
+function collectFormData(body){
+  const data=[];
+  body.querySelectorAll('.form-section').forEach(sec=>{
+    sec.querySelectorAll('.form-group').forEach(grp=>{
+      const label=grp.querySelector('label'),field=grp.querySelector('input,select,textarea');
+      if(label&&field&&field.value&&field.value.trim()){
+        data.push({label:label.textContent.replace('*','').trim(),value:field.value.trim()});
+      }
+    });
+    sec.querySelectorAll('.checkbox-grid').forEach(grid=>{
+      const checked=[...grid.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.nextElementSibling?c.nextElementSibling.textContent:'');
+      if(checked.length)data.push({label:'Selected',value:checked.join(', ')});
+    });
+  });
+  return data;
+}
+const STATUS_META={
+  pending:{label:'Pending review',color:'#F59E0B',bg:'rgba(245,158,11,.15)'},
+  reviewing:{label:'In review',color:'#0EA5E9',bg:'rgba(14,165,233,.15)'},
+  accepted:{label:'Accepted',color:'#A8A0FF',bg:'rgba(168,160,255,.15)'},
+  in_progress:{label:'In progress',color:'#6D60FF',bg:'rgba(109,96,255,.15)'},
+  completed:{label:'Completed',color:'#22C55E',bg:'rgba(34,197,94,.15)'},
+  declined:{label:'Declined',color:'#EF4444',bg:'rgba(239,68,68,.15)'}
+};
+async function renderRequestsTab(forceRefresh){
+  const list=document.getElementById('reqs-list');
+  list.innerHTML='<p class="reqs-empty">Loading...</p>';
+  const reqs=await loadRequests();
+  reqs.sort((a,b)=>b.submittedAt-a.submittedAt);
+  if(!reqs.length){list.innerHTML='<p class="reqs-empty">No requests yet. They will appear here as visitors submit briefs.</p>';return}
+  list.innerHTML=reqs.map((r,i)=>{
+    const st=STATUS_META[r.status]||STATUS_META.pending;
+    return `<div class="req-card"><div class="req-hd" onclick="toggleReq(${i})"><span class="req-id">${r.id}</span><span class="req-svc">${r.service}</span><span class="req-status-pill" style="background:${st.bg};color:${st.color}">${st.label}</span></div><div class="req-body" id="reqb-${i}">${r.fields.map(f=>`<div class="req-field-row"><span class="lbl">${f.label}</span><span class="val">${f.value}</span></div>`).join('')}<div class="req-field-row"><span class="lbl">Submitted</span><span class="val">${new Date(r.submittedAt).toLocaleString()}</span></div><select class="req-status-select" onchange="updateReqStatus('${r.id}',this.value)"><option value="pending" ${r.status==='pending'?'selected':''}>Pending review</option><option value="reviewing" ${r.status==='reviewing'?'selected':''}>In review</option><option value="accepted" ${r.status==='accepted'?'selected':''}>Accepted</option><option value="in_progress" ${r.status==='in_progress'?'selected':''}>In progress</option><option value="completed" ${r.status==='completed'?'selected':''}>Completed</option><option value="declined" ${r.status==='declined'?'selected':''}>Declined</option></select></div></div>`;
+  }).join('');
+}
+function toggleReq(i){const b=document.getElementById(`reqb-${i}`);b.style.display=b.style.display==='block'?'none':'block'}
+async function updateReqStatus(id,status){
+  const reqs=await loadRequests();
+  const idx=reqs.findIndex(r=>r.id===id);
+  if(idx>=0){reqs[idx].status=status;await saveRequestsArr(reqs);renderRequestsTab()}
+}
+
+/* TRACK REQUEST (visitor-facing) */
+function openTrackModal(){document.getElementById('track-overlay').classList.add('open');document.body.style.overflow='hidden';document.getElementById('track-input').value='';document.getElementById('track-result').classList.remove('show');document.getElementById('track-not-found').style.display='none';setTimeout(()=>document.getElementById('track-input').focus(),150)}
+function closeTrackModal(){document.getElementById('track-overlay').classList.remove('open');document.body.style.overflow=''}
+async function checkTrackStatus(){
+  const id=document.getElementById('track-input').value.trim().toUpperCase();
+  const resultEl=document.getElementById('track-result'),notFound=document.getElementById('track-not-found');
+  resultEl.classList.remove('show');notFound.style.display='none';
+  if(!id)return;
+  const reqs=await loadRequests();
+  const found=reqs.find(r=>r.id===id);
+  if(!found){notFound.style.display='block';return}
+  const st=STATUS_META[found.status]||STATUS_META.pending;
+  resultEl.innerHTML=`<div class="track-status-badge" style="background:${st.bg};color:${st.color}">${st.label}</div><p style="font-size:13px;color:var(--ink-2);line-height:1.6">Service: <strong style="color:var(--ink)">${found.service}</strong><br>Submitted: ${new Date(found.submittedAt).toLocaleDateString()}</p>`;
+  resultEl.classList.add('show');
+}
+function copyTrackId(){
+  const id=document.getElementById('success-track-id').textContent;
+  navigator.clipboard?.writeText(id);
+}
 
 function handleImgUpload(e,key){
   const file=e.target.files[0];if(!file)return;
@@ -768,11 +954,11 @@ function addService(){S.services.push({tag:'◆ New',title:'New Service',desc:'D
 function delSvc(i){if(!confirm('Delete this service?'))return;S.services.splice(i,1);renderAdminServices();renderServices()}
 
 /* ADMIN PANEL */
-function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();syncContentImgUI();renderAdminServices();renderUsersTab();updateSyncUI()}
+function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();syncContentImgUI();renderAdminServices();renderUsersTab();updateSyncUI();updateReqSyncUI();renderRequestsTab()}
 function openAdmin(){syncAdminUI();document.getElementById('adm-overlay').classList.add('open');document.getElementById('adm-panel').classList.add('open');document.body.style.overflow='hidden'}
 function closeAdmin(){document.getElementById('adm-overlay').classList.remove('open');document.getElementById('adm-panel').classList.remove('open');document.body.style.overflow=''}
-function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI()}}
-document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal();else if(document.getElementById('auth-overlay').style.pointerEvents==='all')closeAdminLogin()}});
+function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI();updateReqSyncUI()}if(name==='reqs'){renderRequestsTab()}}
+document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal();else if(document.getElementById('track-overlay').classList.contains('open'))closeTrackModal();else if(document.getElementById('auth-overlay').style.pointerEvents==='all')closeAdminLogin()}});
 
 /* FORM CONFIGS */
 const forms={
@@ -783,10 +969,30 @@ const forms={
 
 /* FORM MODAL */
 function initCheckboxes(c){c.querySelectorAll('.checkbox-item').forEach(item=>{const cb=item.querySelector('input[type="checkbox"]');if(cb?.checked)item.classList.add('checked');cb?.addEventListener('change',()=>item.classList.toggle('checked',cb.checked))})}
-function openModal(formKey){if(!formKey||formKey==='none')return;const config=forms[formKey];if(!config)return;document.getElementById('modal-tag').textContent=config.tag;document.getElementById('modal-title').textContent=config.title;const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');body.innerHTML=config.html;body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden'}
+let currentServiceTitle='';
+function openModal(formKey){if(!formKey||formKey==='none')return;const config=forms[formKey];if(!config)return;currentServiceTitle=config.title;document.getElementById('modal-tag').textContent=config.tag;document.getElementById('modal-title').textContent=config.title;const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');body.innerHTML=config.html;body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden'}
 function closeModal(){document.getElementById('modal').classList.remove('active');document.body.style.overflow=''}
 function handleOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal()}
-function submitForm(){const body=document.getElementById('modal-body');let valid=true;body.querySelectorAll('input[required],select[required],textarea[required]').forEach(f=>{if(!f.value.trim()){f.style.borderColor='#EF4444';f.style.background='#FFF5F5';valid=false;f.addEventListener('input',()=>{f.style.borderColor='';f.style.background=''},{ once:true})}});if(!valid)return;body.style.display='none';document.getElementById('modal-footer').style.display='none';document.getElementById('success-state').classList.add('visible')}
+async function submitForm(){
+  const body=document.getElementById('modal-body');let valid=true;
+  body.querySelectorAll('input[required],select[required],textarea[required]').forEach(f=>{if(!f.value.trim()){f.style.borderColor='#EF4444';f.style.background='#FFF5F5';valid=false;f.addEventListener('input',()=>{f.style.borderColor='';f.style.background=''},{ once:true})}});
+  if(!valid)return;
+  const submitBtn=document.querySelector('.submit-btn');
+  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Sending...'}
+  const fields=collectFormData(body);
+  const trackId=genTrackId();
+  const request={id:trackId,service:currentServiceTitle,fields,status:'pending',submittedAt:Date.now()};
+  try{
+    const reqs=await loadRequests();
+    reqs.push(request);
+    await saveRequestsArr(reqs);
+  }catch(e){}
+  if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Send Brief →'}
+  document.getElementById('success-track-id').textContent=trackId;
+  body.style.display='none';
+  document.getElementById('modal-footer').style.display='none';
+  document.getElementById('success-state').classList.add('visible');
+}
 
 /* INIT */
 async function init(){
