@@ -295,6 +295,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <button onclick="closeAdminLogin()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:#1A1A1E;border:none;color:#666;cursor:pointer;font-size:14px">✕</button>
     <div class="auth-logo" id="auth-logo-txt">HerEra<em>.</em></div>
     <div class="auth-tagline">Admin Access</div>
+    <div id="auth-loading" style="text-align:center;padding:20px 0;color:#444;font-size:13px">Loading...</div>
     <div class="auth-tabs" id="auth-tabs-wrap">
       <button class="auth-tab active" id="tab-li-btn" onclick="switchAuthTab('login')">Sign In</button>
       <button class="auth-tab" id="tab-su-btn" onclick="switchAuthTab('signup')" style="display:none">Set Up Admin</button>
@@ -588,11 +589,11 @@ function getUsers(){
   if(S&&Array.isArray(S.users))return S.users;
   try{return JSON.parse(localStorage.getItem('studioUsers')||'[]')}catch(e){return[]}
 }
-function saveUsers(u){
+async function saveUsers(u){
   if(!S.users)S.users=[];
   S.users=u;
   localStorage.setItem('studioUsers',JSON.stringify(u));
-  saveToCloud();
+  return await saveToCloud();
 }
 function getSession(){try{let s=localStorage.getItem('studioSessPersist');if(s)return JSON.parse(s);s=sessionStorage.getItem('studioSess');return s?JSON.parse(s):null}catch(e){return null}}
 function setSession(u,remember){if(remember){localStorage.setItem('studioSessPersist',JSON.stringify(u));sessionStorage.removeItem('studioSess')}else{sessionStorage.setItem('studioSess',JSON.stringify(u));localStorage.removeItem('studioSessPersist')}}
@@ -606,22 +607,24 @@ function switchAuthTab(tab){
   document.getElementById('tab-li-btn').classList.toggle('active',isLogin);
   document.getElementById('tab-su-btn').classList.toggle('active',!isLogin);
 }
-function openAdminLogin(){
-  const users=getUsers();
-  const wrap=document.getElementById('auth-tabs-wrap');
-  if(users.length===0){
-    document.getElementById('tab-su-btn').style.display='none';
-    switchAuthTab('signup');
-    wrap.style.display='none';
-  } else {
-    document.getElementById('tab-su-btn').style.display='none';
-    wrap.style.display='none';
-    switchAuthTab('login');
-  }
-  document.getElementById('li-err').style.display='none';
+async function openAdminLogin(){
   document.getElementById('auth-overlay').style.opacity='1';
   document.getElementById('auth-overlay').style.pointerEvents='all';
   document.body.style.overflow='hidden';
+  document.getElementById('tab-login').style.display='none';
+  document.getElementById('tab-signup').style.display='none';
+  document.getElementById('auth-tabs-wrap').style.display='none';
+  document.getElementById('first-badge').style.display='none';
+  document.getElementById('auth-loading').style.display='block';
+  if(window._cloudReady)await window._cloudReady;
+  document.getElementById('auth-loading').style.display='none';
+  const users=getUsers();
+  if(users.length===0){
+    switchAuthTab('signup');
+  } else {
+    switchAuthTab('login');
+  }
+  document.getElementById('li-err').style.display='none';
   setTimeout(()=>{const f=document.getElementById(users.length===0?'su-user':'li-user');if(f)f.focus()},150);
 }
 function closeAdminLogin(){
@@ -636,7 +639,7 @@ function doSignIn(){
   if(found){setSession({id:found.id,username:found.username,role:found.role},remember);closeAdminLogin();applyLoggedInUI()}
   else{err.style.display='block';document.getElementById('li-pass').value='';document.getElementById('li-pass').focus()}
 }
-function doSignUp(){
+async function doSignUp(){
   const u=document.getElementById('su-user').value.trim(),p=document.getElementById('su-pass').value.trim(),p2=document.getElementById('su-pass2').value.trim(),err=document.getElementById('su-err');
   const remember=document.getElementById('su-remember').checked;
   if(!u||!p){err.textContent='Fill in all fields.';err.style.display='block';return}
@@ -644,14 +647,20 @@ function doSignUp(){
   const users=getUsers();
   if(users.find(x=>x.username.toLowerCase()===u.toLowerCase())){err.textContent='Username already taken.';err.style.display='block';return}
   const nu={id:Date.now().toString(),username:u,password:btoa(p),role:'admin',createdAt:new Date().toLocaleDateString()};
-  users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role},remember);closeAdminLogin();applyLoggedInUI();
+  users.push(nu);
+  const btn=document.querySelector('#tab-signup .auth-btn');
+  if(btn){btn.disabled=true;btn.textContent='Creating account...'}
+  const ok=await saveUsers(users);
+  if(btn){btn.disabled=false;btn.textContent='Create Admin Account →'}
+  if(!ok){err.textContent='Could not save to cloud. Check your internet connection and try again.';err.style.display='block';return}
+  setSession({id:nu.id,username:nu.username,role:nu.role},remember);closeAdminLogin();applyLoggedInUI();
 }
 function doLogout(){clearSession();location.reload()}
-function resetAccess(){
+async function resetAccess(){
   if(!confirm('This will remove ALL admin accounts and let you create a brand new one. Your site settings (theme, services, content) will NOT be affected. Continue?'))return;
   localStorage.removeItem('studioUsers');
   S.users=[];
-  saveToCloud();
+  await saveToCloud();
   clearSession();
   location.reload();
 }
@@ -1042,7 +1051,7 @@ async function init(){
   applyAll();
   applyLoggedInUI();
 }
-init();
+window._cloudReady=init();
 </script>
 </body>
 </html>
