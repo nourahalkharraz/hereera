@@ -489,6 +489,7 @@ html[dir="rtl"] .success-state{text-align:center}
     <div class="adm-hd-left">
       <div class="adm-hd-logo">HerEra<em>.</em> Dashboard</div>
       <div class="adm-hd-status"><span id="sync-dot"></span><span id="sync-status-txt">Not connected to cloud</span></div>
+      <div id="sync-timestamp" style="font-size:10px;color:#3A3A44;margin-top:2px;display:none"></div>
     </div>
     <button id="adm-close-btn" onclick="closeAdmin()">✕</button>
   </div>
@@ -1133,10 +1134,17 @@ async function saveSettings(){
   localStorage.setItem('studioSettings',JSON.stringify(S));
   const dot=document.getElementById('sync-dot'),stxt=document.getElementById('sync-status-txt'),ss=document.getElementById('save-status');
   dot.className='syncing';stxt.textContent='Syncing...';
+  S._meta={savedAt:Date.now()};
   const ok=await saveToCloud();
-  if(ok){dot.className='synced';stxt.textContent='Synced — everyone sees your changes';ss.textContent='✓ Saved & synced to everyone';ss.style.color='#22C55E';window._lastSavedSnapshot=JSON.stringify(S);updateUnsavedBanner();}
+  if(ok){dot.className='synced';stxt.textContent='Synced — everyone sees your changes';ss.textContent='✓ Saved & synced to everyone';ss.style.color='#22C55E';window._lastSavedSnapshot=JSON.stringify(S);updateUnsavedBanner();updateSyncTimestamp();}
   else{dot.className='';stxt.textContent=getSyncCfg()?'Sync failed — check connection':'Not connected to cloud';ss.textContent='✓ Saved locally (connect cloud to sync)';ss.style.color='#F59E0B';}
   ss.classList.add('show');setTimeout(()=>ss.classList.remove('show'),3000);
+}
+function updateSyncTimestamp(){
+  const el=document.getElementById('sync-timestamp');
+  if(!el)return;
+  if(S._meta&&S._meta.savedAt){el.textContent='Last saved (any device): '+new Date(S._meta.savedAt).toLocaleString();el.style.display='block';}
+  else{el.style.display='none';}
 }
 function updateUnsavedBanner(){
   const banner=document.getElementById('unsaved-banner');
@@ -1309,6 +1317,7 @@ async function openAdmin(){
   await loadFromCloud();
   applyAll();
   syncAdminUI();
+  updateSyncTimestamp();
   window._lastSavedSnapshot=JSON.stringify(S);
   updateUnsavedBanner();
 }
