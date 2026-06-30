@@ -544,11 +544,14 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
           <button class="bg-card" data-btype="blobs" onclick="setBgType(this)"><div class="bg-preview" style="background:#F9F9F8;position:relative;overflow:hidden"><div style="position:absolute;left:5%;top:10%;width:60%;height:60%;background:rgba(74,58,255,.25);border-radius:50%;filter:blur(18px)"></div><div style="position:absolute;right:5%;bottom:10%;width:50%;height:50%;background:rgba(167,139,250,.25);border-radius:50%;filter:blur(14px)"></div></div><div class="bg-label">Blobs</div></button>
           <button class="bg-card" data-btype="aurora" onclick="setBgType(this)"><div class="bg-preview" style="background:linear-gradient(135deg,rgba(74,58,255,.3) 0%,transparent 60%),linear-gradient(225deg,rgba(167,139,250,.25) 0%,transparent 55%),#F9F9F8"></div><div class="bg-label">Aurora</div></button>
         </div>
+        <p class="hint" style="margin:4px 0 8px;color:#444" id="bg-none-hint">Pick "None" above turns the background off.</p>
+        <div class="adm-color-row" id="bg-c1-row"><label>Pattern color</label><input type="color" id="bg-c1" oninput="liveBg()"></div>
+        <div class="adm-color-row" id="bg-c2-row"><label>Secondary color</label><input type="color" id="bg-c2" oninput="liveBg()"></div>
         <div class="adm-slider" id="bg-op-row">
           <div class="adm-sl-hd"><label>Intensity</label><span id="bgv-op">12%</span></div>
           <input type="range" min="2" max="60" value="12" step="1" id="bg-op" oninput="document.getElementById('bgv-op').textContent=this.value+'%';liveBg()">
         </div>
-        <div class="adm-toggle-row" style="margin-top:8px"><label>Animate</label><button class="adm-tog" id="bg-anim-tog" onclick="toggleBgAnim()"></button></div>
+        <div class="adm-toggle-row" style="margin-top:8px"><label>Animate background</label><button class="adm-tog" id="bg-anim-tog" onclick="toggleBgAnim()"></button></div>
       </div>
 
     </div>
@@ -1027,19 +1030,43 @@ function applyBg(){
   const b=S.bg,layer=document.getElementById('bg-layer'),bst=document.getElementById('bg-style');
   layer.innerHTML='';bst.textContent='';
   const op=b.op/100;
-  if(b.type==='dots'){bst.textContent=`body{background-image:radial-gradient(circle,${rgba(b.c1,op)} ${b.sz}px,transparent ${b.sz}px);background-size:${b.sc}px ${b.sc}px}`}
-  else if(b.type==='mesh'){bst.textContent=`body{background:radial-gradient(ellipse 65% 55% at 15% 15%,${rgba(b.c1,Math.min(op*2.2,.92))} 0%,transparent 100%),radial-gradient(ellipse 55% 65% at 85% 85%,${rgba(S.theme.accent,Math.min(op*1.8,.85))} 0%,transparent 100%),radial-gradient(ellipse 60% 60% at 55% 105%,${rgba(b.c1,op)} 0%,transparent 100%),${S.theme.bg}}`}
-  else if(b.type==='grid'){bst.textContent=`body{background-image:linear-gradient(${rgba(b.c1,op)} 1px,transparent 1px),linear-gradient(90deg,${rgba(b.c1,op)} 1px,transparent 1px);background-size:${b.sc}px ${b.sc}px}`}
-  else if(b.type==='blobs'){[[5,10,55,50,b.c1],[45,50,62,55,S.theme.accent],[25,65,40,42,b.c1]].forEach((d,i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;left:${d[0]}%;top:${d[1]}%;width:${d[2]}%;height:${d[3]}%;background:${rgba(d[4],Math.min(op*1.6,.85))};border-radius:50%;filter:blur(${b.bl}px);pointer-events:none;${b.anim?`animation:bfloat ${8+i*3}s ease-in-out ${-i*2}s infinite alternate;`:''}`;layer.appendChild(el)});if(b.anim)injectAnim('_bfa','@keyframes bfloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(6%,-8%) scale(1.1)}}')}
-  else if(b.type==='aurora'){[[`linear-gradient(135deg,${rgba(b.c1,Math.min(op*3,.9))} 0%,transparent 55%)`,'aur0',14],[`linear-gradient(225deg,${rgba(S.theme.accent,Math.min(op*2.5,.85))} 0%,transparent 52%)`,'aur1',10],[`linear-gradient(45deg,${rgba(b.c1,op*1.5)} 0%,transparent 65%)`,'aur2',18]].forEach(([g,n,dr],i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;inset:0;background:${g};pointer-events:none;${b.anim?`animation:${n} ${dr}s ease-in-out ${-i*3}s infinite alternate;`:''}`;layer.appendChild(el)});if(b.anim)injectAnim('_afa','@keyframes aur0{0%{opacity:1;transform:rotate(0) scale(1)}100%{opacity:.7;transform:rotate(5deg) scale(1.08)}}@keyframes aur1{0%{opacity:.8}100%{opacity:1;transform:rotate(-4deg) scale(1.06)}}@keyframes aur2{0%{opacity:.6}100%{opacity:1;transform:scale(1.12)}}')}
+  const c1=b.c1||S.theme.accent,c2=b.c2||'#C4B5FD';
+  if(b.type==='dots'){
+    bst.textContent=`body{background-image:radial-gradient(circle,${rgba(c1,op)} ${b.sz}px,transparent ${b.sz}px);background-size:${b.sc}px ${b.sc}px;${b.anim?`animation:bgdrift_${b.sc} ${14}s linear infinite;`:''}}`;
+    if(b.anim)injectAnim('_bgd',`@keyframes bgdrift_${b.sc}{from{background-position:0 0}to{background-position:${b.sc}px ${b.sc}px}}`);
+  }
+  else if(b.type==='mesh'){
+    bst.textContent=`body{background:radial-gradient(ellipse 65% 55% at 15% 15%,${rgba(c1,Math.min(op*2.2,.92))} 0%,transparent 100%),radial-gradient(ellipse 55% 65% at 85% 85%,${rgba(c2,Math.min(op*2.2,.92))} 0%,transparent 100%),radial-gradient(ellipse 60% 60% at 55% 105%,${rgba(c1,op)} 0%,transparent 100%),${S.theme.bg};background-size:140% 140%;${b.anim?`animation:bgmesh 16s ease-in-out infinite;`:''}}`;
+    if(b.anim)injectAnim('_bgd','@keyframes bgmesh{0%{background-position:0% 0%}50%{background-position:30% 20%}100%{background-position:0% 0%}}');
+  }
+  else if(b.type==='grid'){
+    bst.textContent=`body{background-image:linear-gradient(${rgba(c1,op)} 1px,transparent 1px),linear-gradient(90deg,${rgba(c1,op)} 1px,transparent 1px);background-size:${b.sc}px ${b.sc}px;${b.anim?`animation:bgdrift_${b.sc} 14s linear infinite;`:''}}`;
+    if(b.anim)injectAnim('_bgd',`@keyframes bgdrift_${b.sc}{from{background-position:0 0}to{background-position:${b.sc}px ${b.sc}px}}`);
+  }
+  else if(b.type==='blobs'){
+    [[5,10,55,50,c1],[45,50,62,55,c2],[25,65,40,42,c1]].forEach((d,i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;left:${d[0]}%;top:${d[1]}%;width:${d[2]}%;height:${d[3]}%;background:${rgba(d[4],Math.min(op*1.6,.85))};border-radius:50%;filter:blur(${b.bl}px);pointer-events:none;${b.anim?`animation:bfloat ${8+i*3}s ease-in-out ${-i*2}s infinite alternate;`:''}`;layer.appendChild(el)});
+    if(b.anim)injectAnim('_bgd','@keyframes bfloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(6%,-8%) scale(1.1)}}');
+  }
+  else if(b.type==='aurora'){
+    [[`linear-gradient(135deg,${rgba(c1,Math.min(op*3,.9))} 0%,transparent 55%)`,'aur0',14],[`linear-gradient(225deg,${rgba(c2,Math.min(op*2.5,.85))} 0%,transparent 52%)`,'aur1',10],[`linear-gradient(45deg,${rgba(c1,op*1.5)} 0%,transparent 65%)`,'aur2',18]].forEach(([g,n,dr],i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;inset:0;background:${g};pointer-events:none;${b.anim?`animation:${n} ${dr}s ease-in-out ${-i*3}s infinite alternate;`:''}`;layer.appendChild(el)});
+    if(b.anim)injectAnim('_bgd','@keyframes aur0{0%{opacity:1;transform:rotate(0) scale(1)}100%{opacity:.7;transform:rotate(5deg) scale(1.08)}}@keyframes aur1{0%{opacity:.8}100%{opacity:1;transform:rotate(-4deg) scale(1.06)}}@keyframes aur2{0%{opacity:.6}100%{opacity:1;transform:scale(1.12)}}');
+  }
 }
 function injectAnim(id,css){let s=document.getElementById(id);if(!s){s=document.createElement('style');s.id=id;document.head.appendChild(s)}s.textContent=css}
-function liveBg(){S.bg.op=parseInt(document.getElementById('bg-op').value);applyBg()}
+function liveBg(){S.bg.op=parseInt(document.getElementById('bg-op').value);S.bg.c1=document.getElementById('bg-c1').value;S.bg.c2=document.getElementById('bg-c2').value;applyBg()}
 function setBgType(btn){
-  // Use accent color for patterns
-  S.bg.c1=S.theme.accent;
+  if(!S.bg.c1)S.bg.c1=S.theme.accent;
+  if(!S.bg.c2)S.bg.c2='#C4B5FD';
   document.querySelectorAll('.bg-card').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-  S.bg.type=btn.dataset.btype;applyBg();
+  S.bg.type=btn.dataset.btype;
+  const hasSecondary=['mesh','blobs','aurora'].includes(S.bg.type);
+  document.getElementById('bg-c1-row').style.display=S.bg.type==='none'?'none':'flex';
+  document.getElementById('bg-c2-row').style.display=hasSecondary?'flex':'none';
+  document.getElementById('bg-op-row').style.display=S.bg.type==='none'?'none':'block';
+  document.querySelector('.adm-toggle-row').style.display=S.bg.type==='none'?'none':'flex';
+  document.getElementById('bg-c1').value=S.bg.c1;
+  document.getElementById('bg-c2').value=S.bg.c2;
+  applyBg();
 }
 function toggleBgAnim(){S.bg.anim=!S.bg.anim;document.getElementById('bg-anim-tog').classList.toggle('on',S.bg.anim);applyBg()}
 function syncBgUI(){
@@ -1047,6 +1074,13 @@ function syncBgUI(){
   document.querySelectorAll('.bg-card').forEach(c=>c.classList.toggle('active',c.dataset.btype===b.type));
   document.getElementById('bg-op').value=b.op;document.getElementById('bgv-op').textContent=b.op+'%';
   document.getElementById('bg-anim-tog').classList.toggle('on',b.anim);
+  document.getElementById('bg-c1').value=b.c1||S.theme.accent;
+  document.getElementById('bg-c2').value=b.c2||'#C4B5FD';
+  const hasSecondary=['mesh','blobs','aurora'].includes(b.type);
+  document.getElementById('bg-c1-row').style.display=b.type==='none'?'none':'flex';
+  document.getElementById('bg-c2-row').style.display=hasSecondary?'flex':'none';
+  document.getElementById('bg-op-row').style.display=b.type==='none'?'none':'block';
+  document.querySelector('.adm-toggle-row').style.display=b.type==='none'?'none':'flex';
 }
 
 /* PAGE TEXT */
