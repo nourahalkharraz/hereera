@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HerEra — Client Intake</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style id="theme-vars">/* loaded by JS */</style>
+<style id="bg-style">/* loaded by JS */</style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
+#bg-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+
+/* AUTH */
+#auth-screen{position:fixed;inset:0;background:#0A0A0D;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+#auth-screen.hidden{display:none}
+.auth-card{background:#111115;border:1px solid #1E1E24;border-radius:20px;padding:44px 40px;width:100%;max-width:360px}
+.auth-logo{font-family:'Sora',sans-serif;font-size:26px;font-weight:800;color:#F0F0F0;letter-spacing:-.5px;text-align:center;margin-bottom:4px}
+.auth-logo em{font-style:normal}
+.auth-tagline{font-size:11px;color:#333;text-align:center;margin-bottom:28px;text-transform:uppercase;letter-spacing:2px;font-weight:600}
+.auth-tabs{display:flex;background:#0F0F12;border-radius:10px;padding:3px;margin-bottom:24px;gap:3px}
+.auth-tab{flex:1;padding:8px;border:none;border-radius:8px;background:none;color:#555;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
+.auth-tab.active{background:#1E1E26;color:#E0E0E0}
+.auth-field{margin-bottom:14px}
+.auth-field label{font-size:10px;color:#444;display:block;margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.auth-field input{width:100%;padding:12px 14px;background:#16161A;border:1px solid #222228;border-radius:10px;color:#E0E0E0;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .15s}
+.auth-field input:focus{border-color:#4A3AFF}
+.auth-err{font-size:12px;color:#FF6B6B;margin-bottom:12px;display:none;padding:8px 12px;background:rgba(255,107,107,.08);border-radius:8px;text-align:center}
+.auth-btn{width:100%;padding:13px;background:#4A3AFF;color:white;border:none;border-radius:10px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:-.2px}
+.auth-btn:hover{opacity:.85}
+.auth-note{font-size:11px;color:#2A2A35;text-align:center;margin-top:12px}
+.auth-note em{color:#4A3AFF;font-style:normal}
+.auth-first-badge{background:rgba(74,58,255,.12);border:1px solid rgba(74,58,255,.25);border-radius:8px;padding:8px 12px;text-align:center;margin-bottom:18px;font-size:12px;color:#A8A0FF;display:none}
+
+/* HEADER */
+.header{padding:20px 48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:10}
+.logo{font-family:'Sora',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;cursor:default}
+.logo span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:8px}
+.dashboard-btn{display:none;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity var(--tr)}
+.dashboard-btn:hover{opacity:.85}
+.dashboard-btn svg{width:15px;height:15px;flex-shrink:0}
+.user-badge{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);padding:5px 12px 5px 8px;border-radius:100px}
+.user-avatar{width:22px;height:22px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+.user-name{font-size:12px;font-weight:600;color:var(--ink-2)}
+.user-role{font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.user-role.admin{background:var(--accent-light);color:var(--accent)}
+.user-role.user{background:#F3F4F6;color:#6B7280}
+.logout-btn{padding:6px 12px;background:none;border:1px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all var(--tr)}
+.logout-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+/* PAGE */
+.hero{padding:72px 48px 52px;max-width:860px;position:relative;z-index:1}
+.hero-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.hero-label::before{content:'';width:24px;height:2px;background:var(--accent);border-radius:2px}
+.hero h1{font-family:'Sora',sans-serif;font-size:clamp(34px,5vw,58px);font-weight:800;line-height:1.08;letter-spacing:-2px;margin-bottom:18px}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero p{font-size:17px;line-height:1.7;color:var(--ink-2);max-width:540px}
+.services{padding:16px 48px 80px;position:relative;z-index:1}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--ink-3);margin-bottom:28px}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.service-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:38px;position:relative;overflow:hidden;cursor:pointer;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr)}
+.service-card::before{content:attr(data-number);position:absolute;top:-8px;right:14px;font-family:'Sora',sans-serif;font-size:110px;font-weight:800;color:var(--ink);opacity:.035;line-height:1;pointer-events:none}
+.service-card:hover{border-color:var(--accent);box-shadow:0 8px 40px rgba(0,0,0,.08);transform:translateY(-4px)}
+.service-card:hover::before{opacity:.065}
+.card-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);background:var(--accent-light);padding:5px 12px;border-radius:100px;margin-bottom:22px}
+.card-title{font-family:'Sora',sans-serif;font-size:25px;font-weight:700;letter-spacing:-.8px;margin-bottom:10px;line-height:1.2}
+.card-desc{font-size:14px;color:var(--ink-2);line-height:1.65;margin-bottom:24px}
+.card-includes{list-style:none;margin-bottom:30px;display:flex;flex-direction:column;gap:7px}
+.card-includes li{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.card-includes li::before{content:'';width:5px;height:5px;background:var(--accent);border-radius:50%;flex-shrink:0}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:22px;border-top:1px solid var(--border)}
+.price-from{font-size:11px;color:var(--ink-3);font-weight:500;text-transform:uppercase;letter-spacing:.5px;display:block}
+.price-value{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;color:var(--ink);line-height:1.1;letter-spacing:-1px}
+.price-value span{font-size:14px;font-weight:500;color:var(--ink-2);letter-spacing:0}
+.card-cta{display:flex;align-items:center;gap:8px;background:var(--ink);color:white;border:none;padding:11px 18px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background var(--tr);white-space:nowrap}
+.card-cta:hover{background:var(--accent)}
+.card-cta svg{width:14px;height:14px}
+.page-footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.page-footer p{font-size:13px;color:var(--ink-3)}
+
+/* FORM MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.38);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:stretch;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.active{opacity:1;pointer-events:all}
+.modal-panel{background:var(--surface);width:100%;max-width:560px;height:100%;overflow-y:auto;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.modal-overlay.active .modal-panel{transform:translateX(0)}
+.modal-header{padding:32px 40px 26px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:5}
+.modal-service-tag{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:100px;margin-bottom:7px;display:inline-block}
+.modal-title{font-family:'Sora',sans-serif;font-size:23px;font-weight:700;letter-spacing:-.7px}
+.modal-close{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-2);flex-shrink:0;margin-left:16px}
+.modal-close:hover{background:var(--bg)}
+.modal-body{padding:38px 40px;flex:1}
+.form-section{margin-bottom:38px}
+.form-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink-3);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row.single{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:13px;font-weight:600;color:var(--ink)}
+.form-group label .req{color:var(--accent);margin-left:2px}
+.form-group input,.form-group select,.form-group textarea{border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--bg);outline:none;width:100%;transition:border-color var(--tr)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);background:var(--surface)}
+.form-group textarea{resize:vertical;min-height:88px}
+.form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;cursor:pointer}
+.hint{font-size:12px;color:var(--ink-3);margin-top:2px}
+.checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.checkbox-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:border-color var(--tr),background var(--tr);user-select:none}
+.checkbox-item:hover,.checkbox-item.checked{border-color:var(--accent);background:var(--accent-light)}
+.checkbox-item input[type="checkbox"]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;padding:0;margin:0}
+.checkbox-item span{font-size:13px;font-weight:500;color:var(--ink)}
+.modal-footer{padding:22px 40px 36px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:11px}
+.submit-btn{width:100%;padding:15px;background:var(--ink);color:white;border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:-.3px;transition:background var(--tr)}
+.submit-btn:hover{background:var(--accent)}
+.form-note{font-size:12px;color:var(--ink-3);text-align:center;line-height:1.55}
+.success-state{display:none;flex-direction:column;align-items:center;justify-content:center;padding:72px 40px;text-align:center;flex:1}
+.success-state.visible{display:flex}
+.success-icon{width:64px;height:64px;background:#ECFDF5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.success-icon svg{color:#22C55E}
+.success-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.8px;margin-bottom:10px}
+.success-msg{font-size:15px;color:var(--ink-2);line-height:1.65;max-width:340px}
+.success-back{margin-top:28px;padding:11px 26px;border:1.5px solid var(--border);border-radius:10px;background:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer}
+
+/* ═══════════════════════════════════════
+   DASHBOARD — NEW CLEAN DESIGN
+═══════════════════════════════════════ */
+#adm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+#adm-overlay.open{opacity:1;pointer-events:all}
+#adm-panel{position:fixed;top:0;right:0;width:440px;height:100%;background:#0F0F11;display:flex;flex-direction:column;z-index:201;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
+#adm-panel.open{transform:translateX(0)}
+
+/* Dashboard header */
+#adm-hd{padding:22px 28px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.adm-hd-left{display:flex;flex-direction:column;gap:3px}
+.adm-hd-logo{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:#F0F0F0;letter-spacing:-.3px}
+.adm-hd-logo em{font-style:normal;color:#6D60FF}
+#sync-dot{width:7px;height:7px;border-radius:50%;background:#555;display:inline-block;margin-right:5px;transition:background .3s}
+#sync-dot.synced{background:#22C55E}
+#sync-dot.syncing{background:#F59E0B;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.adm-hd-status{font-size:11px;color:#444;display:flex;align-items:center;gap:4px}
+#adm-close-btn{width:34px;height:34px;border-radius:8px;background:#1E1E24;border:none;color:#666;cursor:pointer;font-size:16px;transition:background .15s,color .15s}
+#adm-close-btn:hover{background:#2A2A30;color:#F0F0F0}
+
+/* Tabs */
+#adm-tabs{display:flex;gap:3px;padding:18px 28px 0;flex-shrink:0}
+.adm-tab{flex:1;padding:10px 6px;border-radius:10px;border:none;background:none;color:#555;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;text-align:center}
+.adm-tab.active{background:#1E1E24;color:#E0E0E0}
+.adm-tab:hover:not(.active){color:#999}
+
+/* Body */
+#adm-body{flex:1;overflow-y:auto;padding:22px 28px;scrollbar-width:thin;scrollbar-color:#1E1E24 transparent}
+.adm-tab-pane{display:none}
+.adm-tab-pane.active{display:flex;flex-direction:column;gap:28px}
+.adm-section{}
+.adm-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#3A3A44;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.adm-sec-title::after{content:'';flex:1;height:1px;background:#1A1A1E}
+
+/* COLOR PRESETS — visual cards */
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.preset-card{border-radius:12px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:border-color .15s,transform .15s;background:none;padding:0}
+.preset-card:hover{transform:scale(1.03)}
+.preset-card.active{border-color:#4A3AFF}
+.preset-swatch{height:44px}
+.preset-name{background:#1A1A1E;padding:7px 8px;font-size:11px;font-weight:600;color:#888;text-align:center;font-family:'Inter',sans-serif}
+.preset-card.active .preset-name{color:#A8A0FF}
+
+/* Custom color row */
+.adm-color-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#1A1A1E;border-radius:10px;margin-bottom:8px}
+.adm-color-row label{font-size:13px;color:#888;font-weight:500}
+.adm-color-row input[type="color"]{width:38px;height:30px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
+
+/* BACKGROUND — visual pattern grid */
+.bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.bg-card{border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:border-color .15s;background:#1A1A1E;padding:0}
+.bg-card.active{border-color:#4A3AFF}
+.bg-preview{height:48px;position:relative}
+.bg-label{padding:6px 8px;font-size:11px;font-weight:600;color:#666;text-align:center;font-family:'Inter',sans-serif}
+.bg-card.active .bg-label{color:#A8A0FF}
+
+/* Sliders */
+.adm-slider{background:#1A1A1E;border-radius:10px;padding:12px 14px}
+.adm-sl-hd{display:flex;justify-content:space-between;margin-bottom:8px}
+.adm-sl-hd label{font-size:13px;color:#888;font-weight:500}
+.adm-sl-hd span{font-size:12px;color:#555;font-weight:600}
+.adm-slider input[type="range"]{width:100%;accent-color:#4A3AFF;cursor:pointer}
+.adm-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#1A1A1E;border-radius:10px}
+.adm-toggle-row label{font-size:13px;color:#888;font-weight:500}
+.adm-tog{width:40px;height:22px;background:#2A2A30;border-radius:100px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.adm-tog.on{background:#4A3AFF}
+.adm-tog::after{content:'';width:16px;height:16px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s}
+.adm-tog.on::after{left:21px}
+
+/* CONTENT fields */
+.adm-field{margin-bottom:10px}
+.adm-field label{font-size:11px;color:#555;display:block;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+.adm-field input[type="text"],.adm-field textarea,.adm-field select,.adm-field input[type="password"]{width:100%;padding:10px 13px;background:#1A1A1E;border:1px solid #222228;border-radius:9px;color:#D0D0D0;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color .15s}
+.adm-field input:focus,.adm-field textarea:focus,.adm-field select:focus{border-color:#4A3AFF}
+.adm-field textarea{resize:vertical;min-height:70px}
+.adm-field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+.adm-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* SERVICES */
+.adm-svc-card{background:#1A1A1E;border:1px solid #1E1E24;border-radius:12px;overflow:hidden;margin-bottom:10px}
+.adm-svc-hd{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
+.adm-svc-num{width:24px;height:24px;background:#222228;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#666;flex-shrink:0}
+.adm-svc-name{font-size:14px;font-weight:600;color:#D0D0D0;flex:1}
+.adm-svc-arrow{color:#333;font-size:12px;transition:transform .2s}
+.adm-svc-arrow.open{transform:rotate(180deg)}
+.adm-svc-body{padding:0 16px 16px;display:none}
+.adm-inc-row{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.adm-inc-row input{flex:1;padding:8px 10px;background:#111;border:1px solid #222228;border-radius:7px;color:#D0D0D0;font-family:'Inter',sans-serif;font-size:12px;outline:none}
+.adm-inc-row input:focus{border-color:#4A3AFF}
+.adm-del-inc{width:28px;height:28px;background:none;border:1px solid #2A2A30;border-radius:6px;color:#555;cursor:pointer;font-size:16px;line-height:1;flex-shrink:0;transition:all .15s}
+.adm-del-inc:hover{background:#3A1A1A;color:#FF6B6B;border-color:#FF6B6B}
+.adm-add-inc{padding:7px;background:#111;border:1px dashed #2A2A30;border-radius:8px;color:#555;font-size:12px;cursor:pointer;width:100%;margin-top:4px;font-family:'Inter',sans-serif;transition:border-color .15s,color .15s}
+.adm-add-inc:hover{border-color:#4A3AFF;color:#A8A0FF}
+.adm-del-svc{padding:6px 12px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#555;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;margin-top:8px}
+.adm-del-svc:hover{background:#3A1A1A;color:#FF6B6B;border-color:#FF6B6B}
+.adm-add-svc{width:100%;padding:13px;background:none;border:1.5px dashed #1E1E24;border-radius:12px;color:#444;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s}
+.adm-add-svc:hover{border-color:#4A3AFF;color:#A8A0FF}
+
+/* USERS */
+.usr-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#1A1A1E;border-radius:10px;margin-bottom:8px}
+.usr-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0}
+.usr-info{flex:1;min-width:0}
+.usr-name{font-size:13px;font-weight:600;color:#D0D0D0}
+.usr-meta{font-size:11px;color:#444;margin-top:1px}
+.usr-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.usr-badge.admin{background:rgba(74,58,255,.2);color:#A8A0FF}
+.usr-badge.user{background:#1E1E24;color:#555}
+.usr-del{width:28px;height:28px;background:none;border:1px solid #2A2A30;border-radius:6px;color:#555;cursor:pointer;font-size:14px;flex-shrink:0;transition:all .15s}
+.usr-del:hover{background:#3A1A1A;color:#FF6B6B;border-color:#FF6B6B}
+
+/* SYNC card */
+.sync-card{background:#1A1A1E;border-radius:12px;padding:16px}
+.sync-steps{list-style:none;counter-reset:steps;margin-bottom:16px;display:flex;flex-direction:column;gap:8px}
+.sync-steps li{counter-increment:steps;display:flex;gap:10px;font-size:12px;color:#666;line-height:1.5}
+.sync-steps li::before{content:counter(steps);width:20px;height:20px;background:#2A2A30;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#888;flex-shrink:0;margin-top:1px}
+.sync-steps a{color:#6D60FF}
+
+/* Footer */
+#adm-ft{padding:16px 28px 20px;border-top:1px solid #141418;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.adm-save-btn{width:100%;padding:13px;background:#4A3AFF;border:none;border-radius:12px;color:white;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.adm-save-btn:hover{opacity:.85}
+.adm-save-btn svg{width:15px;height:15px}
+.adm-ft-row{display:flex;gap:8px}
+.adm-reset-btn{flex:1;padding:10px;background:none;border:1px solid #1E1E24;border-radius:10px;color:#555;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.adm-reset-btn:hover{border-color:#555;color:#D0D0D0}
+.adm-save-status{font-size:11px;color:#22C55E;display:flex;align-items:center;justify-content:center;gap:5px;min-height:16px;opacity:0;transition:opacity .3s}
+.adm-save-status.show{opacity:1}
+
+#adm-trigger{position:fixed;bottom:0;right:0;width:28px;height:28px;z-index:9999;opacity:0;cursor:default}
+@media(max-width:768px){.header{padding:18px 22px}.hero{padding:44px 22px 36px}.services{padding:12px 22px 56px}.modal-body{padding:26px 22px}.modal-header{padding:22px 22px 18px}.modal-footer{padding:18px 22px 28px}.form-row{grid-template-columns:1fr}.checkbox-grid{grid-template-columns:1fr}.modal-panel{max-width:100%}.page-footer{flex-direction:column;gap:6px;padding:22px}#adm-panel{width:100%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo" id="auth-logo-txt">HerEra<em>.</em></div>
+    <div class="auth-tagline">Client Intake Portal</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-li-btn" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-su-btn" onclick="switchAuthTab('signup')">Create Account</button>
+    </div>
+    <div id="tab-login">
+      <div class="auth-field"><label>Username</label><input type="text" id="li-user" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <div class="auth-err" id="li-err">Incorrect username or password.</div>
+      <button class="auth-btn" onclick="doSignIn()">Sign In →</button>
+    </div>
+    <div id="tab-signup" style="display:none">
+      <div class="auth-first-badge" id="first-badge">✦ You're creating the <em>admin account</em></div>
+      <div class="auth-field"><label>Username</label><input type="text" id="su-user" placeholder="Choose a username" onkeydown="if(event.key==='Enter')doSignUp()"></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="su-pass" placeholder="Choose a password" onkeydown="if(event.key==='Enter')doSignUp()"></div>
+      <div class="auth-field"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignUp()"></div>
+      <div class="auth-err" id="su-err"></div>
+      <button class="auth-btn" onclick="doSignUp()">Create Account →</button>
+      <p class="auth-note" id="su-note">Regular accounts can submit service requests only.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-wrap" style="display:none">
+  <div id="bg-layer"></div>
+  <header class="header">
+    <div class="logo" id="pg-logo"></div>
+    <div class="header-right">
+      <button class="dashboard-btn" id="dashboard-btn" onclick="openAdmin()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <div class="user-badge">
+        <div class="user-avatar" id="hdr-avatar"></div>
+        <span class="user-name" id="hdr-name"></span>
+        <span class="user-role" id="hdr-role"></span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="hero-label" id="pg-hero-label"></div>
+    <h1 id="pg-hero-h1"></h1>
+    <p id="pg-hero-para"></p>
+  </section>
+  <section class="services">
+    <p class="section-label" id="pg-section-label"></p>
+    <div class="services-grid" id="services-grid"></div>
+  </section>
+  <footer class="page-footer">
+    <p id="pg-footer-l"></p>
+    <p id="pg-footer-r"></p>
+  </footer>
+</div>
+
+<!-- FORM MODAL -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div><div class="modal-service-tag" id="modal-tag"></div><div class="modal-title" id="modal-title"></div></div>
+      <button class="modal-close" onclick="closeModal()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="success-state" id="success-state">
+      <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="success-title">Brief Received!</div>
+      <p class="success-msg">Thank you for reaching out. We'll review your brief and get back to you within <strong>24 hours</strong>.</p>
+      <button class="success-back" onclick="closeModal()">Back to Services</button>
+    </div>
+    <div class="modal-footer" id="modal-footer">
+      <button class="submit-btn" onclick="submitForm()">Send Brief →</button>
+      <p class="form-note">We'll respond within 24 hours. All information is confidential.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="adm-overlay" onclick="closeAdmin()"></div>
+<div id="adm-panel">
+  <div id="adm-hd">
+    <div class="adm-hd-left">
+      <div class="adm-hd-logo">HerEra<em>.</em> Dashboard</div>
+      <div class="adm-hd-status"><span id="sync-dot"></span><span id="sync-status-txt">Not connected to cloud</span></div>
+    </div>
+    <button id="adm-close-btn" onclick="closeAdmin()">✕</button>
+  </div>
+  <div id="adm-tabs">
+    <button class="adm-tab active" onclick="switchTab('look',this)">✦ Appearance</button>
+    <button class="adm-tab" onclick="switchTab('content',this)">✏️ Content</button>
+    <button class="adm-tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+  </div>
+  <div id="adm-body">
+
+    <!-- APPEARANCE TAB -->
+    <div class="adm-tab-pane active" id="tab-look">
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Color theme</div>
+        <div class="preset-grid" id="preset-grid">
+          <button class="preset-card" data-preset="indigo" onclick="applyPreset('indigo',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#4A3AFF,#7C6FFF)"></div><div class="preset-name">Indigo</div></button>
+          <button class="preset-card" data-preset="rose" onclick="applyPreset('rose',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#E11D48,#FB7185)"></div><div class="preset-name">Rose</div></button>
+          <button class="preset-card" data-preset="emerald" onclick="applyPreset('emerald',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#059669,#34D399)"></div><div class="preset-name">Emerald</div></button>
+          <button class="preset-card" data-preset="amber" onclick="applyPreset('amber',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#D97706,#FBBF24)"></div><div class="preset-name">Amber</div></button>
+          <button class="preset-card" data-preset="midnight" onclick="applyPreset('midnight',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#0EA5E9,#38BDF8)"></div><div class="preset-name">Sky Blue</div></button>
+          <button class="preset-card" data-preset="dark" onclick="applyPreset('dark',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#1A1A1A,#444)"></div><div class="preset-name">Dark</div></button>
+        </div>
+        <div class="adm-color-row" style="margin-top:8px"><label>Custom accent</label><input type="color" id="tc-accent" oninput="liveAccent()"></div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Background</div>
+        <div class="bg-grid">
+          <button class="bg-card" data-btype="none" onclick="setBgType(this)"><div class="bg-preview" style="background:#F9F9F8"></div><div class="bg-label">None</div></button>
+          <button class="bg-card" data-btype="dots" onclick="setBgType(this)"><div class="bg-preview" style="background:#F9F9F8;background-image:radial-gradient(circle,rgba(74,58,255,.25) 1.5px,transparent 1.5px);background-size:16px 16px"></div><div class="bg-label">Dots</div></button>
+          <button class="bg-card" data-btype="grid" onclick="setBgType(this)"><div class="bg-preview" style="background:#F9F9F8;background-image:linear-gradient(rgba(74,58,255,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(74,58,255,.15) 1px,transparent 1px);background-size:16px 16px"></div><div class="bg-label">Grid</div></button>
+          <button class="bg-card" data-btype="mesh" onclick="setBgType(this)"><div class="bg-preview" style="background:radial-gradient(ellipse 80% 80% at 20% 20%,rgba(74,58,255,.35) 0%,transparent 100%),radial-gradient(ellipse 80% 80% at 80% 80%,rgba(167,139,250,.35) 0%,transparent 100%),#F9F9F8"></div><div class="bg-label">Gradient</div></button>
+          <button class="bg-card" data-btype="blobs" onclick="setBgType(this)"><div class="bg-preview" style="background:#F9F9F8;position:relative;overflow:hidden"><div style="position:absolute;left:5%;top:10%;width:60%;height:60%;background:rgba(74,58,255,.25);border-radius:50%;filter:blur(18px)"></div><div style="position:absolute;right:5%;bottom:10%;width:50%;height:50%;background:rgba(167,139,250,.25);border-radius:50%;filter:blur(14px)"></div></div><div class="bg-label">Blobs</div></button>
+          <button class="bg-card" data-btype="aurora" onclick="setBgType(this)"><div class="bg-preview" style="background:linear-gradient(135deg,rgba(74,58,255,.3) 0%,transparent 60%),linear-gradient(225deg,rgba(167,139,250,.25) 0%,transparent 55%),#F9F9F8"></div><div class="bg-label">Aurora</div></button>
+        </div>
+        <div class="adm-slider" id="bg-op-row">
+          <div class="adm-sl-hd"><label>Intensity</label><span id="bgv-op">12%</span></div>
+          <input type="range" min="2" max="60" value="12" step="1" id="bg-op" oninput="document.getElementById('bgv-op').textContent=this.value+'%';liveBg()">
+        </div>
+        <div class="adm-toggle-row" style="margin-top:8px"><label>Animate</label><button class="adm-tog" id="bg-anim-tog" onclick="toggleBgAnim()"></button></div>
+      </div>
+
+    </div>
+
+    <!-- CONTENT TAB -->
+    <div class="adm-tab-pane" id="tab-content">
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Logo</div>
+        <div class="adm-row">
+          <div class="adm-field"><label>Name</label><input type="text" id="ct-logo" oninput="liveContent()"></div>
+          <div class="adm-field"><label>Dot</label><input type="text" id="ct-dot" oninput="liveContent()" style="text-align:center"></div>
+        </div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Hero text</div>
+        <div class="adm-field"><label>Label (small above title)</label><input type="text" id="ct-label" oninput="liveContent()"></div>
+        <div class="adm-field"><label>Headline line 1</label><input type="text" id="ct-h1" oninput="liveContent()"></div>
+        <div class="adm-field"><label>Headline line 2 (italic)</label><input type="text" id="ct-h1em" oninput="liveContent()"></div>
+        <div class="adm-field"><label>Paragraph</label><textarea id="ct-para" oninput="liveContent()"></textarea></div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Services &amp; footer</div>
+        <div class="adm-field"><label>Services section label</label><input type="text" id="ct-seclbl" oninput="liveContent()"></div>
+        <div class="adm-field"><label>Footer left</label><input type="text" id="ct-ftl" oninput="liveContent()"></div>
+        <div class="adm-field"><label>Footer right</label><input type="text" id="ct-ftr" oninput="liveContent()"></div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Service cards</div>
+        <div id="adm-svc-list"></div>
+        <button class="adm-add-svc" onclick="addService()">+ Add Service</button>
+      </div>
+
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="adm-tab-pane" id="tab-settings">
+
+      <div class="adm-section">
+        <div class="adm-sec-title">☁ Cloud sync</div>
+        <div class="sync-card">
+          <ol class="sync-steps">
+            <li>Go to <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> and create a free account</li>
+            <li>Click <strong style="color:#D0D0D0">Create Bin</strong>, paste <code style="color:#A8A0FF;background:#111;padding:1px 5px;border-radius:4px">{}</code> and save it as <strong style="color:#D0D0D0">Public</strong></li>
+            <li>Copy the Bin ID from the URL</li>
+            <li>Go to API Keys, create a key, copy it</li>
+            <li>Paste both below and click Connect</li>
+          </ol>
+          <div class="adm-field"><label>Bin ID</label><input type="text" id="sync-bin" placeholder="64a1b2c3d4e5f6g7h8..."></div>
+          <div class="adm-field"><label>API Key (Master Key)</label><input type="password" id="sync-key" placeholder="$2a$10$..."></div>
+          <div id="sync-msg" style="font-size:12px;margin-bottom:10px;display:none;padding:8px 10px;border-radius:8px;text-align:center"></div>
+          <button onclick="connectSync()" style="width:100%;padding:10px;background:#4A3AFF;border:none;border-radius:9px;color:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s">Connect & Test →</button>
+        </div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">👥 Users</div>
+        <div id="users-list"></div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">🔒 Change password</div>
+        <div class="adm-field"><label>New password</label><input type="password" id="new-pass" placeholder="••••••••"></div>
+        <div class="adm-field"><label>Confirm</label><input type="password" id="new-pass2" placeholder="••••••••"></div>
+        <div id="cred-msg" style="font-size:12px;margin-bottom:8px;display:none;text-align:center;padding:7px;border-radius:8px"></div>
+        <button onclick="changeAdminPass()" style="width:100%;padding:10px;background:#1E1E24;border:1px solid #2A2A30;border-radius:9px;color:#A8A0FF;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Update Password</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="adm-ft">
+    <div class="adm-save-status" id="save-status"></div>
+    <button class="adm-save-btn" onclick="saveSettings()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+      Save &amp; Sync to Everyone
+    </button>
+    <div class="adm-ft-row">
+      <button class="adm-reset-btn" onclick="resetSettings()">↺ Reset to Default</button>
+    </div>
+  </div>
+</div>
+
+<div id="adm-trigger" onclick="tryOpenAdmin()"></div>
+
+<script>
+/* ═══════════════════ AUTH ═══════════════════ */
+function getUsers(){try{return JSON.parse(localStorage.getItem('studioUsers')||'[]')}catch(e){return[]}}
+function saveUsers(u){localStorage.setItem('studioUsers',JSON.stringify(u))}
+function getSession(){try{const s=sessionStorage.getItem('studioSess');return s?JSON.parse(s):null}catch(e){return null}}
+function setSession(u){sessionStorage.setItem('studioSess',JSON.stringify(u))}
+function clearSession(){sessionStorage.removeItem('studioSess')}
+function isAdmin(){const s=getSession();return s&&s.role==='admin'}
+
+function switchAuthTab(tab){
+  const isLogin=tab==='login';
+  document.getElementById('tab-login').style.display=isLogin?'block':'none';
+  document.getElementById('tab-signup').style.display=isLogin?'none':'block';
+  document.getElementById('tab-li-btn').classList.toggle('active',isLogin);
+  document.getElementById('tab-su-btn').classList.toggle('active',!isLogin);
+  if(!isLogin){const u=getUsers();const isFirst=u.length===0;document.getElementById('first-badge').style.display=isFirst?'block':'none';document.getElementById('su-note').style.display=isFirst?'none':'block'}
+}
+function doSignIn(){
+  const u=document.getElementById('li-user').value.trim(),p=document.getElementById('li-pass').value,err=document.getElementById('li-err');
+  const found=getUsers().find(x=>x.username===u&&x.password===btoa(p));
+  if(found){setSession({id:found.id,username:found.username,role:found.role});showMain()}
+  else{err.style.display='block';document.getElementById('li-pass').value='';document.getElementById('li-pass').focus()}
+}
+function doSignUp(){
+  const u=document.getElementById('su-user').value.trim(),p=document.getElementById('su-pass').value,p2=document.getElementById('su-pass2').value,err=document.getElementById('su-err');
+  if(!u||!p){err.textContent='Fill in all fields.';err.style.display='block';return}
+  if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
+  const users=getUsers();
+  if(users.find(x=>x.username===u)){err.textContent='Username already taken.';err.style.display='block';return}
+  const role=users.length===0?'admin':'user';
+  const nu={id:Date.now().toString(),username:u,password:btoa(p),role,createdAt:new Date().toLocaleDateString()};
+  users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role});showMain();
+}
+function doLogout(){clearSession();location.reload()}
+function changeAdminPass(){
+  const p=document.getElementById('new-pass').value,p2=document.getElementById('new-pass2').value,msg=document.getElementById('cred-msg');
+  if(!p){showMsg('cred-msg','Enter a new password.','err');return}
+  if(p!==p2){showMsg('cred-msg','Passwords do not match.','err');return}
+  const sess=getSession(),users=getUsers(),idx=users.findIndex(x=>x.id===sess.id);
+  if(idx>=0){users[idx].password=btoa(p);saveUsers(users)}
+  document.getElementById('new-pass').value='';document.getElementById('new-pass2').value='';
+  showMsg('cred-msg','✓ Password updated.','ok');
+}
+function showMsg(id,txt,type){const el=document.getElementById(id);el.textContent=txt;el.style.cssText=`display:block;color:${type==='ok'?'#22C55E':'#FF6B6B'};background:${type==='ok'?'rgba(34,197,94,.08)':'rgba(255,107,107,.08)'}`;setTimeout(()=>el.style.display='none',3000)}
+function showMain(){
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('main-wrap').style.display='block';
+  const sess=getSession();
+  document.getElementById('hdr-avatar').textContent=sess.username[0].toUpperCase();
+  document.getElementById('hdr-name').textContent=sess.username;
+  const r=document.getElementById('hdr-role');r.textContent=sess.role==='admin'?'Admin':'User';r.className='user-role '+(sess.role==='admin'?'admin':'user');
+  const isAdm=sess.role==='admin';
+  document.getElementById('adm-trigger').style.display=isAdm?'block':'none';
+  document.getElementById('dashboard-btn').style.display=isAdm?'flex':'none';
+  applyAll();
+}
+function tryOpenAdmin(){if(isAdmin())openAdmin()}
+function renderUsersTab(){
+  const users=getUsers(),sess=getSession();
+  const list=document.getElementById('users-list');
+  if(!users.length){list.innerHTML='<p style="font-size:12px;color:#444;text-align:center;padding:16px">No users yet.</p>';return}
+  list.innerHTML=users.map(u=>`<div class="usr-row"><div class="usr-av" style="background:${u.role==='admin'?'#4A3AFF':'#333'}">${u.username[0].toUpperCase()}</div><div class="usr-info"><div class="usr-name">${u.username}${u.id===sess?.id?' <span style="color:#333">(you)</span>':''}</div><div class="usr-meta">Joined ${u.createdAt}</div></div><span class="usr-badge ${u.role}">${u.role}</span>${u.id!==sess?.id&&u.role!=='admin'?`<button class="usr-del" onclick="deleteUser('${u.id}')">×</button>`:'<div style="width:28px"></div>'}</div>`).join('')
+}
+function deleteUser(id){if(!confirm('Remove this user?'))return;saveUsers(getUsers().filter(u=>u.id!==id));renderUsersTab()}
+
+/* ═══════════════════ CLOUD SYNC (JSONBin) ═══════════════════ */
+function getSyncCfg(){try{return JSON.parse(localStorage.getItem('studioSync')||'null')}catch(e){return null}}
+function saveSyncCfg(b,k){localStorage.setItem('studioSync',JSON.stringify({bin:b,key:k}))}
+async function loadFromCloud(){
+  const cfg=getSyncCfg();if(!cfg||!cfg.bin)return false;
+  try{
+    const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}/latest`,{headers:cfg.key?{'X-Master-Key':cfg.key,'X-Bin-Meta':false}:{}});
+    if(!res.ok)return false;
+    const data=await res.json();
+    if(data&&data.record){S=data.record;return true}
+  }catch(e){}return false;
+}
+async function saveToCloud(){
+  const cfg=getSyncCfg();if(!cfg||!cfg.bin||!cfg.key)return false;
+  try{
+    const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':cfg.key},body:JSON.stringify(S)});
+    return res.ok;
+  }catch(e){return false}
+}
+async function connectSync(){
+  const bin=document.getElementById('sync-bin').value.trim(),key=document.getElementById('sync-key').value.trim();
+  if(!bin||!key){showMsg('sync-msg','Enter both Bin ID and API Key.','err');return}
+  showMsg('sync-msg','Testing connection...','ok');
+  document.getElementById('sync-dot').className='syncing';
+  saveSyncCfg(bin,key);
+  // Test by saving current S
+  const ok=await saveToCloud();
+  if(ok){document.getElementById('sync-dot').className='synced';document.getElementById('sync-status-txt').textContent='Synced to cloud';showMsg('sync-msg','✓ Connected! Changes now sync to everyone.','ok')}
+  else{document.getElementById('sync-dot').className='';showMsg('sync-msg','Connection failed. Check your Bin ID and API Key.','err')}
+}
+function updateSyncUI(){
+  const cfg=getSyncCfg();
+  if(cfg&&cfg.bin){document.getElementById('sync-bin').value=cfg.bin;if(cfg.key)document.getElementById('sync-key').value=cfg.key;document.getElementById('sync-status-txt').textContent='Synced to cloud';document.getElementById('sync-dot').className='synced';}
+}
+
+/* ═══════════════════ SETTINGS ═══════════════════ */
+/*SITE_DEF_START*/const DEF={
+  theme:{accent:'#4A3AFF',bg:'#F9F9F8',surface:'#FFFFFF',ink:'#111111',ink2:'#555555'},
+  bg:{type:'none',c1:'#4A3AFF',c2:'#C4B5FD',op:12,sc:28,sz:1.5,bl:70,anim:false},
+  page:{logo:'HerEra',dot:'.',label:'Get started',h1:"Let's build your",h1em:'brand identity.',para:"Choose a service below and fill out a brief — we'll review your project and get back to you within 24 hours to discuss next steps.",seclbl:'Available Services',ftl:'© 2025 HerEra. All rights reserved.',ftr:'Questions? Reach out before submitting.'},
+  services:[
+    {tag:'⬡ Design',title:'Logo Design',desc:"A distinctive mark built around your brand's values — from wordmarks to icon-based systems, crafted to work everywhere.",inc:['Primary logo + variations','SVG, PNG, PDF source files','2–3 initial concepts','Revision rounds included'],price:'15',cur:'KD',form:'logo'},
+    {tag:'◈ Identity',title:'Brand Identity',desc:'A complete visual language — logo, color system, typography, and brand guidelines that keep everything consistent.',inc:['Full logo suite + brand mark','Color palette + typography','Brand guidelines PDF','Stationery mockups'],price:'40',cur:'KD',form:'brand'},
+    {tag:'◉ Content',title:'Social Media Kit',desc:'Branded templates for posts, stories, highlight covers, and reels — built for consistency across all your platforms.',inc:['Post + story templates','Highlight cover icons','Profile picture frame','Editable Canva / Figma files'],price:'20',cur:'KD',form:'social'}
+  ]
+};/*SITE_DEF_END*/
+let S=JSON.parse(JSON.stringify(DEF));
+
+function loadSettings(){try{const d=localStorage.getItem('studioSettings');if(d)S=JSON.parse(d)}catch(e){}}
+async function saveSettings(){
+  localStorage.setItem('studioSettings',JSON.stringify(S));
+  const dot=document.getElementById('sync-dot'),stxt=document.getElementById('sync-status-txt'),ss=document.getElementById('save-status');
+  dot.className='syncing';stxt.textContent='Syncing...';
+  const ok=await saveToCloud();
+  if(ok){dot.className='synced';stxt.textContent='Synced — everyone sees your changes';ss.textContent='✓ Saved & synced to everyone';ss.style.color='#22C55E';}
+  else{dot.className='';stxt.textContent=getSyncCfg()?'Sync failed — check connection':'Not connected to cloud';ss.textContent='✓ Saved locally (connect cloud to sync)';ss.style.color='#F59E0B';}
+  ss.classList.add('show');setTimeout(()=>ss.classList.remove('show'),3000);
+}
+function resetSettings(){if(!confirm('Reset all settings to default?'))return;S=JSON.parse(JSON.stringify(DEF));localStorage.removeItem('studioSettings');applyAll();syncAdminUI()}
+function applyAll(){applyTheme();applyBg();renderPageText();renderServices()}
+
+/* THEME */
+function hexToAlpha(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`}
+function applyTheme(){
+  const t=S.theme;
+  document.getElementById('theme-vars').textContent=`:root{--bg:${t.bg};--surface:${t.surface};--ink:${t.ink};--ink-2:${t.ink2};--ink-3:#999;--accent:${t.accent};--accent-light:${hexToAlpha(t.accent,.13)};--border:${hexToAlpha(t.ink,.11)};--success:#22C55E;--radius:16px;--tr:0.25s cubic-bezier(0.4,0,0.2,1)}body{background-color:${t.bg}}`;
+}
+function liveAccent(){S.theme.accent=document.getElementById('tc-accent').value;applyTheme()}
+const presets={indigo:{accent:'#4A3AFF',bg:'#F9F9F8',surface:'#FFFFFF',ink:'#111111',ink2:'#555555'},rose:{accent:'#E11D48',bg:'#FFF5F7',surface:'#FFFFFF',ink:'#1A0008',ink2:'#664455'},emerald:{accent:'#059669',bg:'#F2FBF8',surface:'#FFFFFF',ink:'#082A1F',ink2:'#3A6655'},amber:{accent:'#D97706',bg:'#FFFBF2',surface:'#FFFFFF',ink:'#1A1000',ink2:'#665533'},midnight:{accent:'#0EA5E9',bg:'#F0F8FF',surface:'#FFFFFF',ink:'#0A1525',ink2:'#335577'},dark:{accent:'#6D60FF',bg:'#111114',surface:'#1C1C20',ink:'#F0F0F0',ink2:'#999999'}};
+function applyPreset(name,btn){
+  S.theme={...presets[name]};applyTheme();
+  document.getElementById('tc-accent').value=presets[name].accent;
+  document.querySelectorAll('.preset-card').forEach(c=>c.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+function syncThemeUI(){
+  const t=S.theme;document.getElementById('tc-accent').value=t.accent;
+  // find matching preset
+  document.querySelectorAll('.preset-card').forEach(c=>{
+    const p=presets[c.dataset.preset];
+    c.classList.toggle('active',p&&p.accent===t.accent&&p.bg===t.bg);
+  });
+}
+
+/* BACKGROUND */
+function rgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${Math.round(a*1000)/1000})`}
+function applyBg(){
+  const b=S.bg,layer=document.getElementById('bg-layer'),bst=document.getElementById('bg-style');
+  layer.innerHTML='';bst.textContent='';
+  const op=b.op/100;
+  if(b.type==='dots'){bst.textContent=`body{background-image:radial-gradient(circle,${rgba(b.c1,op)} ${b.sz}px,transparent ${b.sz}px);background-size:${b.sc}px ${b.sc}px}`}
+  else if(b.type==='mesh'){bst.textContent=`body{background:radial-gradient(ellipse 65% 55% at 15% 15%,${rgba(b.c1,Math.min(op*2.2,.92))} 0%,transparent 100%),radial-gradient(ellipse 55% 65% at 85% 85%,${rgba(S.theme.accent,Math.min(op*1.8,.85))} 0%,transparent 100%),radial-gradient(ellipse 60% 60% at 55% 105%,${rgba(b.c1,op)} 0%,transparent 100%),${S.theme.bg}}`}
+  else if(b.type==='grid'){bst.textContent=`body{background-image:linear-gradient(${rgba(b.c1,op)} 1px,transparent 1px),linear-gradient(90deg,${rgba(b.c1,op)} 1px,transparent 1px);background-size:${b.sc}px ${b.sc}px}`}
+  else if(b.type==='blobs'){[[5,10,55,50,b.c1],[45,50,62,55,S.theme.accent],[25,65,40,42,b.c1]].forEach((d,i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;left:${d[0]}%;top:${d[1]}%;width:${d[2]}%;height:${d[3]}%;background:${rgba(d[4],Math.min(op*1.6,.85))};border-radius:50%;filter:blur(${b.bl}px);pointer-events:none;${b.anim?`animation:bfloat ${8+i*3}s ease-in-out ${-i*2}s infinite alternate;`:''}`;layer.appendChild(el)});if(b.anim)injectAnim('_bfa','@keyframes bfloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(6%,-8%) scale(1.1)}}')}
+  else if(b.type==='aurora'){[[`linear-gradient(135deg,${rgba(b.c1,Math.min(op*3,.9))} 0%,transparent 55%)`,'aur0',14],[`linear-gradient(225deg,${rgba(S.theme.accent,Math.min(op*2.5,.85))} 0%,transparent 52%)`,'aur1',10],[`linear-gradient(45deg,${rgba(b.c1,op*1.5)} 0%,transparent 65%)`,'aur2',18]].forEach(([g,n,dr],i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;inset:0;background:${g};pointer-events:none;${b.anim?`animation:${n} ${dr}s ease-in-out ${-i*3}s infinite alternate;`:''}`;layer.appendChild(el)});if(b.anim)injectAnim('_afa','@keyframes aur0{0%{opacity:1;transform:rotate(0) scale(1)}100%{opacity:.7;transform:rotate(5deg) scale(1.08)}}@keyframes aur1{0%{opacity:.8}100%{opacity:1;transform:rotate(-4deg) scale(1.06)}}@keyframes aur2{0%{opacity:.6}100%{opacity:1;transform:scale(1.12)}}')}
+}
+function injectAnim(id,css){let s=document.getElementById(id);if(!s){s=document.createElement('style');s.id=id;document.head.appendChild(s)}s.textContent=css}
+function liveBg(){S.bg.op=parseInt(document.getElementById('bg-op').value);applyBg()}
+function setBgType(btn){
+  // Use accent color for patterns
+  S.bg.c1=S.theme.accent;
+  document.querySelectorAll('.bg-card').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  S.bg.type=btn.dataset.btype;applyBg();
+}
+function toggleBgAnim(){S.bg.anim=!S.bg.anim;document.getElementById('bg-anim-tog').classList.toggle('on',S.bg.anim);applyBg()}
+function syncBgUI(){
+  const b=S.bg;
+  document.querySelectorAll('.bg-card').forEach(c=>c.classList.toggle('active',c.dataset.btype===b.type));
+  document.getElementById('bg-op').value=b.op;document.getElementById('bgv-op').textContent=b.op+'%';
+  document.getElementById('bg-anim-tog').classList.toggle('on',b.anim);
+}
+
+/* PAGE TEXT */
+function renderPageText(){
+  const p=S.page;
+  document.getElementById('pg-logo').innerHTML=p.logo+'<span>'+p.dot+'</span>';
+  document.getElementById('auth-logo-txt').innerHTML=p.logo+'<em>'+p.dot+'</em>';
+  document.getElementById('pg-hero-label').textContent=p.label;
+  document.getElementById('pg-hero-h1').innerHTML=p.h1+'<br><em>'+p.h1em+'</em>';
+  document.getElementById('pg-hero-para').textContent=p.para;
+  document.getElementById('pg-section-label').textContent=p.seclbl;
+  document.getElementById('pg-footer-l').textContent=p.ftl;
+  document.getElementById('pg-footer-r').textContent=p.ftr;
+}
+function liveContent(){
+  S.page.logo=document.getElementById('ct-logo').value;S.page.dot=document.getElementById('ct-dot').value;S.page.label=document.getElementById('ct-label').value;S.page.h1=document.getElementById('ct-h1').value;S.page.h1em=document.getElementById('ct-h1em').value;S.page.para=document.getElementById('ct-para').value;S.page.seclbl=document.getElementById('ct-seclbl').value;S.page.ftl=document.getElementById('ct-ftl').value;S.page.ftr=document.getElementById('ct-ftr').value;
+  renderPageText();
+}
+function syncContentUI(){
+  const p=S.page;
+  ['ct-logo','ct-dot','ct-label','ct-h1','ct-h1em','ct-para','ct-seclbl','ct-ftl','ct-ftr'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.value=[p.logo,p.dot,p.label,p.h1,p.h1em,p.para,p.seclbl,p.ftl,p.ftr][i]});
+}
+
+/* SERVICES */
+function renderServices(){
+  document.getElementById('services-grid').innerHTML=S.services.map((sv,i)=>`<div class="service-card" data-number="0${i+1}" onclick="openModal('${sv.form}')"><div class="card-tag">${sv.tag}</div><h2 class="card-title">${sv.title}</h2><p class="card-desc">${sv.desc}</p><ul class="card-includes">${sv.inc.map(x=>`<li>${x}</li>`).join('')}</ul><div class="card-footer"><div><span class="price-from">Starting from</span><div class="price-value">${sv.price} <span>${sv.cur}</span></div></div><button class="card-cta">Start Brief<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`).join('');
+}
+function renderAdminServices(){
+  const list=document.getElementById('adm-svc-list');
+  list.innerHTML=S.services.map((sv,i)=>`<div class="adm-svc-card"><div class="adm-svc-hd" onclick="toggleSvc(${i})"><div class="adm-svc-num">${i+1}</div><div class="adm-svc-name" id="asn-${i}">${sv.title}</div><span class="adm-svc-arrow" id="asa-${i}">▼</span></div><div class="adm-svc-body" id="asb-${i}"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="adm-field"><label>Tag</label><input type="text" value="${sv.tag}" oninput="updSvc(${i},'tag',this.value)"></div><div class="adm-field"><label>Title</label><input type="text" value="${sv.title}" oninput="updSvc(${i},'title',this.value);document.getElementById('asn-${i}').textContent=this.value"></div></div><div class="adm-field"><label>Description</label><textarea oninput="updSvc(${i},'desc',this.value)">${sv.desc}</textarea></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="adm-field"><label>Price</label><input type="text" value="${sv.price}" oninput="updSvc(${i},'price',this.value)"></div><div class="adm-field"><label>Currency</label><input type="text" value="${sv.cur}" oninput="updSvc(${i},'cur',this.value)"></div></div><div class="adm-field"><label>What's included</label><div id="adi-${i}">${sv.inc.map((x,j)=>`<div class="adm-inc-row"><input type="text" value="${x}" oninput="updInc(${i},${j},this.value)"><button class="adm-del-inc" onclick="delInc(${i},${j})">×</button></div>`).join('')}</div><button class="adm-add-inc" onclick="addInc(${i})">+ Add item</button></div><div class="adm-field"><label>Form type</label><select onchange="updSvc(${i},'form',this.value)"><option value="logo" ${sv.form==='logo'?'selected':''}>Logo Design</option><option value="brand" ${sv.form==='brand'?'selected':''}>Brand Identity</option><option value="social" ${sv.form==='social'?'selected':''}>Social Media Kit</option><option value="none" ${sv.form==='none'?'selected':''}>No form</option></select></div>${S.services.length>1?`<button class="adm-del-svc" onclick="delSvc(${i})">🗑 Delete service</button>`:''}</div></div>`).join('');
+}
+function toggleSvc(i){const b=document.getElementById(`asb-${i}`),a=document.getElementById(`asa-${i}`);const open=b.style.display==='none'||b.style.display==='';b.style.display=open?'block':'none';a.classList.toggle('open',open)}
+function updSvc(i,k,v){S.services[i][k]=v;renderServices()}
+function updInc(i,j,v){S.services[i].inc[j]=v;renderServices()}
+function addInc(i){S.services[i].inc.push('New item');renderAdminServices();renderServices()}
+function delInc(i,j){S.services[i].inc.splice(j,1);renderAdminServices();renderServices()}
+function addService(){S.services.push({tag:'◆ New',title:'New Service',desc:'Describe this service...',inc:['Deliverable 1','Deliverable 2'],price:'0',cur:'KD',form:'logo'});renderAdminServices();renderServices()}
+function delSvc(i){if(!confirm('Delete this service?'))return;S.services.splice(i,1);renderAdminServices();renderServices()}
+
+/* ADMIN PANEL */
+function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();renderAdminServices();renderUsersTab();updateSyncUI()}
+function openAdmin(){syncAdminUI();document.getElementById('adm-overlay').classList.add('open');document.getElementById('adm-panel').classList.add('open');document.body.style.overflow='hidden'}
+function closeAdmin(){document.getElementById('adm-overlay').classList.remove('open');document.getElementById('adm-panel').classList.remove('open');document.body.style.overflow=''}
+function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI()}}
+document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal()}});
+
+/* FORM CONFIGS */
+const forms={
+  logo:{tag:'⬡ Logo Design',title:'Logo Design Brief',html:`<div class="form-section"><div class="form-section-title">Your Info</div><div class="form-row"><div class="form-group"><label>Full Name <span class="req">*</span></label><input type="text" placeholder="Sarah Ahmed" required></div><div class="form-group"><label>Email <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row single"><div class="form-group"><label>Business Name <span class="req">*</span></label><input type="text" placeholder="Your business or brand name" required></div></div><div class="form-row"><div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div><div class="form-group"><label>Instagram / Website</label><input type="text" placeholder="@handle or website URL"></div></div></div><div class="form-section"><div class="form-section-title">Your Business</div><div class="form-row single"><div class="form-group"><label>What does your business do? <span class="req">*</span></label><textarea placeholder="Describe what you sell or offer..."></textarea></div></div><div class="form-row single"><div class="form-group"><label>Existing brand materials?</label><select><option value="">Select</option><option>No — starting from scratch</option><option>Yes — but I want a refresh</option><option>Yes — keeping existing brand</option></select></div></div></div><div class="form-section"><div class="form-section-title">Logo Preferences</div><div class="form-row single"><div class="form-group"><label>Logo Style <span class="req">*</span></label><select required><option value="">Select a style</option><option>Wordmark (text only)</option><option>Lettermark (initials)</option><option>Icon + wordmark combination</option><option>Abstract icon / symbol</option><option>No preference</option></select></div></div><div class="form-row single"><div class="form-group"><label>Color Preferences</label><input type="text" placeholder="e.g. Black & gold, soft pastels..."><span class="hint">Leave blank to let us suggest.</span></div></div><div class="form-row single"><div class="form-group"><label>Brands You Admire</label><textarea placeholder="Share handles or logos you like and why." style="min-height:72px"></textarea></div></div></div><div class="form-section"><div class="form-section-title">Project Details</div><div class="form-row"><div class="form-group"><label>Timeline</label><select><option value="">Select</option><option>Within 1 week</option><option>1–2 weeks</option><option>2–4 weeks</option><option>Flexible</option></select></div><div class="form-group"><label>Budget Range</label><select><option value="">Select</option><option>15–25 KD</option><option>25–40 KD</option><option>40–60 KD</option><option>60+ KD</option></select></div></div><div class="form-row single"><div class="form-group"><label>Anything else?</label><textarea placeholder="Additional details..." style="min-height:70px"></textarea></div></div></div>`},
+  brand:{tag:'◈ Brand Identity',title:'Brand Identity Brief',html:`<div class="form-section"><div class="form-section-title">Your Info</div><div class="form-row"><div class="form-group"><label>Full Name <span class="req">*</span></label><input type="text" placeholder="Sarah Ahmed" required></div><div class="form-group"><label>Email <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row"><div class="form-group"><label>Business Name <span class="req">*</span></label><input type="text" placeholder="Brand or company name" required></div><div class="form-group"><label>Industry</label><select><option value="">Select</option><option>Fashion & Beauty</option><option>Food & Beverage</option><option>Health & Wellness</option><option>Tech & Services</option><option>Retail & E-commerce</option><option>Real Estate</option><option>Education</option><option>Other</option></select></div></div><div class="form-row"><div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div><div class="form-group"><label>Instagram / Website</label><input type="text" placeholder="@handle or URL"></div></div></div><div class="form-section"><div class="form-section-title">About Your Brand</div><div class="form-row single"><div class="form-group"><label>Describe your business <span class="req">*</span></label><textarea placeholder="What do you sell? What makes you different?"></textarea></div></div><div class="form-row single"><div class="form-group"><label>Target audience <span class="req">*</span></label><textarea placeholder="Describe your ideal customer..." style="min-height:70px"></textarea></div></div></div><div class="form-section"><div class="form-section-title">Brand Personality</div><p class="hint" style="margin-bottom:12px">Select all that describe your brand's tone:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox"><span>Modern & minimal</span></label><label class="checkbox-item"><input type="checkbox"><span>Luxury & premium</span></label><label class="checkbox-item"><input type="checkbox"><span>Bold & powerful</span></label><label class="checkbox-item"><input type="checkbox"><span>Playful & fun</span></label><label class="checkbox-item"><input type="checkbox"><span>Organic & natural</span></label><label class="checkbox-item"><input type="checkbox"><span>Feminine & soft</span></label><label class="checkbox-item"><input type="checkbox"><span>Corporate & serious</span></label><label class="checkbox-item"><input type="checkbox"><span>Youthful & energetic</span></label></div></div><div class="form-section"><div class="form-section-title">Project Details</div><div class="form-row"><div class="form-group"><label>Timeline</label><select><option value="">Select</option><option>2–3 weeks</option><option>3–4 weeks</option><option>1–2 months</option><option>Flexible</option></select></div><div class="form-group"><label>Budget Range</label><select><option value="">Select</option><option>40–65 KD</option><option>65–100 KD</option><option>100–150 KD</option><option>150+ KD</option></select></div></div><div class="form-row single"><div class="form-group"><label>Reference brands</label><textarea placeholder="Brands or accounts you're inspired by." style="min-height:70px"></textarea></div></div></div>`},
+  social:{tag:'◉ Social Media Kit',title:'Social Media Kit Brief',html:`<div class="form-section"><div class="form-section-title">Your Info</div><div class="form-row"><div class="form-group"><label>Full Name <span class="req">*</span></label><input type="text" placeholder="Sarah Ahmed" required></div><div class="form-group"><label>Email <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row"><div class="form-group"><label>Business Name <span class="req">*</span></label><input type="text" placeholder="Your brand name" required></div><div class="form-group"><label>Instagram Handle</label><input type="text" placeholder="@yourbrand"></div></div><div class="form-row single"><div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div></div></div><div class="form-section"><div class="form-section-title">Platforms & Templates</div><p class="hint" style="margin-bottom:12px">Platforms you post on:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" checked><span>Instagram</span></label><label class="checkbox-item"><input type="checkbox"><span>TikTok</span></label><label class="checkbox-item"><input type="checkbox"><span>Twitter / X</span></label><label class="checkbox-item"><input type="checkbox"><span>LinkedIn</span></label><label class="checkbox-item"><input type="checkbox"><span>Facebook</span></label><label class="checkbox-item"><input type="checkbox"><span>Snapchat</span></label></div><p class="hint" style="margin:12px 0">Templates needed:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" checked><span>Feed posts</span></label><label class="checkbox-item"><input type="checkbox" checked><span>Instagram Stories</span></label><label class="checkbox-item"><input type="checkbox"><span>Reels covers</span></label><label class="checkbox-item"><input type="checkbox"><span>Highlight covers</span></label><label class="checkbox-item"><input type="checkbox"><span>Profile frame</span></label><label class="checkbox-item"><input type="checkbox"><span>Carousel posts</span></label></div></div><div class="form-section"><div class="form-section-title">Brand & Style</div><div class="form-row single"><div class="form-group"><label>Existing brand? <span class="req">*</span></label><select required><option value="">Select</option><option>Yes — I'll share my files</option><option>Yes — but need new direction</option><option>No — design a look for me</option></select></div></div><div class="form-row single"><div class="form-group"><label>Brand Colors</label><input type="text" placeholder="e.g. Rose gold, cream, black"></div></div><div class="form-row single"><div class="form-group"><label>Aesthetic / mood</label><textarea placeholder="Describe the vibe: luxury, minimalist..."></textarea></div></div></div><div class="form-section"><div class="form-section-title">Project Details</div><div class="form-row"><div class="form-group"><label>Templates needed</label><select><option value="">Select</option><option>5–10 templates</option><option>10–20 templates</option><option>20–30 templates</option><option>Full kit (30+)</option></select></div><div class="form-group"><label>Format</label><select><option value="">Select</option><option>Canva (editable)</option><option>Figma (editable)</option><option>PNG exports</option><option>All formats</option></select></div></div><div class="form-row"><div class="form-group"><label>Timeline</label><select><option value="">Select</option><option>Within 1 week</option><option>1–2 weeks</option><option>2–4 weeks</option><option>Flexible</option></select></div><div class="form-group"><label>Budget Range</label><select><option value="">Select</option><option>20–35 KD</option><option>35–55 KD</option><option>55–80 KD</option><option>80+ KD</option></select></div></div><div class="form-row single"><div class="form-group"><label>Additional notes</label><textarea placeholder="Anything else..." style="min-height:70px"></textarea></div></div></div>`}
+};
+
+/* FORM MODAL */
+function initCheckboxes(c){c.querySelectorAll('.checkbox-item').forEach(item=>{const cb=item.querySelector('input[type="checkbox"]');if(cb?.checked)item.classList.add('checked');cb?.addEventListener('change',()=>item.classList.toggle('checked',cb.checked))})}
+function openModal(formKey){if(!formKey||formKey==='none')return;const config=forms[formKey];if(!config)return;document.getElementById('modal-tag').textContent=config.tag;document.getElementById('modal-title').textContent=config.title;const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');body.innerHTML=config.html;body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden'}
+function closeModal(){document.getElementById('modal').classList.remove('active');document.body.style.overflow=''}
+function handleOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal()}
+function submitForm(){const body=document.getElementById('modal-body');let valid=true;body.querySelectorAll('input[required],select[required],textarea[required]').forEach(f=>{if(!f.value.trim()){f.style.borderColor='#EF4444';f.style.background='#FFF5F5';valid=false;f.addEventListener('input',()=>{f.style.borderColor='';f.style.background=''},{ once:true})}});if(!valid)return;body.style.display='none';document.getElementById('modal-footer').style.display='none';document.getElementById('success-state').classList.add('visible')}
+
+/* INIT */
+async function init(){
+  loadSettings();
+  // Try cloud first
+  const cloudLoaded=await loadFromCloud();
+  if(!cloudLoaded){}// keep localStorage settings
+  renderPageText();
+  const sess=getSession();
+  if(sess)showMain();
+}
+init();
+</script>
+</body>
+</html>
