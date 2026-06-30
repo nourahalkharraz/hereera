@@ -699,6 +699,7 @@ html[dir="rtl"] .success-state{text-align:center}
   </div>
 
   <div id="adm-ft">
+    <div id="sync-timestamp-footer" style="display:none;font-size:11px;color:#666;text-align:center;margin-bottom:8px;font-weight:600"></div>
     <div id="unsaved-banner" style="display:none;align-items:center;gap:8px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#FBBF24;font-weight:600">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
       You have unsaved changes — tap Save below or they won't reach your visitors.
@@ -932,16 +933,18 @@ function getSyncCfg(){
 }
 function saveSyncCfg(b,k){localStorage.setItem('studioSync',JSON.stringify({bin:b,key:k}))}
 async function loadFromCloud(){
-  const cfg=getSyncCfg();if(!cfg||!cfg.bin)return false;
+  const cfg=getSyncCfg();if(!cfg||!cfg.bin){window._lastSyncError='No sync config found';return false}
   try{
     const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}/latest`,{headers:cfg.key?{'X-Master-Key':cfg.key,'X-Bin-Meta':false}:{}});
-    if(!res.ok)return false;
+    if(!res.ok){let body='';try{body=await res.text()}catch(e){}window._lastSyncError=`GET failed: HTTP ${res.status} ${res.statusText} — ${body.slice(0,200)}`;return false}
     const data=await res.json();
-    if(data&&data.record){S=data.record;return true}
-  }catch(e){}return false;
+    if(data&&data.record){S=data.record;window._lastSyncError=null;return true}
+    window._lastSyncError='GET succeeded but response had no record';
+  }catch(e){window._lastSyncError='Network/JS error on GET: '+e.message}
+  return false;
 }
 async function saveToCloud(){
-  const cfg=getSyncCfg();if(!cfg||!cfg.bin||!cfg.key)return false;
+  const cfg=getSyncCfg();if(!cfg||!cfg.bin||!cfg.key){window._lastSyncError='No sync config (missing bin or key)';return false}
   try{
     try{
       const getRes=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}/latest`,{headers:{'X-Master-Key':cfg.key,'X-Bin-Meta':false}});
@@ -955,8 +958,10 @@ async function saveToCloud(){
       }
     }catch(e){}
     const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':cfg.key},body:JSON.stringify(S)});
-    return res.ok;
-  }catch(e){return false}
+    if(!res.ok){let body='';try{body=await res.text()}catch(e){}window._lastSyncError=`PUT failed: HTTP ${res.status} ${res.statusText} — ${body.slice(0,200)}`;return false}
+    window._lastSyncError=null;
+    return true;
+  }catch(e){window._lastSyncError='Network/JS error on PUT: '+e.message;return false}
 }
 async function connectSync(){
   const bin=document.getElementById('sync-bin').value.trim(),key=document.getElementById('sync-key').value.trim();
@@ -1136,15 +1141,24 @@ async function saveSettings(){
   dot.className='syncing';stxt.textContent='Syncing...';
   S._meta={savedAt:Date.now()};
   const ok=await saveToCloud();
-  if(ok){dot.className='synced';stxt.textContent='Synced — everyone sees your changes';ss.textContent='✓ Saved & synced to everyone';ss.style.color='#22C55E';window._lastSavedSnapshot=JSON.stringify(S);updateUnsavedBanner();updateSyncTimestamp();}
-  else{dot.className='';stxt.textContent=getSyncCfg()?'Sync failed — check connection':'Not connected to cloud';ss.textContent='✓ Saved locally (connect cloud to sync)';ss.style.color='#F59E0B';}
-  ss.classList.add('show');setTimeout(()=>ss.classList.remove('show'),3000);
+  if(ok){
+    dot.className='synced';stxt.textContent='Synced — everyone sees your changes';
+    ss.textContent='✓ Saved & synced to everyone';ss.style.color='#22C55E';
+    window._lastSavedSnapshot=JSON.stringify(S);updateUnsavedBanner();updateSyncTimestamp();
+    ss.classList.add('show');setTimeout(()=>ss.classList.remove('show'),3000);
+  } else {
+    dot.className='';stxt.textContent=getSyncCfg()?'Sync failed — check connection':'Not connected to cloud';
+    ss.textContent='✗ FAILED: '+(window._lastSyncError||'unknown error');ss.style.color='#EF4444';
+    ss.classList.add('show');
+    // do not auto-hide error — keep visible so it can be screenshotted
+  }
 }
 function updateSyncTimestamp(){
   const el=document.getElementById('sync-timestamp');
-  if(!el)return;
-  if(S._meta&&S._meta.savedAt){el.textContent='Last saved (any device): '+new Date(S._meta.savedAt).toLocaleString();el.style.display='block';}
-  else{el.style.display='none';}
+  const el2=document.getElementById('sync-timestamp-footer');
+  const txt=(S._meta&&S._meta.savedAt)?'Last saved (any device): '+new Date(S._meta.savedAt).toLocaleString():'';
+  if(el){el.textContent=txt;el.style.display=txt?'block':'none';}
+  if(el2){el2.textContent=txt;el2.style.display=txt?'block':'none';}
 }
 function updateUnsavedBanner(){
   const banner=document.getElementById('unsaved-banner');
