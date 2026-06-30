@@ -306,7 +306,6 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;user-select:none"><input type="checkbox" id="li-remember" checked style="width:15px;height:15px;accent-color:#4A3AFF;cursor:pointer"><span style="font-size:12px;color:#888">Remember me on this device</span></label>
       <div class="auth-err" id="li-err">Incorrect username or password.</div>
       <button class="auth-btn" onclick="doSignIn()">Sign In →</button>
-      <p class="auth-note" style="margin-top:14px"><button onclick="resetAccess()" style="background:none;border:none;color:#444;font-size:11px;cursor:pointer;text-decoration:underline;padding:0;font-family:'Inter',sans-serif">Trouble signing in? Reset admin access</button></p>
     </div>
     <div id="tab-signup" style="display:none">
       <div class="auth-first-badge" id="first-badge" style="display:block">✦ No admin account yet — create one to manage the site</div>
@@ -656,14 +655,6 @@ async function doSignUp(){
   setSession({id:nu.id,username:nu.username,role:nu.role},remember);closeAdminLogin();applyLoggedInUI();
 }
 function doLogout(){clearSession();location.reload()}
-async function resetAccess(){
-  if(!confirm('This will remove ALL admin accounts and let you create a brand new one. Your site settings (theme, services, content) will NOT be affected. Continue?'))return;
-  localStorage.removeItem('studioUsers');
-  S.users=[];
-  await saveToCloud();
-  clearSession();
-  location.reload();
-}
 function changeAdminPass(){
   const p=document.getElementById('new-pass').value,p2=document.getElementById('new-pass2').value,msg=document.getElementById('cred-msg');
   if(!p){showMsg('cred-msg','Enter a new password.','err');return}
