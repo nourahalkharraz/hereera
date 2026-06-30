@@ -581,8 +581,16 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 
 <script>
 /* ═══════════════════ AUTH ═══════════════════ */
-function getUsers(){try{return JSON.parse(localStorage.getItem('studioUsers')||'[]')}catch(e){return[]}}
-function saveUsers(u){localStorage.setItem('studioUsers',JSON.stringify(u))}
+function getUsers(){
+  if(S&&Array.isArray(S.users))return S.users;
+  try{return JSON.parse(localStorage.getItem('studioUsers')||'[]')}catch(e){return[]}
+}
+function saveUsers(u){
+  if(!S.users)S.users=[];
+  S.users=u;
+  localStorage.setItem('studioUsers',JSON.stringify(u));
+  saveToCloud();
+}
 function getSession(){try{let s=localStorage.getItem('studioSessPersist');if(s)return JSON.parse(s);s=sessionStorage.getItem('studioSess');return s?JSON.parse(s):null}catch(e){return null}}
 function setSession(u,remember){if(remember){localStorage.setItem('studioSessPersist',JSON.stringify(u));sessionStorage.removeItem('studioSess')}else{sessionStorage.setItem('studioSess',JSON.stringify(u));localStorage.removeItem('studioSessPersist')}}
 function clearSession(){sessionStorage.removeItem('studioSess');localStorage.removeItem('studioSessPersist')}
@@ -639,6 +647,8 @@ function doLogout(){clearSession();location.reload()}
 function resetAccess(){
   if(!confirm('This will remove ALL admin accounts and let you create a brand new one. Your site settings (theme, services, content) will NOT be affected. Continue?'))return;
   localStorage.removeItem('studioUsers');
+  S.users=[];
+  saveToCloud();
   clearSession();
   location.reload();
 }
@@ -854,7 +864,8 @@ function clearSvcImg(i){S.services[i].img='';renderServices();renderAdminService
     {tag:'⬡ Design',title:'Logo Design',desc:"A distinctive mark built around your brand's values — from wordmarks to icon-based systems, crafted to work everywhere.",inc:['Primary logo + variations','SVG, PNG, PDF source files','2–3 initial concepts','Revision rounds included'],price:'15',cur:'KD',form:'logo',img:''},
     {tag:'◈ Identity',title:'Brand Identity',desc:'A complete visual language — logo, color system, typography, and brand guidelines that keep everything consistent.',inc:['Full logo suite + brand mark','Color palette + typography','Brand guidelines PDF','Stationery mockups'],price:'40',cur:'KD',form:'brand',img:''},
     {tag:'◉ Content',title:'Social Media Kit',desc:'Branded templates for posts, stories, highlight covers, and reels — built for consistency across all your platforms.',inc:['Post + story templates','Highlight cover icons','Profile picture frame','Editable Canva / Figma files'],price:'20',cur:'KD',form:'social',img:''}
-  ]
+  ],
+  users:[]
 };/*SITE_DEF_END*/
 let S=JSON.parse(JSON.stringify(DEF));
 
