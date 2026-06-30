@@ -552,6 +552,8 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
           <input type="range" min="2" max="60" value="12" step="1" id="bg-op" oninput="document.getElementById('bgv-op').textContent=this.value+'%';liveBg()">
         </div>
         <div class="adm-toggle-row" style="margin-top:8px"><label>Animate background</label><button class="adm-tog" id="bg-anim-tog" onclick="toggleBgAnim()"></button></div>
+        <p class="hint" style="margin:10px 0 6px;color:#444">Live preview (the dashboard covers the real page on mobile, so check here):</p>
+        <div id="bg-live-preview" style="width:100%;height:90px;border-radius:10px;border:1px solid #2A2A30;overflow:hidden;position:relative;background:#F9F9F8"></div>
       </div>
 
     </div>
@@ -1051,8 +1053,25 @@ function applyBg(){
     [[`linear-gradient(135deg,${rgba(c1,Math.min(op*3,.9))} 0%,transparent 55%)`,'aur0',14],[`linear-gradient(225deg,${rgba(c2,Math.min(op*2.5,.85))} 0%,transparent 52%)`,'aur1',10],[`linear-gradient(45deg,${rgba(c1,op*1.5)} 0%,transparent 65%)`,'aur2',18]].forEach(([g,n,dr],i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;inset:0;background:${g};pointer-events:none;${b.anim?`animation:${n} ${dr}s ease-in-out ${-i*3}s infinite alternate;`:''}`;layer.appendChild(el)});
     if(b.anim)injectAnim('_bgd','@keyframes aur0{0%{opacity:1;transform:rotate(0) scale(1)}100%{opacity:.7;transform:rotate(5deg) scale(1.08)}}@keyframes aur1{0%{opacity:.8}100%{opacity:1;transform:rotate(-4deg) scale(1.06)}}@keyframes aur2{0%{opacity:.6}100%{opacity:1;transform:scale(1.12)}}');
   }
+  renderBgPreview();
 }
 function injectAnim(id,css){let s=document.getElementById(id);if(!s){s=document.createElement('style');s.id=id;document.head.appendChild(s)}s.textContent=css}
+function renderBgPreview(){
+  const prev=document.getElementById('bg-live-preview');
+  if(!prev)return;
+  const b=S.bg,op=b.op/100,c1=b.c1||S.theme.accent,c2=b.c2||'#C4B5FD';
+  prev.innerHTML='';
+  prev.style.background=S.theme.bg;
+  prev.style.backgroundImage='';
+  prev.style.animation='';
+  if(b.type==='none'){prev.style.background=S.theme.bg;}
+  else if(b.type==='dots'){prev.style.backgroundImage=`radial-gradient(circle,${rgba(c1,op)} ${b.sz}px,transparent ${b.sz}px)`;prev.style.backgroundSize=`${b.sc}px ${b.sc}px`;if(b.anim)prev.style.animation=`bgdrift_${b.sc} 2.2s linear infinite`;}
+  else if(b.type==='grid'){prev.style.backgroundImage=`linear-gradient(${rgba(c1,op)} 1px,transparent 1px),linear-gradient(90deg,${rgba(c1,op)} 1px,transparent 1px)`;prev.style.backgroundSize=`${b.sc}px ${b.sc}px`;if(b.anim)prev.style.animation=`bgdrift_${b.sc} 2.2s linear infinite`;}
+  else if(b.type==='mesh'){prev.style.background=`radial-gradient(ellipse 65% 55% at 15% 15%,${rgba(c1,Math.min(op*2.2,.92))} 0%,transparent 100%),radial-gradient(ellipse 55% 65% at 85% 85%,${rgba(c2,Math.min(op*2.2,.92))} 0%,transparent 100%),${S.theme.bg}`;if(b.anim){prev.style.backgroundSize='140% 140%';prev.style.animation='bgmesh 3s ease-in-out infinite'}}
+  else if(b.type==='blobs'){[[5,10,55,50,c1],[45,50,62,55,c2]].forEach((d,i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;left:${d[0]}%;top:${d[1]}%;width:${d[2]}%;height:${d[3]}%;background:${rgba(d[4],Math.min(op*1.6,.85))};border-radius:50%;filter:blur(10px);${b.anim?`animation:pbfloat ${2+i}s ease-in-out ${-i}s infinite alternate`:''}`;prev.appendChild(el)});}
+  else if(b.type==='aurora'){[[`linear-gradient(135deg,${rgba(c1,Math.min(op*3,.9))} 0%,transparent 55%)`,2.2],[`linear-gradient(225deg,${rgba(c2,Math.min(op*2.5,.85))} 0%,transparent 52%)`,1.8]].forEach(([g,dr],i)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;inset:0;background:${g};${b.anim?`animation:paur${i} ${dr}s ease-in-out infinite alternate`:''}`;prev.appendChild(el)});}
+  if(b.anim)injectAnim('_bgprev','@keyframes pbfloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(10%,-12%) scale(1.15)}}@keyframes paur0{0%{opacity:1;transform:scale(1)}100%{opacity:.6;transform:scale(1.15) rotate(6deg)}}@keyframes paur1{0%{opacity:.7}100%{opacity:1;transform:rotate(-6deg) scale(1.1)}}');
+}
 function liveBg(){S.bg.op=parseInt(document.getElementById('bg-op').value);S.bg.c1=document.getElementById('bg-c1').value;S.bg.c2=document.getElementById('bg-c2').value;applyBg()}
 function setBgType(btn){
   if(!S.bg.c1)S.bg.c1=S.theme.accent;
@@ -1081,6 +1100,7 @@ function syncBgUI(){
   document.getElementById('bg-c2-row').style.display=hasSecondary?'flex':'none';
   document.getElementById('bg-op-row').style.display=b.type==='none'?'none':'block';
   document.querySelector('.adm-toggle-row').style.display=b.type==='none'?'none':'flex';
+  renderBgPreview();
 }
 
 /* PAGE TEXT */
