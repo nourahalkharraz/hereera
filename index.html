@@ -256,14 +256,15 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 </head>
 <body>
 
-<!-- AUTH -->
-<div id="auth-screen">
-  <div class="auth-card">
+<!-- ADMIN LOGIN MODAL -->
+<div id="auth-overlay" onclick="if(event.target===this)closeAdminLogin()" style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s">
+  <div class="auth-card" style="position:relative">
+    <button onclick="closeAdminLogin()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:#1A1A1E;border:none;color:#666;cursor:pointer;font-size:14px">✕</button>
     <div class="auth-logo" id="auth-logo-txt">HerEra<em>.</em></div>
-    <div class="auth-tagline">Client Intake Portal</div>
-    <div class="auth-tabs">
+    <div class="auth-tagline">Admin Access</div>
+    <div class="auth-tabs" id="auth-tabs-wrap">
       <button class="auth-tab active" id="tab-li-btn" onclick="switchAuthTab('login')">Sign In</button>
-      <button class="auth-tab" id="tab-su-btn" onclick="switchAuthTab('signup')">Create Account</button>
+      <button class="auth-tab" id="tab-su-btn" onclick="switchAuthTab('signup')" style="display:none">Set Up Admin</button>
     </div>
     <div id="tab-login">
       <div class="auth-field"><label>Username</label><input type="text" id="li-user" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doSignIn()"></div>
@@ -273,34 +274,37 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
       <button class="auth-btn" onclick="doSignIn()">Sign In →</button>
     </div>
     <div id="tab-signup" style="display:none">
-      <div class="auth-first-badge" id="first-badge">✦ You're creating the <em>admin account</em></div>
+      <div class="auth-first-badge" id="first-badge" style="display:block">✦ No admin account yet — create one to manage the site</div>
       <div class="auth-field"><label>Username</label><input type="text" id="su-user" placeholder="Choose a username" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <div class="auth-field"><label>Password</label><input type="password" id="su-pass" placeholder="Choose a password" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <div class="auth-field"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;user-select:none"><input type="checkbox" id="su-remember" checked style="width:15px;height:15px;accent-color:#4A3AFF;cursor:pointer"><span style="font-size:12px;color:#888">Remember me on this device</span></label>
       <div class="auth-err" id="su-err"></div>
-      <button class="auth-btn" onclick="doSignUp()">Create Account →</button>
-      <p class="auth-note" id="su-note">Regular accounts can submit service requests only.</p>
+      <button class="auth-btn" onclick="doSignUp()">Create Admin Account →</button>
     </div>
   </div>
 </div>
 
 <!-- MAIN -->
-<div id="main-wrap" style="display:none">
+<div id="main-wrap">
   <div id="bg-layer"></div>
   <header class="header">
     <div class="logo" id="pg-logo"></div>
     <div class="header-right">
-      <button class="dashboard-btn" id="dashboard-btn" onclick="openAdmin()">
+      <button class="dashboard-btn" id="dashboard-btn" onclick="openAdmin()" style="display:none">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         Dashboard
       </button>
-      <div class="user-badge">
+      <div class="user-badge" id="user-badge-wrap" style="display:none">
         <div class="user-avatar" id="hdr-avatar"></div>
         <span class="user-name" id="hdr-name"></span>
         <span class="user-role" id="hdr-role"></span>
       </div>
-      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+      <button class="logout-btn" id="logout-btn" onclick="doLogout()" style="display:none">Sign Out</button>
+      <button class="logout-btn" id="admin-login-btn" onclick="openAdminLogin()" style="display:flex;align-items:center;gap:6px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM6 21v-1a4 4 0 014-4h4a4 4 0 014 4v1"/></svg>
+        Admin Login
+      </button>
     </div>
   </header>
   <section class="hero">
@@ -508,13 +512,35 @@ function switchAuthTab(tab){
   document.getElementById('tab-signup').style.display=isLogin?'none':'block';
   document.getElementById('tab-li-btn').classList.toggle('active',isLogin);
   document.getElementById('tab-su-btn').classList.toggle('active',!isLogin);
-  if(!isLogin){const u=getUsers();const isFirst=u.length===0;document.getElementById('first-badge').style.display=isFirst?'block':'none';document.getElementById('su-note').style.display=isFirst?'none':'block'}
+}
+function openAdminLogin(){
+  const users=getUsers();
+  const wrap=document.getElementById('auth-tabs-wrap');
+  if(users.length===0){
+    document.getElementById('tab-su-btn').style.display='none';
+    switchAuthTab('signup');
+    wrap.style.display='none';
+  } else {
+    document.getElementById('tab-su-btn').style.display='none';
+    wrap.style.display='none';
+    switchAuthTab('login');
+  }
+  document.getElementById('li-err').style.display='none';
+  document.getElementById('auth-overlay').style.opacity='1';
+  document.getElementById('auth-overlay').style.pointerEvents='all';
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{const f=document.getElementById(users.length===0?'su-user':'li-user');if(f)f.focus()},150);
+}
+function closeAdminLogin(){
+  document.getElementById('auth-overlay').style.opacity='0';
+  document.getElementById('auth-overlay').style.pointerEvents='none';
+  document.body.style.overflow='';
 }
 function doSignIn(){
   const u=document.getElementById('li-user').value.trim(),p=document.getElementById('li-pass').value,err=document.getElementById('li-err');
   const remember=document.getElementById('li-remember').checked;
   const found=getUsers().find(x=>x.username===u&&x.password===btoa(p));
-  if(found){setSession({id:found.id,username:found.username,role:found.role},remember);showMain()}
+  if(found){setSession({id:found.id,username:found.username,role:found.role},remember);closeAdminLogin();applyLoggedInUI()}
   else{err.style.display='block';document.getElementById('li-pass').value='';document.getElementById('li-pass').focus()}
 }
 function doSignUp(){
@@ -524,9 +550,8 @@ function doSignUp(){
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const users=getUsers();
   if(users.find(x=>x.username===u)){err.textContent='Username already taken.';err.style.display='block';return}
-  const role=users.length===0?'admin':'user';
-  const nu={id:Date.now().toString(),username:u,password:btoa(p),role,createdAt:new Date().toLocaleDateString()};
-  users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role},remember);showMain();
+  const nu={id:Date.now().toString(),username:u,password:btoa(p),role:'admin',createdAt:new Date().toLocaleDateString()};
+  users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role},remember);closeAdminLogin();applyLoggedInUI();
 }
 function doLogout(){clearSession();location.reload()}
 function changeAdminPass(){
@@ -539,17 +564,19 @@ function changeAdminPass(){
   showMsg('cred-msg','✓ Password updated.','ok');
 }
 function showMsg(id,txt,type){const el=document.getElementById(id);el.textContent=txt;el.style.cssText=`display:block;color:${type==='ok'?'#22C55E':'#FF6B6B'};background:${type==='ok'?'rgba(34,197,94,.08)':'rgba(255,107,107,.08)'}`;setTimeout(()=>el.style.display='none',3000)}
-function showMain(){
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('main-wrap').style.display='block';
+function applyLoggedInUI(){
   const sess=getSession();
-  document.getElementById('hdr-avatar').textContent=sess.username[0].toUpperCase();
-  document.getElementById('hdr-name').textContent=sess.username;
-  const r=document.getElementById('hdr-role');r.textContent=sess.role==='admin'?'Admin':'User';r.className='user-role '+(sess.role==='admin'?'admin':'user');
-  const isAdm=sess.role==='admin';
+  const isAdm=sess&&sess.role==='admin';
   document.getElementById('adm-trigger').style.display=isAdm?'block':'none';
   document.getElementById('dashboard-btn').style.display=isAdm?'flex':'none';
-  applyAll();
+  document.getElementById('logout-btn').style.display=isAdm?'inline-flex':'none';
+  document.getElementById('admin-login-btn').style.display=isAdm?'none':'flex';
+  document.getElementById('user-badge-wrap').style.display=isAdm?'flex':'none';
+  if(isAdm){
+    document.getElementById('hdr-avatar').textContent=sess.username[0].toUpperCase();
+    document.getElementById('hdr-name').textContent=sess.username;
+    const r=document.getElementById('hdr-role');r.textContent='Admin';r.className='user-role admin';
+  }
 }
 function tryOpenAdmin(){if(isAdmin())openAdmin()}
 function renderUsersTab(){
@@ -745,7 +772,7 @@ function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();syncContentImgUI
 function openAdmin(){syncAdminUI();document.getElementById('adm-overlay').classList.add('open');document.getElementById('adm-panel').classList.add('open');document.body.style.overflow='hidden'}
 function closeAdmin(){document.getElementById('adm-overlay').classList.remove('open');document.getElementById('adm-panel').classList.remove('open');document.body.style.overflow=''}
 function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI()}}
-document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal()}});
+document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal();else if(document.getElementById('auth-overlay').style.pointerEvents==='all')closeAdminLogin()}});
 
 /* FORM CONFIGS */
 const forms={
@@ -764,12 +791,9 @@ function submitForm(){const body=document.getElementById('modal-body');let valid
 /* INIT */
 async function init(){
   loadSettings();
-  // Try cloud first
   const cloudLoaded=await loadFromCloud();
-  if(!cloudLoaded){}// keep localStorage settings
-  renderPageText();
-  const sess=getSession();
-  if(sess)showMain();
+  applyAll();
+  applyLoggedInUI();
 }
 init();
 </script>
