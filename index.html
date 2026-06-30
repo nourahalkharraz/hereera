@@ -175,10 +175,15 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 #adm-close-btn:hover{background:#2A2A30;color:#F0F0F0}
 
 /* Tabs */
-#adm-tabs{display:flex;gap:3px;padding:18px 28px 0;flex-shrink:0}
+#adm-tabs{display:flex;flex-direction:column;gap:10px;padding:18px 28px 0;flex-shrink:0}
+.adm-tab-group{display:flex;flex-direction:column;gap:6px}
+.adm-tab-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#3A3A44;padding-left:2px}
+.adm-tab-row{display:flex;gap:3px}
 .adm-tab{flex:1;padding:10px 6px;border-radius:10px;border:none;background:none;color:#555;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;text-align:center}
 .adm-tab.active{background:#1E1E24;color:#E0E0E0}
 .adm-tab:hover:not(.active){color:#999}
+.adm-tab-divider{height:1px;background:#1A1A1E;margin:2px 0}
+.adm-tab.customize-tab.active{background:rgba(74,58,255,.18);color:#A8A0FF}
 
 /* Body */
 #adm-body{flex:1;overflow-y:auto;padding:22px 28px;scrollbar-width:thin;scrollbar-color:#1E1E24 transparent}
@@ -412,10 +417,21 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <button id="adm-close-btn" onclick="closeAdmin()">✕</button>
   </div>
   <div id="adm-tabs">
-    <button class="adm-tab active" onclick="switchTab('look',this)">✦ Appearance</button>
-    <button class="adm-tab" onclick="switchTab('content',this)">✏️ Content</button>
-    <button class="adm-tab" onclick="switchTab('reqs',this)" style="position:relative">📋 Requests<span class="notif-badge" id="notif-badge-tab" style="display:none">0</span></button>
-    <button class="adm-tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+    <div class="adm-tab-group">
+      <div class="adm-tab-group-label">🎨 Customize your site</div>
+      <div class="adm-tab-row">
+        <button class="adm-tab customize-tab active" onclick="switchTab('look',this)">✦ Appearance</button>
+        <button class="adm-tab customize-tab" onclick="switchTab('content',this)">✏️ Content</button>
+      </div>
+    </div>
+    <div class="adm-tab-divider"></div>
+    <div class="adm-tab-group">
+      <div class="adm-tab-group-label">⚙ Manage</div>
+      <div class="adm-tab-row">
+        <button class="adm-tab" onclick="switchTab('reqs',this)" style="position:relative">📋 Requests<span class="notif-badge" id="notif-badge-tab" style="display:none">0</span></button>
+        <button class="adm-tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+      </div>
+    </div>
   </div>
   <div id="adm-body">
 
