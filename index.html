@@ -298,15 +298,16 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
       <button class="auth-tab" id="tab-su-btn" onclick="switchAuthTab('signup')" style="display:none">Set Up Admin</button>
     </div>
     <div id="tab-login">
-      <div class="auth-field"><label>Username</label><input type="text" id="li-user" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <div class="auth-field"><label>Username</label><input type="text" id="li-user" placeholder="Enter username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doSignIn()"></div>
       <div class="auth-field"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignIn()"></div>
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;user-select:none"><input type="checkbox" id="li-remember" checked style="width:15px;height:15px;accent-color:#4A3AFF;cursor:pointer"><span style="font-size:12px;color:#888">Remember me on this device</span></label>
       <div class="auth-err" id="li-err">Incorrect username or password.</div>
       <button class="auth-btn" onclick="doSignIn()">Sign In →</button>
+      <p class="auth-note" style="margin-top:14px"><button onclick="resetAccess()" style="background:none;border:none;color:#444;font-size:11px;cursor:pointer;text-decoration:underline;padding:0;font-family:'Inter',sans-serif">Trouble signing in? Reset admin access</button></p>
     </div>
     <div id="tab-signup" style="display:none">
       <div class="auth-first-badge" id="first-badge" style="display:block">✦ No admin account yet — create one to manage the site</div>
-      <div class="auth-field"><label>Username</label><input type="text" id="su-user" placeholder="Choose a username" onkeydown="if(event.key==='Enter')doSignUp()"></div>
+      <div class="auth-field"><label>Username</label><input type="text" id="su-user" placeholder="Choose a username" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <div class="auth-field"><label>Password</label><input type="password" id="su-pass" placeholder="Choose a password" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <div class="auth-field"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;user-select:none"><input type="checkbox" id="su-remember" checked style="width:15px;height:15px;accent-color:#4A3AFF;cursor:pointer"><span style="font-size:12px;color:#888">Remember me on this device</span></label>
@@ -618,23 +619,29 @@ function closeAdminLogin(){
   document.body.style.overflow='';
 }
 function doSignIn(){
-  const u=document.getElementById('li-user').value.trim(),p=document.getElementById('li-pass').value,err=document.getElementById('li-err');
+  const u=document.getElementById('li-user').value.trim().toLowerCase(),p=document.getElementById('li-pass').value.trim(),err=document.getElementById('li-err');
   const remember=document.getElementById('li-remember').checked;
-  const found=getUsers().find(x=>x.username===u&&x.password===btoa(p));
+  const found=getUsers().find(x=>x.username.toLowerCase()===u&&x.password===btoa(p));
   if(found){setSession({id:found.id,username:found.username,role:found.role},remember);closeAdminLogin();applyLoggedInUI()}
   else{err.style.display='block';document.getElementById('li-pass').value='';document.getElementById('li-pass').focus()}
 }
 function doSignUp(){
-  const u=document.getElementById('su-user').value.trim(),p=document.getElementById('su-pass').value,p2=document.getElementById('su-pass2').value,err=document.getElementById('su-err');
+  const u=document.getElementById('su-user').value.trim(),p=document.getElementById('su-pass').value.trim(),p2=document.getElementById('su-pass2').value.trim(),err=document.getElementById('su-err');
   const remember=document.getElementById('su-remember').checked;
   if(!u||!p){err.textContent='Fill in all fields.';err.style.display='block';return}
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const users=getUsers();
-  if(users.find(x=>x.username===u)){err.textContent='Username already taken.';err.style.display='block';return}
+  if(users.find(x=>x.username.toLowerCase()===u.toLowerCase())){err.textContent='Username already taken.';err.style.display='block';return}
   const nu={id:Date.now().toString(),username:u,password:btoa(p),role:'admin',createdAt:new Date().toLocaleDateString()};
   users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role},remember);closeAdminLogin();applyLoggedInUI();
 }
 function doLogout(){clearSession();location.reload()}
+function resetAccess(){
+  if(!confirm('This will remove ALL admin accounts and let you create a brand new one. Your site settings (theme, services, content) will NOT be affected. Continue?'))return;
+  localStorage.removeItem('studioUsers');
+  clearSession();
+  location.reload();
+}
 function changeAdminPass(){
   const p=document.getElementById('new-pass').value,p2=document.getElementById('new-pass2').value,msg=document.getElementById('cred-msg');
   if(!p){showMsg('cred-msg','Enter a new password.','err');return}
