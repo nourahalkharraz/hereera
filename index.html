@@ -476,6 +476,24 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <div class="adm-tab-pane active" id="tab-look">
 
       <div class="adm-section">
+        <div class="adm-sec-title">Images</div>
+        <p class="hint" style="margin-bottom:10px;color:#444">Logo image</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+          <div id="logo-img-preview" style="width:56px;height:56px;border-radius:12px;background:#1A1A1E;border:1px solid #2A2A30;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0"><span style="font-size:10px;color:#444">No image</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <label style="display:block;text-align:center;padding:9px;background:#1A1A1E;border:1px dashed #3A3A44;border-radius:9px;color:#A0A0AA;font-size:12px;font-weight:600;cursor:pointer">⬆ Upload logo image<input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,'logoImg')"></label>
+            <button onclick="clearImg('logoImg')" style="padding:7px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#666;font-size:11px;cursor:pointer;font-weight:600">Remove (use text name instead)</button>
+          </div>
+        </div>
+        <p class="hint" style="margin-bottom:10px;color:#444">Hero background image</p>
+        <div id="hero-img-preview" style="width:100%;height:90px;border-radius:10px;background:#1A1A1E;border:1px solid #2A2A30;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;background-size:cover;background-position:center"><span style="font-size:11px;color:#444">No hero background image</span></div>
+        <div style="display:flex;gap:6px">
+          <label style="flex:1;text-align:center;padding:9px;background:#1A1A1E;border:1px dashed #3A3A44;border-radius:9px;color:#A0A0AA;font-size:12px;font-weight:600;cursor:pointer">⬆ Upload hero background<input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,'heroImg')"></label>
+          <button onclick="clearImg('heroImg')" style="padding:9px 14px;background:none;border:1px solid #2A2A30;border-radius:9px;color:#666;font-size:11px;cursor:pointer;font-weight:600">Remove</button>
+        </div>
+      </div>
+
+      <div class="adm-section">
         <div class="adm-sec-title">Color theme</div>
         <div class="preset-grid" id="preset-grid">
           <button class="preset-card" data-preset="indigo" onclick="applyPreset('indigo',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#4A3AFF,#7C6FFF)"></div><div class="preset-name">Indigo</div></button>
@@ -539,17 +557,10 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <div class="adm-tab-pane" id="tab-content">
 
       <div class="adm-section">
-        <div class="adm-sec-title">Logo</div>
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-          <div id="logo-img-preview" style="width:56px;height:56px;border-radius:12px;background:#1A1A1E;border:1px solid #2A2A30;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0"><span style="font-size:10px;color:#444">No image</span></div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
-            <label style="display:block;text-align:center;padding:8px;background:#1A1A1E;border:1px dashed #2A2A30;border-radius:8px;color:#888;font-size:12px;cursor:pointer">Upload logo image<input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,'logoImg')"></label>
-            <button onclick="clearImg('logoImg')" style="padding:6px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#555;font-size:11px;cursor:pointer">Remove image (use text instead)</button>
-          </div>
-        </div>
-        <p class="hint" style="margin-bottom:10px;color:#444">If you upload a logo image, it replaces the text name below.</p>
+        <div class="adm-sec-title">Logo text</div>
+        <p class="hint" style="margin-bottom:10px;color:#444">Used only if no logo image is set in Appearance.</p>
         <div class="adm-row">
-          <div class="adm-field"><label>Name (used if no image)</label><input type="text" id="ct-logo" oninput="liveContent()"></div>
+          <div class="adm-field"><label>Name</label><input type="text" id="ct-logo" oninput="liveContent()"></div>
           <div class="adm-field"><label>Dot</label><input type="text" id="ct-dot" oninput="liveContent()" style="text-align:center"></div>
         </div>
       </div>
@@ -560,13 +571,6 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
         <div class="adm-field"><label>Headline line 1</label><input type="text" id="ct-h1" oninput="liveContent()"></div>
         <div class="adm-field"><label>Headline line 2 (italic)</label><input type="text" id="ct-h1em" oninput="liveContent()"></div>
         <div class="adm-field"><label>Paragraph</label><textarea id="ct-para" oninput="liveContent()"></textarea></div>
-        <div style="margin-top:10px">
-          <div id="hero-img-preview" style="width:100%;height:80px;border-radius:10px;background:#1A1A1E;border:1px solid #2A2A30;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;background-size:cover;background-position:center"><span style="font-size:11px;color:#444">No hero background image</span></div>
-          <div style="display:flex;gap:6px">
-            <label style="flex:1;text-align:center;padding:8px;background:#1A1A1E;border:1px dashed #2A2A30;border-radius:8px;color:#888;font-size:12px;cursor:pointer">Upload hero background<input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,'heroImg')"></label>
-            <button onclick="clearImg('heroImg')" style="padding:8px 12px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#555;font-size:11px;cursor:pointer">Remove</button>
-          </div>
-        </div>
       </div>
 
       <div class="adm-section">
