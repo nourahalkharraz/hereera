@@ -942,6 +942,17 @@ async function loadFromCloud(){
 async function saveToCloud(){
   const cfg=getSyncCfg();if(!cfg||!cfg.bin||!cfg.key)return false;
   try{
+    try{
+      const getRes=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}/latest`,{headers:{'X-Master-Key':cfg.key,'X-Bin-Meta':false}});
+      if(getRes.ok){
+        const latest=await getRes.json();
+        if(latest&&typeof latest==='object'){
+          for(const k in latest){if(!(k in S))S[k]=latest[k];}
+          if((!S.users||S.users.length===0)&&Array.isArray(latest.users)&&latest.users.length>0)S.users=latest.users;
+          if((!Array.isArray(S.services)||S.services.length===0)&&Array.isArray(latest.services)&&latest.services.length>0)S.services=latest.services;
+        }
+      }
+    }catch(e){}
     const res=await fetch(`https://api.jsonbin.io/v3/b/${cfg.bin}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':cfg.key},body:JSON.stringify(S)});
     return res.ok;
   }catch(e){return false}
@@ -1293,7 +1304,14 @@ function delSvc(i){if(!confirm('Delete this service?'))return;S.services.splice(
 
 /* ADMIN PANEL */
 function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();syncContentImgUI();renderAdminServices();renderUsersTab();updateSyncUI();updateReqSyncUI();renderRequestsTab()}
-function openAdmin(){syncAdminUI();document.getElementById('adm-overlay').classList.add('open');document.getElementById('adm-panel').classList.add('open');document.body.style.overflow='hidden'}
+async function openAdmin(){
+  document.getElementById('adm-overlay').classList.add('open');document.getElementById('adm-panel').classList.add('open');document.body.style.overflow='hidden';
+  await loadFromCloud();
+  applyAll();
+  syncAdminUI();
+  window._lastSavedSnapshot=JSON.stringify(S);
+  updateUnsavedBanner();
+}
 function closeAdmin(){document.getElementById('adm-overlay').classList.remove('open');document.getElementById('adm-panel').classList.remove('open');document.body.style.overflow=''}
 function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI();updateReqSyncUI()}if(name==='reqs'){renderRequestsTab().then(()=>{setLastSeen(Date.now());updateNotifBadge()})}}
 document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal();else if(document.getElementById('track-overlay').classList.contains('open'))closeTrackModal();else if(document.getElementById('auth-overlay').style.pointerEvents==='all')closeAdminLogin()}});
