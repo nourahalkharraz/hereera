@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HerEra — Client Intake</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700;800&family=Poppins:wght@500;600;700;800&family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style id="theme-vars">/* loaded by JS */</style>
 <style id="bg-style">/* loaded by JS */</style>
 <style>
@@ -485,7 +485,35 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
           <button class="preset-card" data-preset="midnight" onclick="applyPreset('midnight',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#0EA5E9,#38BDF8)"></div><div class="preset-name">Sky Blue</div></button>
           <button class="preset-card" data-preset="dark" onclick="applyPreset('dark',this)"><div class="preset-swatch" style="background:linear-gradient(135deg,#1A1A1A,#444)"></div><div class="preset-name">Dark</div></button>
         </div>
-        <div class="adm-color-row" style="margin-top:8px"><label>Custom accent</label><input type="color" id="tc-accent" oninput="liveAccent()"></div>
+        <p class="hint" style="margin:10px 0 4px;color:#444">Or pick any color for each part of the site:</p>
+        <div class="adm-color-row"><label>Accent (buttons, links, tags)</label><input type="color" id="tc-accent" oninput="liveAccent()"></div>
+        <div class="adm-color-row"><label>Page background</label><input type="color" id="tc-bg" oninput="liveThemeColors()"></div>
+        <div class="adm-color-row"><label>Card background</label><input type="color" id="tc-surface" oninput="liveThemeColors()"></div>
+        <div class="adm-color-row"><label>Headline text</label><input type="color" id="tc-ink" oninput="liveThemeColors()"></div>
+        <div class="adm-color-row"><label>Body text</label><input type="color" id="tc-ink2" oninput="liveThemeColors()"></div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Typography</div>
+        <div class="adm-field">
+          <label>Heading font</label>
+          <select id="tc-font" onchange="liveFont()">
+            <option value="sora">Sora — Modern & clean</option>
+            <option value="playfair">Playfair Display — Elegant serif</option>
+            <option value="poppins">Poppins — Friendly & round</option>
+            <option value="outfit">Outfit — Minimal & geometric</option>
+            <option value="space">Space Grotesk — Bold & techy</option>
+            <option value="dmserif">DM Serif Display — Editorial</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="adm-section">
+        <div class="adm-sec-title">Shape</div>
+        <div class="adm-slider">
+          <div class="adm-sl-hd"><label>Corner roundness</label><span id="tc-radius-val">16px</span></div>
+          <input type="range" min="0" max="32" value="16" step="1" id="tc-radius" oninput="liveRadius()">
+        </div>
       </div>
 
       <div class="adm-section">
@@ -929,7 +957,7 @@ function clearSvcImg(i){S.services[i].img='';renderServices();renderAdminService
 
 /* ═══════════════════ SETTINGS ═══════════════════ */
 /*SITE_DEF_START*/const DEF={
-  theme:{accent:'#4A3AFF',bg:'#F9F9F8',surface:'#FFFFFF',ink:'#111111',ink2:'#555555'},
+  theme:{accent:'#4A3AFF',bg:'#F9F9F8',surface:'#FFFFFF',ink:'#111111',ink2:'#555555',radius:16,font:'sora'},
   bg:{type:'none',c1:'#4A3AFF',c2:'#C4B5FD',op:12,sc:28,sz:1.5,bl:70,anim:false},
   page:{logo:'HerEra',dot:'.',logoImg:'',heroImg:'',label:'Get started',h1:"Let's build your",h1em:'brand identity.',para:"Choose a service below and fill out a brief — we'll review your project and get back to you within 24 hours to discuss next steps.",seclbl:'Available Services',ftl:'© 2025 HerEra. All rights reserved.',ftr:'Questions? Reach out before submitting.'},
   services:[
@@ -956,21 +984,33 @@ function applyAll(){applyTheme();applyBg();renderPageText();renderServices()}
 
 /* THEME */
 function hexToAlpha(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`}
+const FONT_MAP={sora:"'Sora',sans-serif",playfair:"'Playfair Display',serif",poppins:"'Poppins',sans-serif",outfit:"'Outfit',sans-serif",space:"'Space Grotesk',sans-serif",dmserif:"'DM Serif Display',serif"};
 function applyTheme(){
   const t=S.theme;
-  document.getElementById('theme-vars').textContent=`:root{--bg:${t.bg};--surface:${t.surface};--ink:${t.ink};--ink-2:${t.ink2};--ink-3:#999;--accent:${t.accent};--accent-light:${hexToAlpha(t.accent,.13)};--border:${hexToAlpha(t.ink,.11)};--success:#22C55E;--radius:16px;--tr:0.25s cubic-bezier(0.4,0,0.2,1)}body{background-color:${t.bg}}`;
+  const fontFam=FONT_MAP[t.font]||FONT_MAP.sora;
+  document.getElementById('theme-vars').textContent=`:root{--bg:${t.bg};--surface:${t.surface};--ink:${t.ink};--ink-2:${t.ink2};--ink-3:#999;--accent:${t.accent};--accent-light:${hexToAlpha(t.accent,.13)};--border:${hexToAlpha(t.ink,.11)};--success:#22C55E;--radius:${t.radius||16}px;--tr:0.25s cubic-bezier(0.4,0,0.2,1)}body{background-color:${t.bg}}.logo,.hero h1,.card-title,.price-value,.modal-title,.success-title,.auth-logo,.track-id-value,.card-cta,.submit-btn{font-family:${fontFam}!important}`;
 }
 function liveAccent(){S.theme.accent=document.getElementById('tc-accent').value;applyTheme()}
+function liveThemeColors(){S.theme.bg=document.getElementById('tc-bg').value;S.theme.surface=document.getElementById('tc-surface').value;S.theme.ink=document.getElementById('tc-ink').value;S.theme.ink2=document.getElementById('tc-ink2').value;applyTheme()}
+function liveRadius(){S.theme.radius=parseInt(document.getElementById('tc-radius').value);document.getElementById('tc-radius-val').textContent=S.theme.radius+'px';applyTheme()}
+function liveFont(){S.theme.font=document.getElementById('tc-font').value;applyTheme()}
 const presets={indigo:{accent:'#4A3AFF',bg:'#F9F9F8',surface:'#FFFFFF',ink:'#111111',ink2:'#555555'},rose:{accent:'#E11D48',bg:'#FFF5F7',surface:'#FFFFFF',ink:'#1A0008',ink2:'#664455'},emerald:{accent:'#059669',bg:'#F2FBF8',surface:'#FFFFFF',ink:'#082A1F',ink2:'#3A6655'},amber:{accent:'#D97706',bg:'#FFFBF2',surface:'#FFFFFF',ink:'#1A1000',ink2:'#665533'},midnight:{accent:'#0EA5E9',bg:'#F0F8FF',surface:'#FFFFFF',ink:'#0A1525',ink2:'#335577'},dark:{accent:'#6D60FF',bg:'#111114',surface:'#1C1C20',ink:'#F0F0F0',ink2:'#999999'}};
 function applyPreset(name,btn){
-  S.theme={...presets[name]};applyTheme();
-  document.getElementById('tc-accent').value=presets[name].accent;
+  S.theme={...S.theme,...presets[name]};applyTheme();
+  syncThemeUI();
   document.querySelectorAll('.preset-card').forEach(c=>c.classList.remove('active'));
   if(btn)btn.classList.add('active');
 }
 function syncThemeUI(){
-  const t=S.theme;document.getElementById('tc-accent').value=t.accent;
-  // find matching preset
+  const t=S.theme;
+  document.getElementById('tc-accent').value=t.accent;
+  document.getElementById('tc-bg').value=t.bg;
+  document.getElementById('tc-surface').value=t.surface;
+  document.getElementById('tc-ink').value=t.ink;
+  document.getElementById('tc-ink2').value=t.ink2;
+  document.getElementById('tc-radius').value=t.radius||16;
+  document.getElementById('tc-radius-val').textContent=(t.radius||16)+'px';
+  document.getElementById('tc-font').value=t.font||'sora';
   document.querySelectorAll('.preset-card').forEach(c=>{
     const p=presets[c.dataset.preset];
     c.classList.toggle('active',p&&p.accent===t.accent&&p.bg===t.bg);
