@@ -268,6 +268,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <div id="tab-login">
       <div class="auth-field"><label>Username</label><input type="text" id="li-user" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doSignIn()"></div>
       <div class="auth-field"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;user-select:none"><input type="checkbox" id="li-remember" checked style="width:15px;height:15px;accent-color:#4A3AFF;cursor:pointer"><span style="font-size:12px;color:#888">Remember me on this device</span></label>
       <div class="auth-err" id="li-err">Incorrect username or password.</div>
       <button class="auth-btn" onclick="doSignIn()">Sign In →</button>
     </div>
@@ -276,6 +277,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
       <div class="auth-field"><label>Username</label><input type="text" id="su-user" placeholder="Choose a username" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <div class="auth-field"><label>Password</label><input type="password" id="su-pass" placeholder="Choose a password" onkeydown="if(event.key==='Enter')doSignUp()"></div>
       <div class="auth-field"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignUp()"></div>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;user-select:none"><input type="checkbox" id="su-remember" checked style="width:15px;height:15px;accent-color:#4A3AFF;cursor:pointer"><span style="font-size:12px;color:#888">Remember me on this device</span></label>
       <div class="auth-err" id="su-err"></div>
       <button class="auth-btn" onclick="doSignUp()">Create Account →</button>
       <p class="auth-note" id="su-note">Regular accounts can submit service requests only.</p>
@@ -394,8 +396,16 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 
       <div class="adm-section">
         <div class="adm-sec-title">Logo</div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <div id="logo-img-preview" style="width:56px;height:56px;border-radius:12px;background:#1A1A1E;border:1px solid #2A2A30;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0"><span style="font-size:10px;color:#444">No image</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <label style="display:block;text-align:center;padding:8px;background:#1A1A1E;border:1px dashed #2A2A30;border-radius:8px;color:#888;font-size:12px;cursor:pointer">Upload logo image<input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,'logoImg')"></label>
+            <button onclick="clearImg('logoImg')" style="padding:6px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#555;font-size:11px;cursor:pointer">Remove image (use text instead)</button>
+          </div>
+        </div>
+        <p class="hint" style="margin-bottom:10px;color:#444">If you upload a logo image, it replaces the text name below.</p>
         <div class="adm-row">
-          <div class="adm-field"><label>Name</label><input type="text" id="ct-logo" oninput="liveContent()"></div>
+          <div class="adm-field"><label>Name (used if no image)</label><input type="text" id="ct-logo" oninput="liveContent()"></div>
           <div class="adm-field"><label>Dot</label><input type="text" id="ct-dot" oninput="liveContent()" style="text-align:center"></div>
         </div>
       </div>
@@ -406,6 +416,13 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
         <div class="adm-field"><label>Headline line 1</label><input type="text" id="ct-h1" oninput="liveContent()"></div>
         <div class="adm-field"><label>Headline line 2 (italic)</label><input type="text" id="ct-h1em" oninput="liveContent()"></div>
         <div class="adm-field"><label>Paragraph</label><textarea id="ct-para" oninput="liveContent()"></textarea></div>
+        <div style="margin-top:10px">
+          <div id="hero-img-preview" style="width:100%;height:80px;border-radius:10px;background:#1A1A1E;border:1px solid #2A2A30;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;background-size:cover;background-position:center"><span style="font-size:11px;color:#444">No hero background image</span></div>
+          <div style="display:flex;gap:6px">
+            <label style="flex:1;text-align:center;padding:8px;background:#1A1A1E;border:1px dashed #2A2A30;border-radius:8px;color:#888;font-size:12px;cursor:pointer">Upload hero background<input type="file" accept="image/*" style="display:none" onchange="handleImgUpload(event,'heroImg')"></label>
+            <button onclick="clearImg('heroImg')" style="padding:8px 12px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#555;font-size:11px;cursor:pointer">Remove</button>
+          </div>
+        </div>
       </div>
 
       <div class="adm-section">
@@ -428,6 +445,9 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 
       <div class="adm-section">
         <div class="adm-sec-title">☁ Cloud sync</div>
+        <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#FBBF24;line-height:1.5">
+          <strong>Not connected yet.</strong> Right now your changes only save on this device ("Saved locally"). Connect below so changes reach every visitor automatically.
+        </div>
         <div class="sync-card">
           <ol class="sync-steps">
             <li>Go to <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> and create a free account</li>
@@ -477,9 +497,9 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 /* ═══════════════════ AUTH ═══════════════════ */
 function getUsers(){try{return JSON.parse(localStorage.getItem('studioUsers')||'[]')}catch(e){return[]}}
 function saveUsers(u){localStorage.setItem('studioUsers',JSON.stringify(u))}
-function getSession(){try{const s=sessionStorage.getItem('studioSess');return s?JSON.parse(s):null}catch(e){return null}}
-function setSession(u){sessionStorage.setItem('studioSess',JSON.stringify(u))}
-function clearSession(){sessionStorage.removeItem('studioSess')}
+function getSession(){try{let s=localStorage.getItem('studioSessPersist');if(s)return JSON.parse(s);s=sessionStorage.getItem('studioSess');return s?JSON.parse(s):null}catch(e){return null}}
+function setSession(u,remember){if(remember){localStorage.setItem('studioSessPersist',JSON.stringify(u));sessionStorage.removeItem('studioSess')}else{sessionStorage.setItem('studioSess',JSON.stringify(u));localStorage.removeItem('studioSessPersist')}}
+function clearSession(){sessionStorage.removeItem('studioSess');localStorage.removeItem('studioSessPersist')}
 function isAdmin(){const s=getSession();return s&&s.role==='admin'}
 
 function switchAuthTab(tab){
@@ -492,19 +512,21 @@ function switchAuthTab(tab){
 }
 function doSignIn(){
   const u=document.getElementById('li-user').value.trim(),p=document.getElementById('li-pass').value,err=document.getElementById('li-err');
+  const remember=document.getElementById('li-remember').checked;
   const found=getUsers().find(x=>x.username===u&&x.password===btoa(p));
-  if(found){setSession({id:found.id,username:found.username,role:found.role});showMain()}
+  if(found){setSession({id:found.id,username:found.username,role:found.role},remember);showMain()}
   else{err.style.display='block';document.getElementById('li-pass').value='';document.getElementById('li-pass').focus()}
 }
 function doSignUp(){
   const u=document.getElementById('su-user').value.trim(),p=document.getElementById('su-pass').value,p2=document.getElementById('su-pass2').value,err=document.getElementById('su-err');
+  const remember=document.getElementById('su-remember').checked;
   if(!u||!p){err.textContent='Fill in all fields.';err.style.display='block';return}
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return}
   const users=getUsers();
   if(users.find(x=>x.username===u)){err.textContent='Username already taken.';err.style.display='block';return}
   const role=users.length===0?'admin':'user';
   const nu={id:Date.now().toString(),username:u,password:btoa(p),role,createdAt:new Date().toLocaleDateString()};
-  users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role});showMain();
+  users.push(nu);saveUsers(users);setSession({id:nu.id,username:nu.username,role:nu.role},remember);showMain();
 }
 function doLogout(){clearSession();location.reload()}
 function changeAdminPass(){
@@ -573,15 +595,41 @@ function updateSyncUI(){
   if(cfg&&cfg.bin){document.getElementById('sync-bin').value=cfg.bin;if(cfg.key)document.getElementById('sync-key').value=cfg.key;document.getElementById('sync-status-txt').textContent='Synced to cloud';document.getElementById('sync-dot').className='synced';}
 }
 
+function handleImgUpload(e,key){
+  const file=e.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){alert('Image too large. Please use an image under 2MB.');return}
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    S.page[key]=ev.target.result;
+    renderPageText();
+    syncContentImgUI();
+  };
+  reader.readAsDataURL(file);
+}
+function clearImg(key){S.page[key]='';renderPageText();syncContentImgUI()}
+function syncContentImgUI(){
+  const lp=document.getElementById('logo-img-preview'),hp=document.getElementById('hero-img-preview');
+  if(S.page.logoImg){lp.innerHTML='<img src="'+S.page.logoImg+'" style="width:100%;height:100%;object-fit:cover">'}else{lp.innerHTML='<span style="font-size:10px;color:#444">No image</span>'}
+  if(S.page.heroImg){hp.style.backgroundImage='url('+S.page.heroImg+')';hp.innerHTML=''}else{hp.style.backgroundImage='';hp.innerHTML='<span style="font-size:11px;color:#444">No hero background image</span>'}
+}
+function handleSvcImgUpload(e,i){
+  const file=e.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){alert('Image too large. Please use an image under 2MB.');return}
+  const reader=new FileReader();
+  reader.onload=function(ev){S.services[i].img=ev.target.result;renderServices();renderAdminServices()};
+  reader.readAsDataURL(file);
+}
+function clearSvcImg(i){S.services[i].img='';renderServices();renderAdminServices()}
+
 /* ═══════════════════ SETTINGS ═══════════════════ */
 /*SITE_DEF_START*/const DEF={
   theme:{accent:'#4A3AFF',bg:'#F9F9F8',surface:'#FFFFFF',ink:'#111111',ink2:'#555555'},
   bg:{type:'none',c1:'#4A3AFF',c2:'#C4B5FD',op:12,sc:28,sz:1.5,bl:70,anim:false},
-  page:{logo:'HerEra',dot:'.',label:'Get started',h1:"Let's build your",h1em:'brand identity.',para:"Choose a service below and fill out a brief — we'll review your project and get back to you within 24 hours to discuss next steps.",seclbl:'Available Services',ftl:'© 2025 HerEra. All rights reserved.',ftr:'Questions? Reach out before submitting.'},
+  page:{logo:'HerEra',dot:'.',logoImg:'',heroImg:'',label:'Get started',h1:"Let's build your",h1em:'brand identity.',para:"Choose a service below and fill out a brief — we'll review your project and get back to you within 24 hours to discuss next steps.",seclbl:'Available Services',ftl:'© 2025 HerEra. All rights reserved.',ftr:'Questions? Reach out before submitting.'},
   services:[
-    {tag:'⬡ Design',title:'Logo Design',desc:"A distinctive mark built around your brand's values — from wordmarks to icon-based systems, crafted to work everywhere.",inc:['Primary logo + variations','SVG, PNG, PDF source files','2–3 initial concepts','Revision rounds included'],price:'15',cur:'KD',form:'logo'},
-    {tag:'◈ Identity',title:'Brand Identity',desc:'A complete visual language — logo, color system, typography, and brand guidelines that keep everything consistent.',inc:['Full logo suite + brand mark','Color palette + typography','Brand guidelines PDF','Stationery mockups'],price:'40',cur:'KD',form:'brand'},
-    {tag:'◉ Content',title:'Social Media Kit',desc:'Branded templates for posts, stories, highlight covers, and reels — built for consistency across all your platforms.',inc:['Post + story templates','Highlight cover icons','Profile picture frame','Editable Canva / Figma files'],price:'20',cur:'KD',form:'social'}
+    {tag:'⬡ Design',title:'Logo Design',desc:"A distinctive mark built around your brand's values — from wordmarks to icon-based systems, crafted to work everywhere.",inc:['Primary logo + variations','SVG, PNG, PDF source files','2–3 initial concepts','Revision rounds included'],price:'15',cur:'KD',form:'logo',img:''},
+    {tag:'◈ Identity',title:'Brand Identity',desc:'A complete visual language — logo, color system, typography, and brand guidelines that keep everything consistent.',inc:['Full logo suite + brand mark','Color palette + typography','Brand guidelines PDF','Stationery mockups'],price:'40',cur:'KD',form:'brand',img:''},
+    {tag:'◉ Content',title:'Social Media Kit',desc:'Branded templates for posts, stories, highlight covers, and reels — built for consistency across all your platforms.',inc:['Post + story templates','Highlight cover icons','Profile picture frame','Editable Canva / Figma files'],price:'20',cur:'KD',form:'social',img:''}
   ]
 };/*SITE_DEF_END*/
 let S=JSON.parse(JSON.stringify(DEF));
@@ -653,14 +701,19 @@ function syncBgUI(){
 /* PAGE TEXT */
 function renderPageText(){
   const p=S.page;
-  document.getElementById('pg-logo').innerHTML=p.logo+'<span>'+p.dot+'</span>';
-  document.getElementById('auth-logo-txt').innerHTML=p.logo+'<em>'+p.dot+'</em>';
+  if(p.logoImg){document.getElementById('pg-logo').innerHTML='<img src="'+p.logoImg+'" style="height:32px;display:block">';document.getElementById('auth-logo-txt').innerHTML='<img src="'+p.logoImg+'" style="height:34px;display:block;margin:0 auto">';}
+  else{document.getElementById('pg-logo').innerHTML=p.logo+'<span>'+p.dot+'</span>';document.getElementById('auth-logo-txt').innerHTML=p.logo+'<em>'+p.dot+'</em>';}
   document.getElementById('pg-hero-label').textContent=p.label;
   document.getElementById('pg-hero-h1').innerHTML=p.h1+'<br><em>'+p.h1em+'</em>';
   document.getElementById('pg-hero-para').textContent=p.para;
   document.getElementById('pg-section-label').textContent=p.seclbl;
   document.getElementById('pg-footer-l').textContent=p.ftl;
   document.getElementById('pg-footer-r').textContent=p.ftr;
+  const heroEl=document.querySelector('.hero');
+  if(heroEl){
+    if(p.heroImg){heroEl.style.backgroundImage='linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,.82)),url('+p.heroImg+')';heroEl.style.backgroundSize='cover';heroEl.style.backgroundPosition='center';heroEl.style.borderRadius='0 0 24px 24px';}
+    else{heroEl.style.backgroundImage='';}
+  }
 }
 function liveContent(){
   S.page.logo=document.getElementById('ct-logo').value;S.page.dot=document.getElementById('ct-dot').value;S.page.label=document.getElementById('ct-label').value;S.page.h1=document.getElementById('ct-h1').value;S.page.h1em=document.getElementById('ct-h1em').value;S.page.para=document.getElementById('ct-para').value;S.page.seclbl=document.getElementById('ct-seclbl').value;S.page.ftl=document.getElementById('ct-ftl').value;S.page.ftr=document.getElementById('ct-ftr').value;
@@ -673,22 +726,22 @@ function syncContentUI(){
 
 /* SERVICES */
 function renderServices(){
-  document.getElementById('services-grid').innerHTML=S.services.map((sv,i)=>`<div class="service-card" data-number="0${i+1}" onclick="openModal('${sv.form}')"><div class="card-tag">${sv.tag}</div><h2 class="card-title">${sv.title}</h2><p class="card-desc">${sv.desc}</p><ul class="card-includes">${sv.inc.map(x=>`<li>${x}</li>`).join('')}</ul><div class="card-footer"><div><span class="price-from">Starting from</span><div class="price-value">${sv.price} <span>${sv.cur}</span></div></div><button class="card-cta">Start Brief<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`).join('');
+  document.getElementById('services-grid').innerHTML=S.services.map((sv,i)=>`<div class="service-card" data-number="0${i+1}" onclick="openModal('${sv.form}')">${sv.img?`<div style="margin:-38px -38px 20px;height:140px;overflow:hidden;border-radius:16px 16px 0 0"><img src="${sv.img}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<div class="card-tag">${sv.tag}</div><h2 class="card-title">${sv.title}</h2><p class="card-desc">${sv.desc}</p><ul class="card-includes">${sv.inc.map(x=>`<li>${x}</li>`).join('')}</ul><div class="card-footer"><div><span class="price-from">Starting from</span><div class="price-value">${sv.price} <span>${sv.cur}</span></div></div><button class="card-cta">Start Brief<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`).join('');
 }
 function renderAdminServices(){
   const list=document.getElementById('adm-svc-list');
-  list.innerHTML=S.services.map((sv,i)=>`<div class="adm-svc-card"><div class="adm-svc-hd" onclick="toggleSvc(${i})"><div class="adm-svc-num">${i+1}</div><div class="adm-svc-name" id="asn-${i}">${sv.title}</div><span class="adm-svc-arrow" id="asa-${i}">▼</span></div><div class="adm-svc-body" id="asb-${i}"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="adm-field"><label>Tag</label><input type="text" value="${sv.tag}" oninput="updSvc(${i},'tag',this.value)"></div><div class="adm-field"><label>Title</label><input type="text" value="${sv.title}" oninput="updSvc(${i},'title',this.value);document.getElementById('asn-${i}').textContent=this.value"></div></div><div class="adm-field"><label>Description</label><textarea oninput="updSvc(${i},'desc',this.value)">${sv.desc}</textarea></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="adm-field"><label>Price</label><input type="text" value="${sv.price}" oninput="updSvc(${i},'price',this.value)"></div><div class="adm-field"><label>Currency</label><input type="text" value="${sv.cur}" oninput="updSvc(${i},'cur',this.value)"></div></div><div class="adm-field"><label>What's included</label><div id="adi-${i}">${sv.inc.map((x,j)=>`<div class="adm-inc-row"><input type="text" value="${x}" oninput="updInc(${i},${j},this.value)"><button class="adm-del-inc" onclick="delInc(${i},${j})">×</button></div>`).join('')}</div><button class="adm-add-inc" onclick="addInc(${i})">+ Add item</button></div><div class="adm-field"><label>Form type</label><select onchange="updSvc(${i},'form',this.value)"><option value="logo" ${sv.form==='logo'?'selected':''}>Logo Design</option><option value="brand" ${sv.form==='brand'?'selected':''}>Brand Identity</option><option value="social" ${sv.form==='social'?'selected':''}>Social Media Kit</option><option value="none" ${sv.form==='none'?'selected':''}>No form</option></select></div>${S.services.length>1?`<button class="adm-del-svc" onclick="delSvc(${i})">🗑 Delete service</button>`:''}</div></div>`).join('');
+  list.innerHTML=S.services.map((sv,i)=>`<div class="adm-svc-card"><div class="adm-svc-hd" onclick="toggleSvc(${i})"><div class="adm-svc-num">${i+1}</div><div class="adm-svc-name" id="asn-${i}">${sv.title}</div><span class="adm-svc-arrow" id="asa-${i}">▼</span></div><div class="adm-svc-body" id="asb-${i}"><div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><div style="width:48px;height:48px;border-radius:8px;background:#111;border:1px solid #2A2A30;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">${sv.img?`<img src="${sv.img}" style="width:100%;height:100%;object-fit:cover">`:'<span style="font-size:9px;color:#444">No image</span>'}</div><label style="flex:1;text-align:center;padding:8px;background:#111;border:1px dashed #2A2A30;border-radius:8px;color:#888;font-size:11px;cursor:pointer">Upload card image<input type="file" accept="image/*" style="display:none" onchange="handleSvcImgUpload(event,${i})"></label>${sv.img?`<button onclick="clearSvcImg(${i})" style="padding:8px;background:none;border:1px solid #2A2A30;border-radius:8px;color:#555;font-size:11px;cursor:pointer">×</button>`:''}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="adm-field"><label>Tag</label><input type="text" value="${sv.tag}" oninput="updSvc(${i},'tag',this.value)"></div><div class="adm-field"><label>Title</label><input type="text" value="${sv.title}" oninput="updSvc(${i},'title',this.value);document.getElementById('asn-${i}').textContent=this.value"></div></div><div class="adm-field"><label>Description</label><textarea oninput="updSvc(${i},'desc',this.value)">${sv.desc}</textarea></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="adm-field"><label>Price</label><input type="text" value="${sv.price}" oninput="updSvc(${i},'price',this.value)"></div><div class="adm-field"><label>Currency</label><input type="text" value="${sv.cur}" oninput="updSvc(${i},'cur',this.value)"></div></div><div class="adm-field"><label>What's included</label><div id="adi-${i}">${sv.inc.map((x,j)=>`<div class="adm-inc-row"><input type="text" value="${x}" oninput="updInc(${i},${j},this.value)"><button class="adm-del-inc" onclick="delInc(${i},${j})">×</button></div>`).join('')}</div><button class="adm-add-inc" onclick="addInc(${i})">+ Add item</button></div><div class="adm-field"><label>Form type</label><select onchange="updSvc(${i},'form',this.value)"><option value="logo" ${sv.form==='logo'?'selected':''}>Logo Design</option><option value="brand" ${sv.form==='brand'?'selected':''}>Brand Identity</option><option value="social" ${sv.form==='social'?'selected':''}>Social Media Kit</option><option value="none" ${sv.form==='none'?'selected':''}>No form</option></select></div>${S.services.length>1?`<button class="adm-del-svc" onclick="delSvc(${i})">🗑 Delete service</button>`:''}</div></div>`).join('');
 }
 function toggleSvc(i){const b=document.getElementById(`asb-${i}`),a=document.getElementById(`asa-${i}`);const open=b.style.display==='none'||b.style.display==='';b.style.display=open?'block':'none';a.classList.toggle('open',open)}
 function updSvc(i,k,v){S.services[i][k]=v;renderServices()}
 function updInc(i,j,v){S.services[i].inc[j]=v;renderServices()}
 function addInc(i){S.services[i].inc.push('New item');renderAdminServices();renderServices()}
 function delInc(i,j){S.services[i].inc.splice(j,1);renderAdminServices();renderServices()}
-function addService(){S.services.push({tag:'◆ New',title:'New Service',desc:'Describe this service...',inc:['Deliverable 1','Deliverable 2'],price:'0',cur:'KD',form:'logo'});renderAdminServices();renderServices()}
+function addService(){S.services.push({tag:'◆ New',title:'New Service',desc:'Describe this service...',inc:['Deliverable 1','Deliverable 2'],price:'0',cur:'KD',form:'logo',img:''});renderAdminServices();renderServices()}
 function delSvc(i){if(!confirm('Delete this service?'))return;S.services.splice(i,1);renderAdminServices();renderServices()}
 
 /* ADMIN PANEL */
-function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();renderAdminServices();renderUsersTab();updateSyncUI()}
+function syncAdminUI(){syncThemeUI();syncBgUI();syncContentUI();syncContentImgUI();renderAdminServices();renderUsersTab();updateSyncUI()}
 function openAdmin(){syncAdminUI();document.getElementById('adm-overlay').classList.add('open');document.getElementById('adm-panel').classList.add('open');document.body.style.overflow='hidden'}
 function closeAdmin(){document.getElementById('adm-overlay').classList.remove('open');document.getElementById('adm-panel').classList.remove('open');document.body.style.overflow=''}
 function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI()}}
