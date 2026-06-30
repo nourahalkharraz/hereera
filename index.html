@@ -676,7 +676,11 @@ function renderUsersTab(){
 function deleteUser(id){if(!confirm('Remove this user?'))return;saveUsers(getUsers().filter(u=>u.id!==id));renderUsersTab()}
 
 /* ═══════════════════ CLOUD SYNC (JSONBin) ═══════════════════ */
-function getSyncCfg(){try{return JSON.parse(localStorage.getItem('studioSync')||'null')}catch(e){return null}}
+const BAKED_SITE_SYNC={bin:'6a4364dbda38895dfe14437a',key:'$2a$10$LxJGtG8/hnEAZRWX22Un8eYkzXDxe7UdRtlTF2WQEa0ATSIlhvCqC'};
+function getSyncCfg(){
+  try{const local=JSON.parse(localStorage.getItem('studioSync')||'null');if(local&&local.bin)return local}catch(e){}
+  return BAKED_SITE_SYNC.bin?BAKED_SITE_SYNC:null;
+}
 function saveSyncCfg(b,k){localStorage.setItem('studioSync',JSON.stringify({bin:b,key:k}))}
 async function loadFromCloud(){
   const cfg=getSyncCfg();if(!cfg||!cfg.bin)return false;
