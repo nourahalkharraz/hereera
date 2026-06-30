@@ -327,6 +327,35 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 .service-card{padding:42px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+
+/* RTL */
+html[dir="rtl"] body{font-family:'Tahoma','Inter',system-ui,sans-serif}
+html[dir="rtl"] .header-right{flex-direction:row-reverse}
+html[dir="rtl"] .hero{text-align:right}
+html[dir="rtl"] .hero-label{flex-direction:row-reverse}
+html[dir="rtl"] .hero-label::before{margin-left:0}
+html[dir="rtl"] .card-tag{flex-direction:row-reverse}
+html[dir="rtl"] .card-includes li{flex-direction:row-reverse}
+html[dir="rtl"] .card-footer{flex-direction:row-reverse}
+html[dir="rtl"] .card-cta{flex-direction:row-reverse}
+html[dir="rtl"] .card-cta svg{transform:scaleX(-1)}
+html[dir="rtl"] .checkbox-item{flex-direction:row-reverse}
+html[dir="rtl"] .modal-overlay{justify-content:flex-start}
+html[dir="rtl"] .modal-panel{transform:translateX(-100%)}
+html[dir="rtl"] .modal-overlay.active .modal-panel{transform:translateX(0)}
+html[dir="rtl"] .modal-header{flex-direction:row-reverse}
+html[dir="rtl"] .modal-close{margin-left:0;margin-right:16px}
+html[dir="rtl"] .form-group label .req{margin-left:0;margin-right:2px}
+html[dir="rtl"] .form-group select{background-position:left 13px center;padding-right:13px;padding-left:34px}
+html[dir="rtl"] .submit-btn,html[dir="rtl"] .success-back,html[dir="rtl"] .track-check-btn{font-family:'Tahoma','Sora',sans-serif}
+html[dir="rtl"] .price-from{text-align:right}
+html[dir="rtl"] .user-badge{flex-direction:row-reverse}
+html[dir="rtl"] .dashboard-btn,html[dir="rtl"] .track-btn-header,html[dir="rtl"] #admin-login-btn{flex-direction:row-reverse}
+html[dir="rtl"] .auth-card{text-align:right}
+html[dir="rtl"] .track-card{text-align:right}
+html[dir="rtl"] .track-card-close{right:auto;left:14px}
+html[dir="rtl"] .page-footer{flex-direction:row-reverse}
+html[dir="rtl"] .success-state{text-align:center}
 </style>
 </head>
 <body>
@@ -369,7 +398,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <div class="header-right">
       <button class="dashboard-btn" id="dashboard-btn" onclick="openAdmin()" style="display:none;position:relative">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        <span class="btn-label">Dashboard</span>
+        <span class="btn-label" id="lbl-dashboard">Dashboard</span>
         <span class="notif-badge" id="notif-badge-dash" style="display:none">0</span>
       </button>
       <div class="user-badge" id="user-badge-wrap" style="display:none">
@@ -377,15 +406,16 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
         <span class="user-name" id="hdr-name"></span>
         <span class="user-role" id="hdr-role"></span>
       </div>
-      <button class="logout-btn" id="logout-btn" onclick="doLogout()" style="display:none">Sign Out</button>
+      <button class="logout-btn" id="logout-btn" onclick="doLogout()" style="display:none"><span id="lbl-signout">Sign Out</span></button>
       <button class="track-btn-header" onclick="openTrackModal()">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <span class="btn-label">Track Request</span>
+        <span class="btn-label" id="lbl-track">Track Request</span>
       </button>
       <button class="logout-btn" id="admin-login-btn" onclick="openAdminLogin()" style="display:flex;align-items:center;gap:6px">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM6 21v-1a4 4 0 014-4h4a4 4 0 014 4v1"/></svg>
-        Admin Login
+        <span id="lbl-adminlogin">Admin Login</span>
       </button>
+      <button class="logout-btn" id="lang-toggle-btn" onclick="toggleLang()" style="font-weight:700">EN / ع</button>
     </div>
   </header>
   <section class="hero">
@@ -413,19 +443,19 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
     <div class="modal-body" id="modal-body"></div>
     <div class="success-state" id="success-state">
       <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <div class="success-title">Brief Received!</div>
-      <p class="success-msg">Thank you for reaching out. We'll review your brief and get back to you within <strong>24 hours</strong>.</p>
+      <div class="success-title" id="lbl-success-title">Brief Received!</div>
+      <p class="success-msg" id="lbl-success-msg">Thank you for reaching out. We'll review your brief and get back to you within <strong>24 hours</strong>.</p>
       <div class="track-id-box">
-        <div class="track-id-label">Your tracking ID</div>
+        <div class="track-id-label" id="lbl-track-id-label">Your tracking ID</div>
         <div class="track-id-value" id="success-track-id">HE-XXXXXX</div>
-        <button class="track-copy-btn" onclick="copyTrackId()">Copy ID</button>
-        <p style="font-size:11px;color:var(--ink-3);margin-top:8px">Save this to check your request status anytime</p>
+        <button class="track-copy-btn" onclick="copyTrackId()" id="lbl-copy-id">Copy ID</button>
+        <p style="font-size:11px;color:var(--ink-3);margin-top:8px" id="lbl-save-id">Save this to check your request status anytime</p>
       </div>
-      <button class="success-back" onclick="closeModal()">Back to Services</button>
+      <button class="success-back" onclick="closeModal()" id="lbl-back-services">Back to Services</button>
     </div>
     <div class="modal-footer" id="modal-footer">
-      <button class="submit-btn" onclick="submitForm()">Send Brief →</button>
-      <p class="form-note">We'll respond within 24 hours. All information is confidential.</p>
+      <button class="submit-btn" onclick="submitForm()" id="lbl-send-brief">Send Brief →</button>
+      <p class="form-note" id="lbl-form-note">We'll respond within 24 hours. All information is confidential.</p>
     </div>
   </div>
 </div>
@@ -434,10 +464,10 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 <div id="track-overlay" onclick="if(event.target===this)closeTrackModal()">
   <div class="track-card">
     <button class="track-card-close" onclick="closeTrackModal()">✕</button>
-    <h3>Track your request</h3>
-    <p class="sub">Enter the tracking ID you received after submitting a brief.</p>
+    <h3 id="lbl-track-title">Track your request</h3>
+    <p class="sub" id="lbl-track-sub">Enter the tracking ID you received after submitting a brief.</p>
     <input type="text" class="track-input" id="track-input" placeholder="HE-XXXXXX" onkeydown="if(event.key==='Enter')checkTrackStatus()">
-    <button class="track-check-btn" onclick="checkTrackStatus()">Check Status</button>
+    <button class="track-check-btn" onclick="checkTrackStatus()" id="lbl-check-status">Check Status</button>
     <p class="track-not-found" id="track-not-found">No request found with that ID. Please check and try again.</p>
     <div class="track-result" id="track-result"></div>
   </div>
@@ -673,6 +703,53 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 <div id="adm-trigger" onclick="tryOpenAdmin()"></div>
 
 <script>
+/* ═══════════════════ LANGUAGE ═══════════════════ */
+const T={
+  en:{dashboard:'Dashboard',signout:'Sign Out',track:'Track Request',adminlogin:'Admin Login',
+    successTitle:'Brief Received!',successMsg:"Thank you for reaching out. We'll review your brief and get back to you within <strong>24 hours</strong>.",
+    trackIdLabel:'Your tracking ID',copyId:'Copy ID',saveId:'Save this to check your request status anytime',backServices:'Back to Services',
+    sendBrief:'Send Brief →',sending:'Sending...',formNote:"We'll respond within 24 hours. All information is confidential.",
+    trackTitle:'Track your request',trackSub:'Enter the tracking ID you received after submitting a brief.',checkStatus:'Check Status',
+    notFound:'No request found with that ID. Please check and try again.',cancelBtn:'Cancel this request',
+    startBrief:'Start Brief',startingFrom:'Starting from'},
+  ar:{dashboard:'لوحة التحكم',signout:'تسجيل خروج',track:'تتبع طلبك',adminlogin:'دخول الأدمن',
+    successTitle:'تم استلام طلبك!',successMsg:'شكراً لتواصلك معنا. راح نراجع طلبك ونرد عليك خلال <strong>24 ساعة</strong>.',
+    trackIdLabel:'رقم تتبع طلبك',copyId:'نسخ الرقم',saveId:'احفظي هذا الرقم عشان تقدرين تستعلمين عن طلبك بأي وقت',backServices:'رجوع للخدمات',
+    sendBrief:'إرسال الطلب ←',sending:'جاري الإرسال...',formNote:'راح نرد عليك خلال 24 ساعة. جميع المعلومات سرية وما تنشارك.',
+    trackTitle:'تتبعي طلبك',trackSub:'أدخلي رقم التتبع اللي استلمتيه بعد إرسال طلبك.',checkStatus:'استعلام',
+    notFound:'ما لقينا طلب بهذا الرقم. تأكدي من الرقم وحاولي مرة ثانية.',cancelBtn:'إلغاء هذا الطلب',
+    startBrief:'ابدئي طلبك',startingFrom:'يبدأ من'}
+};
+function getLang(){return localStorage.getItem('siteLang')||'en'}
+function setLang(l){localStorage.setItem('siteLang',l)}
+function toggleLang(){setLang(getLang()==='ar'?'en':'ar');applyLang();renderPageText();renderServices()}
+function applyLang(){
+  const lang=getLang();
+  document.documentElement.lang=lang==='ar'?'ar':'en';
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  const t=T[lang];
+  const setText=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
+  const setHtml=(id,val)=>{const el=document.getElementById(id);if(el)el.innerHTML=val};
+  setText('lbl-dashboard',t.dashboard);
+  setText('lbl-signout',t.signout);
+  setText('lbl-track',t.track);
+  setText('lbl-adminlogin',t.adminlogin);
+  setText('lbl-success-title',t.successTitle);
+  setHtml('lbl-success-msg',t.successMsg);
+  setText('lbl-track-id-label',t.trackIdLabel);
+  setText('lbl-copy-id',t.copyId);
+  setText('lbl-save-id',t.saveId);
+  setText('lbl-back-services',t.backServices);
+  setText('lbl-send-brief',t.sendBrief);
+  setText('lbl-form-note',t.formNote);
+  setText('lbl-track-title',t.trackTitle);
+  setText('lbl-track-sub',t.trackSub);
+  setText('lbl-check-status',t.checkStatus);
+  setText('track-not-found',t.notFound);
+  const langBtn=document.getElementById('lang-toggle-btn');
+  if(langBtn)langBtn.textContent=lang==='ar'?'عربي / EN':'EN / ع';
+}
+
 /* ═══════════════════ AUTH ═══════════════════ */
 function getUsers(){
   if(S&&Array.isArray(S.users))return S.users;
@@ -767,17 +844,48 @@ function applyLoggedInUI(){
     document.getElementById('hdr-avatar').textContent=sess.username[0].toUpperCase();
     document.getElementById('hdr-name').textContent=sess.username;
     const r=document.getElementById('hdr-role');r.textContent='Admin';r.className='user-role admin';
+    if('Notification' in window && Notification.permission==='default')Notification.requestPermission();
     updateNotifBadge();
-    if(!window._notifPoll)window._notifPoll=setInterval(updateNotifBadge,60000);
+    if(!window._notifPoll)window._notifPoll=setInterval(updateNotifBadge,30000);
   }
 }
 function getLastSeen(){return parseInt(localStorage.getItem('studioReqLastSeen')||'0')}
 function setLastSeen(t){localStorage.setItem('studioReqLastSeen',String(t))}
+function playNotifSound(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sine';o.frequency.value=880;
+    g.gain.setValueAtTime(0.0001,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.25,ctx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.4);
+    o.start();o.stop(ctx.currentTime+0.45);
+    setTimeout(()=>{
+      const o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.connect(g2);g2.connect(ctx.destination);
+      o2.type='sine';o2.frequency.value=1180;
+      g2.gain.setValueAtTime(0.0001,ctx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.22,ctx.currentTime+0.02);
+      g2.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.35);
+      o2.start();o2.stop(ctx.currentTime+0.4);
+    },140);
+  }catch(e){}
+}
 async function updateNotifBadge(){
   if(!isAdmin())return;
   const reqs=await loadRequests();
   const lastSeen=getLastSeen();
-  const newCount=reqs.filter(r=>r.submittedAt>lastSeen).length;
+  const newOnes=reqs.filter(r=>r.submittedAt>lastSeen);
+  const newCount=newOnes.length;
+  const prevCount=window._lastNotifCount;
+  if(typeof prevCount==='number'&&newCount>prevCount){
+    playNotifSound();
+    if('Notification' in window && Notification.permission==='granted'){
+      try{new Notification('HerEra — New request',{body:newCount===1?'A new client request just came in.':`${newCount} new client requests waiting.`});}catch(e){}
+    }
+  }
+  window._lastNotifCount=newCount;
   const dashB=document.getElementById('notif-badge-dash'),tabB=document.getElementById('notif-badge-tab');
   const label=newCount>99?'99+':String(newCount);
   if(dashB)dashB.style.display=newCount>0?'flex':'none';
@@ -898,7 +1006,8 @@ const STATUS_META={
   accepted:{label:'Accepted',color:'#A8A0FF',bg:'rgba(168,160,255,.15)'},
   in_progress:{label:'In progress',color:'#6D60FF',bg:'rgba(109,96,255,.15)'},
   completed:{label:'Completed',color:'#22C55E',bg:'rgba(34,197,94,.15)'},
-  declined:{label:'Declined',color:'#EF4444',bg:'rgba(239,68,68,.15)'}
+  declined:{label:'Declined',color:'#EF4444',bg:'rgba(239,68,68,.15)'},
+  cancelled:{label:'Cancelled',color:'#888',bg:'rgba(136,136,136,.15)'}
 };
 async function renderRequestsTab(forceRefresh){
   const list=document.getElementById('reqs-list');
@@ -908,7 +1017,8 @@ async function renderRequestsTab(forceRefresh){
   if(!reqs.length){list.innerHTML='<p class="reqs-empty">No requests yet. They will appear here as visitors submit briefs.</p>';return}
   list.innerHTML=reqs.map((r,i)=>{
     const st=STATUS_META[r.status]||STATUS_META.pending;
-    return `<div class="req-card"><div class="req-hd" onclick="toggleReq(${i})"><span class="req-id">${r.id}</span><span class="req-svc">${r.service}</span><span class="req-status-pill" style="background:${st.bg};color:${st.color}">${st.label}</span></div><div class="req-body" id="reqb-${i}">${r.fields.map(f=>`<div class="req-field-row"><span class="lbl">${f.label}</span><span class="val">${f.value}</span></div>`).join('')}<div class="req-field-row"><span class="lbl">Submitted</span><span class="val">${new Date(r.submittedAt).toLocaleString()}</span></div><select class="req-status-select" onchange="updateReqStatus('${r.id}',this.value)"><option value="pending" ${r.status==='pending'?'selected':''}>Pending review</option><option value="reviewing" ${r.status==='reviewing'?'selected':''}>In review</option><option value="accepted" ${r.status==='accepted'?'selected':''}>Accepted</option><option value="in_progress" ${r.status==='in_progress'?'selected':''}>In progress</option><option value="completed" ${r.status==='completed'?'selected':''}>Completed</option><option value="declined" ${r.status==='declined'?'selected':''}>Declined</option></select></div></div>`;
+    const imgsHtml=(r.images&&r.images.length)?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0"><span class="lbl" style="width:100%;font-size:11px;color:#555">Attached images</span>${r.images.map(im=>`<a href="${im}" target="_blank"><img src="${im}" style="width:54px;height:54px;border-radius:7px;object-fit:cover;border:1px solid #2A2A30"></a>`).join('')}</div>`:'';
+    return `<div class="req-card"><div class="req-hd" onclick="toggleReq(${i})"><span class="req-id">${r.id}</span><span class="req-svc">${r.service}</span><span class="req-status-pill" style="background:${st.bg};color:${st.color}">${st.label}</span></div><div class="req-body" id="reqb-${i}">${r.fields.map(f=>`<div class="req-field-row"><span class="lbl">${f.label}</span><span class="val">${f.value}</span></div>`).join('')}${imgsHtml}<div class="req-field-row"><span class="lbl">Submitted</span><span class="val">${new Date(r.submittedAt).toLocaleString()}</span></div><select class="req-status-select" onchange="updateReqStatus('${r.id}',this.value)"><option value="pending" ${r.status==='pending'?'selected':''}>Pending review</option><option value="reviewing" ${r.status==='reviewing'?'selected':''}>In review</option><option value="accepted" ${r.status==='accepted'?'selected':''}>Accepted</option><option value="in_progress" ${r.status==='in_progress'?'selected':''}>In progress</option><option value="completed" ${r.status==='completed'?'selected':''}>Completed</option><option value="declined" ${r.status==='declined'?'selected':''}>Declined</option><option value="cancelled" ${r.status==='cancelled'?'selected':''}>Cancelled by client</option></select></div></div>`;
   }).join('');
 }
 function toggleReq(i){const b=document.getElementById(`reqb-${i}`);b.style.display=b.style.display==='block'?'none':'block'}
@@ -930,8 +1040,16 @@ async function checkTrackStatus(){
   const found=reqs.find(r=>r.id===id);
   if(!found){notFound.style.display='block';return}
   const st=STATUS_META[found.status]||STATUS_META.pending;
-  resultEl.innerHTML=`<div class="track-status-badge" style="background:${st.bg};color:${st.color}">${st.label}</div><p style="font-size:13px;color:var(--ink-2);line-height:1.6">Service: <strong style="color:var(--ink)">${found.service}</strong><br>Submitted: ${new Date(found.submittedAt).toLocaleDateString()}</p>`;
+  const canCancel=['pending','reviewing','accepted'].includes(found.status);
+  resultEl.innerHTML=`<div class="track-status-badge" style="background:${st.bg};color:${st.color}">${st.label}</div><p style="font-size:13px;color:var(--ink-2);line-height:1.6">${getLang()==='ar'?'الخدمة':'Service'}: <strong style="color:var(--ink)">${found.service}</strong><br>${getLang()==='ar'?'تاريخ الإرسال':'Submitted'}: ${new Date(found.submittedAt).toLocaleDateString()}</p>${canCancel?`<button onclick="cancelMyRequest('${found.id}')" style="margin-top:14px;width:100%;padding:11px;background:none;border:1.5px solid #EF4444;border-radius:10px;color:#EF4444;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer">${T[getLang()].cancelBtn}</button>`:''}`;
   resultEl.classList.add('show');
+}
+async function cancelMyRequest(id){
+  if(!confirm('Cancel this request? This cannot be undone.'))return;
+  const reqs=await loadRequests();
+  const idx=reqs.findIndex(r=>r.id===id);
+  if(idx>=0){reqs[idx].status='cancelled';await saveRequestsArr(reqs)}
+  checkTrackStatus();
 }
 function copyTrackId(){
   const id=document.getElementById('success-track-id').textContent;
@@ -1131,7 +1249,8 @@ function syncContentUI(){
 
 /* SERVICES */
 function renderServices(){
-  document.getElementById('services-grid').innerHTML=S.services.map((sv,i)=>`<div class="service-card" data-number="0${i+1}" onclick="openModal('${sv.form}')">${sv.img?`<div style="margin:-38px -38px 20px;height:140px;overflow:hidden;border-radius:16px 16px 0 0"><img src="${sv.img}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<div class="card-tag">${sv.tag}</div><h2 class="card-title">${sv.title}</h2><p class="card-desc">${sv.desc}</p><ul class="card-includes">${sv.inc.map(x=>`<li>${x}</li>`).join('')}</ul><div class="card-footer"><div><span class="price-from">Starting from</span><div class="price-value">${sv.price} <span>${sv.cur}</span></div></div><button class="card-cta">Start Brief<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`).join('');
+  const t=T[getLang()];
+  document.getElementById('services-grid').innerHTML=S.services.map((sv,i)=>`<div class="service-card" data-number="0${i+1}" onclick="openModal('${sv.form}')">${sv.img?`<div style="margin:-38px -38px 20px;height:140px;overflow:hidden;border-radius:16px 16px 0 0"><img src="${sv.img}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<div class="card-tag">${sv.tag}</div><h2 class="card-title">${sv.title}</h2><p class="card-desc">${sv.desc}</p><ul class="card-includes">${sv.inc.map(x=>`<li>${x}</li>`).join('')}</ul><div class="card-footer"><div><span class="price-from">${t.startingFrom}</span><div class="price-value">${sv.price} <span>${sv.cur}</span></div></div><button class="card-cta">${t.startBrief}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`).join('');
 }
 function renderAdminServices(){
   const list=document.getElementById('adm-svc-list');
@@ -1159,10 +1278,38 @@ const forms={
   social:{tag:'◉ Social Media Kit',title:'Social Media Kit Brief',html:`<div class="form-section"><div class="form-section-title">Your Info</div><div class="form-row"><div class="form-group"><label>Full Name <span class="req">*</span></label><input type="text" placeholder="Sarah Ahmed" required></div><div class="form-group"><label>Email <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row"><div class="form-group"><label>Business Name <span class="req">*</span></label><input type="text" placeholder="Your brand name" required></div><div class="form-group"><label>Instagram Handle</label><input type="text" placeholder="@yourbrand"></div></div><div class="form-row single"><div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div></div></div><div class="form-section"><div class="form-section-title">Platforms & Templates</div><p class="hint" style="margin-bottom:12px">Platforms you post on:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" checked><span>Instagram</span></label><label class="checkbox-item"><input type="checkbox"><span>TikTok</span></label><label class="checkbox-item"><input type="checkbox"><span>Twitter / X</span></label><label class="checkbox-item"><input type="checkbox"><span>LinkedIn</span></label><label class="checkbox-item"><input type="checkbox"><span>Facebook</span></label><label class="checkbox-item"><input type="checkbox"><span>Snapchat</span></label></div><p class="hint" style="margin:12px 0">Templates needed:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" checked><span>Feed posts</span></label><label class="checkbox-item"><input type="checkbox" checked><span>Instagram Stories</span></label><label class="checkbox-item"><input type="checkbox"><span>Reels covers</span></label><label class="checkbox-item"><input type="checkbox"><span>Highlight covers</span></label><label class="checkbox-item"><input type="checkbox"><span>Profile frame</span></label><label class="checkbox-item"><input type="checkbox"><span>Carousel posts</span></label></div></div><div class="form-section"><div class="form-section-title">Brand & Style</div><div class="form-row single"><div class="form-group"><label>Existing brand? <span class="req">*</span></label><select required><option value="">Select</option><option>Yes — I'll share my files</option><option>Yes — but need new direction</option><option>No — design a look for me</option></select></div></div><div class="form-row single"><div class="form-group"><label>Brand Colors</label><input type="text" placeholder="e.g. Rose gold, cream, black"></div></div><div class="form-row single"><div class="form-group"><label>Aesthetic / mood</label><textarea placeholder="Describe the vibe: luxury, minimalist..."></textarea></div></div></div><div class="form-section"><div class="form-section-title">Project Details</div><div class="form-row"><div class="form-group"><label>Templates needed</label><select><option value="">Select</option><option>5–10 templates</option><option>10–20 templates</option><option>20–30 templates</option><option>Full kit (30+)</option></select></div><div class="form-group"><label>Format</label><select><option value="">Select</option><option>Canva (editable)</option><option>Figma (editable)</option><option>PNG exports</option><option>All formats</option></select></div></div><div class="form-row"><div class="form-group"><label>Timeline</label><select><option value="">Select</option><option>Within 1 week</option><option>1–2 weeks</option><option>2–4 weeks</option><option>Flexible</option></select></div><div class="form-group"><label>Budget Range</label><select><option value="">Select</option><option>20–35 KD</option><option>35–55 KD</option><option>55–80 KD</option><option>80+ KD</option></select></div></div><div class="form-row single"><div class="form-group"><label>Additional notes</label><textarea placeholder="Anything else..." style="min-height:70px"></textarea></div></div></div>`}
 };
 
+const formsAr={
+  logo:{tag:'⬡ تصميم لوقو',title:'استمارة طلب تصميم لوقو',html:`<div class="form-section"><div class="form-section-title">معلوماتك</div><div class="form-row"><div class="form-group"><label>الاسم الكامل <span class="req">*</span></label><input type="text" placeholder="سارة أحمد" required></div><div class="form-group"><label>البريد الإلكتروني <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row single"><div class="form-group"><label>اسم النشاط التجاري <span class="req">*</span></label><input type="text" placeholder="اسم نشاطك أو علامتك التجارية" required></div></div><div class="form-row"><div class="form-group"><label>الواتساب <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div><div class="form-group"><label>إنستقرام / الموقع</label><input type="text" placeholder="@الحساب أو رابط الموقع"></div></div></div><div class="form-section"><div class="form-section-title">عن نشاطك</div><div class="form-row single"><div class="form-group"><label>وش طبيعة نشاطك التجاري؟ <span class="req">*</span></label><textarea placeholder="وش تقدمين أو تبيعين..."></textarea></div></div><div class="form-row single"><div class="form-group"><label>عندك هوية بصرية حالية؟</label><select><option value="">اختاري</option><option>لا — أبدأ من الصفر</option><option>إي — بس أبي تجديد</option><option>إي — وأبي أحافظ على نفس الهوية</option></select></div></div></div><div class="form-section"><div class="form-section-title">تفضيلات اللوقو</div><div class="form-row single"><div class="form-group"><label>نوع اللوقو <span class="req">*</span></label><select required><option value="">اختاري النوع</option><option>نصي فقط (Wordmark)</option><option>أحرف مختصرة (Lettermark)</option><option>أيقونة + نص مدمج</option><option>رمز أو شعار تجريدي</option><option>ما عندي تفضيل معين</option></select></div></div><div class="form-row single"><div class="form-group"><label>تفضيلات الألوان</label><input type="text" placeholder="مثال: أسود وذهبي، ألوان هادئة..."><span class="hint">اتركيها فاضية وخلينا نقترح لك.</span></div></div><div class="form-row single"><div class="form-group"><label>علامات تجارية تعجبك</label><textarea placeholder="شاركينا حسابات أو لوقوهات تعجبك وليش." style="min-height:72px"></textarea></div></div></div><div class="form-section"><div class="form-section-title">تفاصيل المشروع</div><div class="form-row"><div class="form-group"><label>المدة الزمنية</label><select><option value="">اختاري</option><option>خلال أسبوع</option><option>1–2 أسبوع</option><option>2–4 أسابيع</option><option>مرنة</option></select></div><div class="form-group"><label>الميزانية</label><select><option value="">اختاري</option><option>15–25 د.ك</option><option>25–40 د.ك</option><option>40–60 د.ك</option><option>+60 د.ك</option></select></div></div><div class="form-row single"><div class="form-group"><label>أي تفاصيل ثانية؟</label><textarea placeholder="أي تفاصيل إضافية..." style="min-height:70px"></textarea></div></div></div>`},
+  brand:{tag:'◈ هوية بصرية',title:'استمارة طلب هوية بصرية كاملة',html:`<div class="form-section"><div class="form-section-title">معلوماتك</div><div class="form-row"><div class="form-group"><label>الاسم الكامل <span class="req">*</span></label><input type="text" placeholder="سارة أحمد" required></div><div class="form-group"><label>البريد الإلكتروني <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row"><div class="form-group"><label>اسم النشاط التجاري <span class="req">*</span></label><input type="text" placeholder="اسم العلامة أو الشركة" required></div><div class="form-group"><label>المجال</label><select><option value="">اختاري</option><option>أزياء وتجميل</option><option>أطعمة ومشروبات</option><option>صحة وعافية</option><option>تقنية وخدمات</option><option>تجزئة وتجارة إلكترونية</option><option>عقارات</option><option>تعليم</option><option>أخرى</option></select></div></div><div class="form-row"><div class="form-group"><label>الواتساب <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div><div class="form-group"><label>إنستقرام / الموقع</label><input type="text" placeholder="@الحساب أو الرابط"></div></div></div><div class="form-section"><div class="form-section-title">عن علامتك التجارية</div><div class="form-row single"><div class="form-group"><label>وصف نشاطك <span class="req">*</span></label><textarea placeholder="وش تبيعين؟ وش يميزك؟"></textarea></div></div><div class="form-row single"><div class="form-group"><label>جمهورك المستهدف <span class="req">*</span></label><textarea placeholder="صفي عميلتك المثالية — العمر، الاهتمامات، أسلوب الحياة..." style="min-height:70px"></textarea></div></div></div><div class="form-section"><div class="form-section-title">شخصية العلامة</div><p class="hint" style="margin-bottom:12px">اختاري كل اللي يوصف نبرة علامتك:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox"><span>عصرية وبسيطة</span></label><label class="checkbox-item"><input type="checkbox"><span>فاخرة وراقية</span></label><label class="checkbox-item"><input type="checkbox"><span>جريئة وقوية</span></label><label class="checkbox-item"><input type="checkbox"><span>مرحة وممتعة</span></label><label class="checkbox-item"><input type="checkbox"><span>طبيعية وعضوية</span></label><label class="checkbox-item"><input type="checkbox"><span>أنثوية وناعمة</span></label><label class="checkbox-item"><input type="checkbox"><span>رسمية واحترافية</span></label><label class="checkbox-item"><input type="checkbox"><span>شبابية وحيوية</span></label></div></div><div class="form-section"><div class="form-section-title">تفاصيل المشروع</div><div class="form-row"><div class="form-group"><label>المدة الزمنية</label><select><option value="">اختاري</option><option>2–3 أسابيع</option><option>3–4 أسابيع</option><option>1–2 شهر</option><option>مرنة</option></select></div><div class="form-group"><label>الميزانية</label><select><option value="">اختاري</option><option>40–65 د.ك</option><option>65–100 د.ك</option><option>100–150 د.ك</option><option>+150 د.ك</option></select></div></div><div class="form-row single"><div class="form-group"><label>علامات مرجعية تعجبك</label><textarea placeholder="علامات أو حسابات تستوحين منها." style="min-height:70px"></textarea></div></div></div>`},
+  social:{tag:'◉ سوشال ميديا',title:'استمارة طلب قالب سوشال ميديا',html:`<div class="form-section"><div class="form-section-title">معلوماتك</div><div class="form-row"><div class="form-group"><label>الاسم الكامل <span class="req">*</span></label><input type="text" placeholder="سارة أحمد" required></div><div class="form-group"><label>البريد الإلكتروني <span class="req">*</span></label><input type="email" placeholder="sarah@brand.com" required></div></div><div class="form-row"><div class="form-group"><label>اسم النشاط التجاري <span class="req">*</span></label><input type="text" placeholder="اسم علامتك التجارية" required></div><div class="form-group"><label>حساب إنستقرام</label><input type="text" placeholder="@yourbrand"></div></div><div class="form-row single"><div class="form-group"><label>الواتساب <span class="req">*</span></label><input type="tel" placeholder="+965 XXXX XXXX" required></div></div></div><div class="form-section"><div class="form-section-title">المنصات والقوالب</div><p class="hint" style="margin-bottom:12px">المنصات اللي تنشرين فيها:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" checked><span>إنستقرام</span></label><label class="checkbox-item"><input type="checkbox"><span>تيك توك</span></label><label class="checkbox-item"><input type="checkbox"><span>تويتر / X</span></label><label class="checkbox-item"><input type="checkbox"><span>لينكدإن</span></label><label class="checkbox-item"><input type="checkbox"><span>فيسبوك</span></label><label class="checkbox-item"><input type="checkbox"><span>سناب شات</span></label></div><p class="hint" style="margin:12px 0">القوالب المطلوبة:</p><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" checked><span>منشورات فييد</span></label><label class="checkbox-item"><input type="checkbox" checked><span>ستوريز</span></label><label class="checkbox-item"><input type="checkbox"><span>أغلفة ريلز</span></label><label class="checkbox-item"><input type="checkbox"><span>أغلفة هايلايتس</span></label><label class="checkbox-item"><input type="checkbox"><span>إطار صورة البروفايل</span></label><label class="checkbox-item"><input type="checkbox"><span>منشورات كاروسيل</span></label></div></div><div class="form-section"><div class="form-section-title">الهوية والأسلوب</div><div class="form-row single"><div class="form-group"><label>عندك هوية بصرية حالية؟ <span class="req">*</span></label><select required><option value="">اختاري</option><option>إي — راح أشارك ملفاتي</option><option>إي — بس أبي اتجاه جديد</option><option>لا — صمموا لي شكل جديد</option></select></div></div><div class="form-row single"><div class="form-group"><label>ألوان العلامة</label><input type="text" placeholder="مثال: روز قولد، كريمي، أسود"></div></div><div class="form-row single"><div class="form-group"><label>الأجواء والمزاج العام</label><textarea placeholder="وصفي الإحساس: فخامة، بساطة، حيوية..."></textarea></div></div></div><div class="form-section"><div class="form-section-title">تفاصيل المشروع</div><div class="form-row"><div class="form-group"><label>عدد القوالب</label><select><option value="">اختاري</option><option>5–10 قوالب</option><option>10–20 قالب</option><option>20–30 قالب</option><option>باقة كاملة (+30)</option></select></div><div class="form-group"><label>الصيغة</label><select><option value="">اختاري</option><option>كانفا (قابل للتعديل)</option><option>فيجما (قابل للتعديل)</option><option>صور PNG جاهزة</option><option>كل الصيغ</option></select></div></div><div class="form-row"><div class="form-group"><label>المدة الزمنية</label><select><option value="">اختاري</option><option>خلال أسبوع</option><option>1–2 أسبوع</option><option>2–4 أسابيع</option><option>مرنة</option></select></div><div class="form-group"><label>الميزانية</label><select><option value="">اختاري</option><option>20–35 د.ك</option><option>35–55 د.ك</option><option>55–80 د.ك</option><option>+80 د.ك</option></select></div></div><div class="form-row single"><div class="form-group"><label>ملاحظات إضافية</label><textarea placeholder="أي شي ثاني تبين نعرفه..." style="min-height:70px"></textarea></div></div></div>`}
+};
+
 /* FORM MODAL */
 function initCheckboxes(c){c.querySelectorAll('.checkbox-item').forEach(item=>{const cb=item.querySelector('input[type="checkbox"]');if(cb?.checked)item.classList.add('checked');cb?.addEventListener('change',()=>item.classList.toggle('checked',cb.checked))})}
 let currentServiceTitle='';
-function openModal(formKey){if(!formKey||formKey==='none')return;const config=forms[formKey];if(!config)return;currentServiceTitle=config.title;document.getElementById('modal-tag').textContent=config.tag;document.getElementById('modal-title').textContent=config.title;const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');body.innerHTML=config.html;body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden'}
+let currentAttachments=[];
+const ATTACH_SECTION_HTML=`<div class="form-section"><div class="form-section-title">Reference Images <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div><p class="hint" style="margin-bottom:10px">Attach up to 3 images — existing logos, inspiration, color references...</p><label id="attach-label" style="display:block;text-align:center;padding:14px;border:1.5px dashed var(--border);border-radius:12px;color:var(--ink-2);font-size:13px;cursor:pointer;margin-bottom:10px">⬆ Tap to attach images<input type="file" id="attach-input" accept="image/*" multiple style="display:none" onchange="handleAttachUpload(event)"></label><div id="attach-thumbs" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>`;
+const ATTACH_SECTION_HTML_AR=`<div class="form-section"><div class="form-section-title">صور مرجعية <span style="font-weight:400;text-transform:none;letter-spacing:0">(اختياري)</span></div><p class="hint" style="margin-bottom:10px">أرفقي حتى 3 صور — لوقو حالي، إلهام، مرجع ألوان...</p><label id="attach-label" style="display:block;text-align:center;padding:14px;border:1.5px dashed var(--border);border-radius:12px;color:var(--ink-2);font-size:13px;cursor:pointer;margin-bottom:10px">⬆ اضغطي لإرفاق صور<input type="file" id="attach-input" accept="image/*" multiple style="display:none" onchange="handleAttachUpload(event)"></label><div id="attach-thumbs" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>`;
+function handleAttachUpload(e){
+  const files=Array.from(e.target.files||[]);
+  const remaining=3-currentAttachments.length;
+  if(remaining<=0){alert('Maximum 3 images allowed.');e.target.value='';return}
+  files.slice(0,remaining).forEach(file=>{
+    if(file.size>1.5*1024*1024){alert(`"${file.name}" is too large. Please use images under 1.5MB.`);return}
+    const reader=new FileReader();
+    reader.onload=ev=>{currentAttachments.push({name:file.name,data:ev.target.result});renderAttachThumbs()};
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';
+}
+function renderAttachThumbs(){
+  const wrap=document.getElementById('attach-thumbs');if(!wrap)return;
+  wrap.innerHTML=currentAttachments.map((a,i)=>`<div style="position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--border)"><img src="${a.data}" style="width:100%;height:100%;object-fit:cover"><button onclick="removeAttach(${i})" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.6);color:white;border:none;font-size:11px;cursor:pointer;line-height:1">×</button></div>`).join('');
+  const lbl=document.getElementById('attach-label');
+  if(lbl)lbl.style.display=currentAttachments.length>=3?'none':'block';
+}
+function removeAttach(i){currentAttachments.splice(i,1);renderAttachThumbs()}
+function openModal(formKey){if(!formKey||formKey==='none')return;const lang=getLang();const config=(lang==='ar'?formsAr:forms)[formKey];if(!config)return;currentServiceTitle=config.title;currentAttachments=[];document.getElementById('modal-tag').textContent=config.tag;document.getElementById('modal-title').textContent=config.title;const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');body.innerHTML=config.html+(lang==='ar'?ATTACH_SECTION_HTML_AR:ATTACH_SECTION_HTML);body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden'}
 function closeModal(){document.getElementById('modal').classList.remove('active');document.body.style.overflow=''}
 function handleOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal()}
 async function submitForm(){
@@ -1170,16 +1317,16 @@ async function submitForm(){
   body.querySelectorAll('input[required],select[required],textarea[required]').forEach(f=>{if(!f.value.trim()){f.style.borderColor='#EF4444';f.style.background='#FFF5F5';valid=false;f.addEventListener('input',()=>{f.style.borderColor='';f.style.background=''},{ once:true})}});
   if(!valid)return;
   const submitBtn=document.querySelector('.submit-btn');
-  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Sending...'}
+  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent=T[getLang()].sending}
   const fields=collectFormData(body);
   const trackId=genTrackId();
-  const request={id:trackId,service:currentServiceTitle,fields,status:'pending',submittedAt:Date.now()};
+  const request={id:trackId,service:currentServiceTitle,fields,images:currentAttachments.map(a=>a.data),status:'pending',submittedAt:Date.now()};
   try{
     const reqs=await loadRequests();
     reqs.push(request);
     await saveRequestsArr(reqs);
   }catch(e){}
-  if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Send Brief →'}
+  if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=T[getLang()].sendBrief}
   document.getElementById('success-track-id').textContent=trackId;
   body.style.display='none';
   document.getElementById('modal-footer').style.display='none';
@@ -1188,6 +1335,7 @@ async function submitForm(){
 
 /* INIT */
 async function init(){
+  applyLang();
   loadSettings();
   const cloudLoaded=await loadFromCloud();
   applyAll();
