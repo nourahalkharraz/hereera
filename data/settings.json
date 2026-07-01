@@ -78,7 +78,15 @@
       "img": ""
     }
   ],
-  "users": [],
+  "users": [
+    {
+      "id": "1782896691582",
+      "username": "yummy",
+      "password": "THZsbGFCdW5ueSMx",
+      "role": "admin",
+      "createdAt": "01/07/2026"
+    }
+  ],
   "_meta": {
     "savedAt": 1782896606286
   }
