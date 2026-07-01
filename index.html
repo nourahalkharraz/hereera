@@ -912,9 +912,14 @@ const GH_HEADERS={'Authorization':`token ${GH_TOKEN}`,'Accept':'application/vnd.
 
 async function ghRead(path){
   try{
-    const res=await fetch(GH_RAW+path+'?t='+Date.now());
+    // Use API endpoint directly to bypass CDN cache on raw.githubusercontent.com
+    const res=await fetch(GH_API+path,{headers:GH_HEADERS});
     if(!res.ok){window._lastSyncError=`Read failed: HTTP ${res.status}`;return null}
-    return await res.json();
+    const info=await res.json();
+    if(!info.content){window._lastSyncError='No content in response';return null}
+    // Decode base64 content (GitHub API returns base64)
+    const decoded=decodeURIComponent(escape(atob(info.content.replace(/\n/g,''))));
+    return JSON.parse(decoded);
   }catch(e){window._lastSyncError='Read error: '+e.message;return null}
 }
 async function ghWrite(path,data){
