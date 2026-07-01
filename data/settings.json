@@ -1,10 +1,10 @@
 {
   "theme": {
-    "accent": "#4A3AFF",
-    "bg": "#F9F9F8",
+    "accent": "#E11D48",
+    "bg": "#FFF5F7",
     "surface": "#FFFFFF",
-    "ink": "#111111",
-    "ink2": "#555555",
+    "ink": "#1A0008",
+    "ink2": "#664455",
     "radius": 16,
     "font": "sora"
   },
@@ -88,6 +88,6 @@
     }
   ],
   "_meta": {
-    "savedAt": 1782905084836
+    "savedAt": 1782905119778
   }
 }
