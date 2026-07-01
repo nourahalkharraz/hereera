@@ -958,8 +958,10 @@ async function saveRequestsArr(arr){
   return await ghWrite(GH_REQUESTS,arr);
 }
 function updateSyncUI(){
-  document.getElementById('sync-status-txt').textContent='GitHub sync active ✓';
-  document.getElementById('sync-dot').className='synced';
+  const dot=document.getElementById('sync-dot');
+  const txt=document.getElementById('sync-status-txt');
+  if(dot)dot.className='synced';
+  if(txt)txt.textContent='GitHub sync active ✓';
 }
 function updateReqSyncUI(){}
 
@@ -1094,7 +1096,7 @@ async function saveSettings(){
     window._lastSavedSnapshot=JSON.stringify(S);updateUnsavedBanner();updateSyncTimestamp();
     ss.classList.add('show');setTimeout(()=>ss.classList.remove('show'),3000);
   } else {
-    dot.className='';stxt.textContent=getSyncCfg()?'Sync failed — check connection':'Not connected to cloud';
+    dot.className='';stxt.textContent='Sync failed — check connection';
     ss.textContent='✗ FAILED: '+(window._lastSyncError||'unknown error');ss.style.color='#EF4444';
     ss.classList.add('show');
     // do not auto-hide error — keep visible so it can be screenshotted
