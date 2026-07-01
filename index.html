@@ -933,7 +933,17 @@ async function ghWrite(path,data){
 async function loadFromCloud(){
   const data=await ghRead(GH_SETTINGS);
   if(data&&typeof data==='object'&&!Array.isArray(data)){
-    S=data;localStorage.setItem('studioSettings',JSON.stringify(S));return true;
+    // Deep merge: start from DEF, overlay with cloud data
+    const merged=JSON.parse(JSON.stringify(DEF));
+    if(data.theme&&typeof data.theme==='object')Object.assign(merged.theme,data.theme);
+    if(data.bg&&typeof data.bg==='object')Object.assign(merged.bg,data.bg);
+    if(data.page&&typeof data.page==='object')Object.assign(merged.page,data.page);
+    if(Array.isArray(data.services)&&data.services.length>0)merged.services=data.services;
+    if(Array.isArray(data.users))merged.users=data.users;
+    if(data._meta)merged._meta=data._meta;
+    S=merged;
+    localStorage.setItem('studioSettings',JSON.stringify(S));
+    return true;
   }
   return false;
 }
