@@ -1,9 +1,6 @@
 {
-  "_meta": {
-    "savedAt": 0
-  },
   "theme": {
-    "accent": "#4A3AFF",
+    "accent": "#ffc4d6",
     "bg": "#F9F9F8",
     "surface": "#FFFFFF",
     "ink": "#111111",
@@ -13,12 +10,12 @@
   },
   "bg": {
     "type": "none",
-    "op": 12,
     "c1": "#4A3AFF",
     "c2": "#C4B5FD",
+    "op": 12,
+    "sc": 28,
     "sz": 1.5,
-    "sc": 24,
-    "bl": 60,
+    "bl": 70,
     "anim": false
   },
   "page": {
@@ -36,14 +33,14 @@
   },
   "services": [
     {
-      "tag": "⬡ Logo Design",
+      "tag": "⬡ Design",
       "title": "Logo Design",
-      "desc": "A distinctive logo that captures your brand essence — crafted for versatility across digital and print.",
+      "desc": "A distinctive mark built around your brand's values — from wordmarks to icon-based systems, crafted to work everywhere.",
       "inc": [
-        "3 unique concepts",
-        "Unlimited revisions",
-        "All file formats (SVG, PNG, PDF)",
-        "Brand usage guidelines"
+        "Primary logo + variations",
+        "SVG, PNG, PDF source files",
+        "2–3 initial concepts",
+        "Revision rounds included"
       ],
       "price": "15",
       "cur": "KD",
@@ -51,14 +48,14 @@
       "img": ""
     },
     {
-      "tag": "◈ Brand Identity",
+      "tag": "◈ Identity",
       "title": "Brand Identity",
-      "desc": "A complete visual system — logo, colors, typography, and more — built to make your brand unforgettable.",
+      "desc": "A complete visual language — logo, color system, typography, and brand guidelines that keep everything consistent.",
       "inc": [
-        "Full logo suite",
-        "Color palette & typography",
-        "Brand guidelines document",
-        "Social media assets"
+        "Full logo suite + brand mark",
+        "Color palette + typography",
+        "Brand guidelines PDF",
+        "Stationery mockups"
       ],
       "price": "40",
       "cur": "KD",
@@ -66,7 +63,7 @@
       "img": ""
     },
     {
-      "tag": "◉ Social Media Kit",
+      "tag": "◉ Content",
       "title": "Social Media Kit",
       "desc": "Branded templates for posts, stories, highlight covers, and reels — built for consistency across all your platforms.",
       "inc": [
@@ -81,5 +78,8 @@
       "img": ""
     }
   ],
-  "users": []
+  "users": [],
+  "_meta": {
+    "savedAt": 1782891535700
+  }
 }
