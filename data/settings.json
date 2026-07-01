@@ -1,1 +1,85 @@
-{"_meta": {"savedAt": 0}, "users": [], "services": []}
+{
+  "_meta": {
+    "savedAt": 0
+  },
+  "theme": {
+    "accent": "#4A3AFF",
+    "bg": "#F9F9F8",
+    "surface": "#FFFFFF",
+    "ink": "#111111",
+    "ink2": "#555555",
+    "radius": 16,
+    "font": "sora"
+  },
+  "bg": {
+    "type": "none",
+    "op": 12,
+    "c1": "#4A3AFF",
+    "c2": "#C4B5FD",
+    "sz": 1.5,
+    "sc": 24,
+    "bl": 60,
+    "anim": false
+  },
+  "page": {
+    "logo": "HerEra",
+    "dot": ".",
+    "logoImg": "",
+    "heroImg": "",
+    "label": "Get started",
+    "h1": "Let's build your",
+    "h1em": "brand identity.",
+    "para": "Choose a service below and fill out a brief — we'll review your project and get back to you within 24 hours to discuss next steps.",
+    "seclbl": "Available Services",
+    "ftl": "© 2025 HerEra. All rights reserved.",
+    "ftr": "Questions? Reach out before submitting."
+  },
+  "services": [
+    {
+      "tag": "⬡ Logo Design",
+      "title": "Logo Design",
+      "desc": "A distinctive logo that captures your brand essence — crafted for versatility across digital and print.",
+      "inc": [
+        "3 unique concepts",
+        "Unlimited revisions",
+        "All file formats (SVG, PNG, PDF)",
+        "Brand usage guidelines"
+      ],
+      "price": "15",
+      "cur": "KD",
+      "form": "logo",
+      "img": ""
+    },
+    {
+      "tag": "◈ Brand Identity",
+      "title": "Brand Identity",
+      "desc": "A complete visual system — logo, colors, typography, and more — built to make your brand unforgettable.",
+      "inc": [
+        "Full logo suite",
+        "Color palette & typography",
+        "Brand guidelines document",
+        "Social media assets"
+      ],
+      "price": "40",
+      "cur": "KD",
+      "form": "brand",
+      "img": ""
+    },
+    {
+      "tag": "◉ Social Media Kit",
+      "title": "Social Media Kit",
+      "desc": "Branded templates for posts, stories, highlight covers, and reels — built for consistency across all your platforms.",
+      "inc": [
+        "Post + story templates",
+        "Highlight cover icons",
+        "Profile picture frame",
+        "Editable Canva / Figma files"
+      ],
+      "price": "20",
+      "cur": "KD",
+      "form": "social",
+      "img": ""
+    }
+  ],
+  "users": []
+}
