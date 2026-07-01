@@ -95,16 +95,24 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 .modal-title{font-family:'Sora',sans-serif;font-size:23px;font-weight:700;letter-spacing:-.7px}
 .modal-close{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-2);flex-shrink:0;margin-left:16px}
 .modal-close:hover{background:var(--bg)}
-.modal-body{padding:38px 40px;flex:1}
-.form-section{margin-bottom:38px}
-.form-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink-3);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.modal-body{padding:28px 28px 12px;flex:1}
+.process-banner{display:flex;gap:0;margin-bottom:24px;background:var(--bg);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.process-step{flex:1;padding:14px 10px;text-align:center;position:relative}
+.process-step:not(:last-child)::after{content:'→';position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:14px;font-weight:700;z-index:1}
+.process-step-num{width:28px;height:28px;background:var(--accent-light);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin:0 auto 6px}
+.process-step-txt{font-size:10px;font-weight:600;color:var(--ink-2);line-height:1.3}
+.process-step-icon{font-size:18px;margin-bottom:4px}
+.form-section{margin-bottom:28px;background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:20px 22px}
+.form-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.form-section-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px;display:inline-block}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .form-row.single{grid-template-columns:1fr}
 .form-group{display:flex;flex-direction:column;gap:6px}
 .form-group label{font-size:13px;font-weight:600;color:var(--ink)}
 .form-group label .req{color:var(--accent);margin-left:2px}
-.form-group input,.form-group select,.form-group textarea{border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--bg);outline:none;width:100%;transition:border-color var(--tr)}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);background:var(--surface)}
+.form-group label{font-size:12px;font-weight:700;color:var(--ink-2);letter-spacing:.3px}
+.form-group input,.form-group select,.form-group textarea{border:1.5px solid var(--border);border-radius:12px;padding:12px 15px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);outline:none;width:100%;transition:border-color var(--tr),box-shadow var(--tr)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-light)}
 .form-group textarea{resize:vertical;min-height:88px}
 .form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;cursor:pointer}
 .hint{font-size:12px;color:var(--ink-3);margin-top:2px}
@@ -114,7 +122,8 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh}
 .checkbox-item input[type="checkbox"]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;padding:0;margin:0}
 .checkbox-item span{font-size:13px;font-weight:500;color:var(--ink)}
 .modal-footer{padding:22px 40px 36px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:11px}
-.submit-btn{width:100%;padding:15px;background:var(--ink);color:white;border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:-.3px;transition:background var(--tr)}
+.submit-btn{width:100%;padding:16px;background:var(--accent);color:white;border:none;border-radius:14px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.3px;transition:all var(--tr);box-shadow:0 4px 20px var(--accent-light)}
+.submit-btn:hover{opacity:.9;transform:translateY(-1px)}
 .submit-btn:hover{background:var(--accent)}
 .form-note{font-size:12px;color:var(--ink-3);text-align:center;line-height:1.55}
 .success-state{display:none;flex-direction:column;align-items:center;justify-content:center;padding:72px 40px;text-align:center;flex:1}
@@ -1331,7 +1340,24 @@ function renderAttachThumbs(){
   if(lbl)lbl.style.display=currentAttachments.length>=3?'none':'block';
 }
 function removeAttach(i){currentAttachments.splice(i,1);renderAttachThumbs()}
-function openModal(formKey){if(!formKey||formKey==='none')return;const lang=getLang();const config=(lang==='ar'?formsAr:forms)[formKey];if(!config)return;currentServiceTitle=config.title;currentAttachments=[];document.getElementById('modal-tag').textContent=config.tag;document.getElementById('modal-title').textContent=config.title;const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');body.innerHTML=config.html+(lang==='ar'?ATTACH_SECTION_HTML_AR:ATTACH_SECTION_HTML);body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden'}
+const PROCESS_BANNER_EN=`<div class="process-banner"><div class="process-step"><div class="process-step-icon">📋</div><div class="process-step-num">1</div><div class="process-step-txt">Fill the brief</div></div><div class="process-step"><div class="process-step-icon">🔍</div><div class="process-step-num">2</div><div class="process-step-txt">We review within 24h</div></div><div class="process-step"><div class="process-step-icon">✉️</div><div class="process-step-num">3</div><div class="process-step-txt">We reach out on Instagram</div></div><div class="process-step"><div class="process-step-icon">🎨</div><div class="process-step-num">4</div><div class="process-step-txt">Design begins!</div></div></div>`;
+const PROCESS_BANNER_AR=`<div class="process-banner"><div class="process-step"><div class="process-step-icon">📋</div><div class="process-step-num">١</div><div class="process-step-txt">تعبين الاستمارة</div></div><div class="process-step"><div class="process-step-icon">🔍</div><div class="process-step-num">٢</div><div class="process-step-txt">نراجع خلال ٢٤ ساعة</div></div><div class="process-step"><div class="process-step-icon">✉️</div><div class="process-step-num">٣</div><div class="process-step-txt">نتواصل معك بإنستقرام</div></div><div class="process-step"><div class="process-step-icon">🎨</div><div class="process-step-num">٤</div><div class="process-step-txt">يبدأ التصميم!</div></div></div>`;
+function openModal(formKey){
+  if(!formKey||formKey==='none')return;
+  const lang=getLang();
+  const config=(lang==='ar'?formsAr:forms)[formKey];
+  if(!config)return;
+  currentServiceTitle=config.title;currentAttachments=[];
+  document.getElementById('modal-tag').textContent=config.tag;
+  document.getElementById('modal-title').textContent=config.title;
+  const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer'),succ=document.getElementById('success-state');
+  const banner=lang==='ar'?PROCESS_BANNER_AR:PROCESS_BANNER_EN;
+  const attach=lang==='ar'?ATTACH_SECTION_HTML_AR:ATTACH_SECTION_HTML;
+  body.innerHTML=banner+config.html+attach;
+  body.style.display='block';footer.style.display='flex';succ.classList.remove('visible');
+  initCheckboxes(body);document.querySelector('.modal-panel').scrollTop=0;
+  document.getElementById('modal').classList.add('active');document.body.style.overflow='hidden';
+}
 function closeModal(){document.getElementById('modal').classList.remove('active');document.body.style.overflow=''}
 function handleOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal()}
 async function submitForm(){
