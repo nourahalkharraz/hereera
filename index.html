@@ -82,6 +82,9 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);min-height:100vh;
 .card-cta:hover{background:var(--accent)}
 .card-cta svg{width:14px;height:14px}
 .page-footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.mini-footer{padding:12px 48px 18px;text-align:center;position:relative;z-index:1}
+.mini-footer button{background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;color:var(--ink-3);cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:2px 6px}
+.mini-footer button:hover{color:var(--ink-2)}
 .stats-bar{display:none;gap:32px;margin-top:36px;padding-top:28px;border-top:1px solid var(--border)}
 .stat-item{display:flex;flex-direction:column;gap:4px}
 .stat-num{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-1px;line-height:1}
@@ -475,6 +478,9 @@ html[dir="rtl"] .success-state{text-align:center}
     <p id="pg-footer-l"></p>
     <p id="pg-footer-r"></p>
   </footer>
+  <div class="mini-footer">
+    <button onclick="openPrivacyModal()" id="lbl-privacy-link">Privacy Policy</button>
+  </div>
 </div>
 
 <!-- FORM MODAL -->
@@ -514,6 +520,15 @@ html[dir="rtl"] .success-state{text-align:center}
     <button class="track-check-btn" onclick="checkTrackStatus()" id="lbl-check-status">Check Status</button>
     <p class="track-not-found" id="track-not-found">No request found with that ID. Please check and try again.</p>
     <div class="track-result" id="track-result"></div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY MODAL -->
+<div id="privacy-overlay" onclick="if(event.target===this)closePrivacyModal()" style="position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);z-index:310;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s">
+  <div class="track-card" style="max-width:560px;max-height:85vh;display:flex;flex-direction:column">
+    <button class="track-card-close" onclick="closePrivacyModal()">✕</button>
+    <h3 id="lbl-privacy-title">Privacy Policy</h3>
+    <div id="privacy-body" style="overflow-y:auto;font-size:13px;line-height:1.7;color:var(--ink-2);margin-top:14px;padding-right:6px"></div>
   </div>
 </div>
 
@@ -735,14 +750,32 @@ const T={
     sendBrief:'Send Brief →',sending:'Sending...',formNote:"We'll respond within 24 hours. All information is confidential.",
     trackTitle:'Track your request',trackSub:'Enter the tracking ID you received after submitting a brief.',checkStatus:'Check Status',
     notFound:'No request found with that ID. Please check and try again.',cancelBtn:'Cancel this request',
-    startBrief:'Start Brief',startingFrom:'Starting from'},
+    startBrief:'Start Brief',startingFrom:'Starting from',
+    privacyLink:'Privacy Policy',privacyTitle:'Privacy Policy',
+    privacyBody:`<p><strong>Last updated:</strong> 2026</p>
+<p style="margin-top:10px">HerEra ("we", "us") provides branding and design services. This policy explains what information we collect through this site and how we use it.</p>
+<p style="margin-top:10px"><strong>Information we collect</strong><br>When you submit a service brief, we collect the details you provide — such as your name, email or phone number, and project information — so we can review and respond to your request.</p>
+<p style="margin-top:10px"><strong>How we use it</strong><br>Your information is used only to process your brief, communicate with you about your project, and generate a tracking ID so you can check your request status.</p>
+<p style="margin-top:10px"><strong>How it's stored</strong><br>Submitted briefs are stored securely and are accessible only to HerEra's admin. We do not sell or share your information with third parties, except where necessary to deliver the service you requested.</p>
+<p style="margin-top:10px"><strong>Cookies &amp; local storage</strong><br>We use your browser's local storage to remember your language preference and, if you're an admin, your login session. We do not use this for advertising or tracking.</p>
+<p style="margin-top:10px"><strong>Your rights</strong><br>You may request access to, or deletion of, your submitted information at any time by contacting us directly.</p>
+<p style="margin-top:10px">If you have questions about this policy, please reach out to us before submitting a brief.</p>`},
   ar:{dashboard:'لوحة التحكم',signout:'تسجيل خروج',track:'تتبع طلبك',adminlogin:'دخول الأدمن',
     successTitle:'تم استلام طلبك!',successMsg:'شكراً لتواصلك معنا. راح نراجع طلبك ونرد عليك خلال <strong>24 ساعة</strong>.',
     trackIdLabel:'رقم تتبع طلبك',copyId:'نسخ الرقم',saveId:'احفظي هذا الرقم عشان تقدرين تستعلمين عن طلبك بأي وقت',backServices:'رجوع للخدمات',
     sendBrief:'إرسال الطلب ←',sending:'جاري الإرسال...',formNote:'راح نرد عليك خلال 24 ساعة. جميع المعلومات سرية وما تنشارك.',
     trackTitle:'تتبعي طلبك',trackSub:'أدخلي رقم التتبع اللي استلمتيه بعد إرسال طلبك.',checkStatus:'استعلام',
     notFound:'ما لقينا طلب بهذا الرقم. تأكدي من الرقم وحاولي مرة ثانية.',cancelBtn:'إلغاء هذا الطلب',
-    startBrief:'ابدئي طلبك',startingFrom:'يبدأ من'}
+    startBrief:'ابدئي طلبك',startingFrom:'يبدأ من',
+    privacyLink:'سياسة الخصوصية',privacyTitle:'سياسة الخصوصية',
+    privacyBody:`<p><strong>آخر تحديث:</strong> 2026</p>
+<p style="margin-top:10px">هرإيرا ("نحن") تقدم خدمات تصميم وهوية بصرية. توضح هذي السياسة وش المعلومات اللي نجمعها عن طريق هذا الموقع وكيف نستخدمها.</p>
+<p style="margin-top:10px"><strong>المعلومات اللي نجمعها</strong><br>لما ترسلين طلب خدمة (Brief)، نجمع البيانات اللي تعطيننا إياها — زي الاسم، الإيميل أو رقم الجوال، وتفاصيل المشروع — عشان نقدر نراجع طلبك ونرد عليك.</p>
+<p style="margin-top:10px"><strong>كيف نستخدمها</strong><br>نستخدم معلوماتك فقط لمعالجة طلبك، التواصل معك بخصوص مشروعك، وتوليد رقم تتبع عشان تقدرين تستعلمين عن حالة طلبك.</p>
+<p style="margin-top:10px"><strong>كيف نخزنها</strong><br>الطلبات المرسلة تُخزّن بشكل آمن ووصولها محصور بإدارة هرإيرا فقط. ما نبيع أو نشارك معلوماتك مع أي طرف ثالث، إلا إذا كان ذلك ضروري لتقديم الخدمة اللي طلبتيها.</p>
+<p style="margin-top:10px"><strong>الكوكيز والتخزين المحلي</strong><br>نستخدم التخزين المحلي بمتصفحك عشان نتذكر لغتك المفضلة، ولو كنتي أدمن، جلسة دخولك. ما نستخدم هذا للإعلانات أو التتبع.</p>
+<p style="margin-top:10px"><strong>حقوقك</strong><br>تقدرين تطلبين الاطلاع على معلوماتك أو حذفها بأي وقت عن طريق التواصل معنا مباشرة.</p>
+<p style="margin-top:10px">لو عندك أي استفسار عن هذي السياسة، تواصلي معنا قبل ما ترسلين طلبك.</p>`}
 };
 function getLang(){return localStorage.getItem('siteLang')||'en'}
 function setLang(l){localStorage.setItem('siteLang',l)}
@@ -770,6 +803,9 @@ function applyLang(){
   setText('lbl-track-sub',t.trackSub);
   setText('lbl-check-status',t.checkStatus);
   setText('track-not-found',t.notFound);
+  setText('lbl-privacy-link',t.privacyLink);
+  setText('lbl-privacy-title',t.privacyTitle);
+  setHtml('privacy-body',t.privacyBody);
   const langBtn=document.getElementById('lang-toggle-btn');
   if(langBtn)langBtn.textContent=lang==='ar'?'عربي / EN':'EN / ع';
 }
@@ -1058,6 +1094,8 @@ async function updateReqStatus(id,status){
 /* TRACK REQUEST (visitor-facing) */
 function openTrackModal(){document.getElementById('track-overlay').classList.add('open');document.body.style.overflow='hidden';document.getElementById('track-input').value='';document.getElementById('track-result').classList.remove('show');document.getElementById('track-not-found').style.display='none';setTimeout(()=>document.getElementById('track-input').focus(),150)}
 function closeTrackModal(){document.getElementById('track-overlay').classList.remove('open');document.body.style.overflow=''}
+function openPrivacyModal(){document.getElementById('privacy-overlay').style.opacity='1';document.getElementById('privacy-overlay').style.pointerEvents='all';document.body.style.overflow='hidden';if(location.hash!=='#privacy')history.replaceState(null,'','#privacy')}
+function closePrivacyModal(){document.getElementById('privacy-overlay').style.opacity='0';document.getElementById('privacy-overlay').style.pointerEvents='none';document.body.style.overflow='';if(location.hash==='#privacy')history.replaceState(null,'',location.pathname+location.search)}
 async function checkTrackStatus(){
   const id=document.getElementById('track-input').value.trim().toUpperCase();
   const resultEl=document.getElementById('track-result'),notFound=document.getElementById('track-not-found');
@@ -1326,7 +1364,7 @@ async function openAdmin(){
 }
 function closeAdmin(){document.getElementById('adm-overlay').classList.remove('open');document.getElementById('adm-panel').classList.remove('open');document.body.style.overflow=''}
 function switchTab(name,btn){document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.adm-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='settings'){renderUsersTab();updateSyncUI();updateReqSyncUI()}if(name==='reqs'){renderRequestsTab().then(()=>{setLastSeen(Date.now());updateNotifBadge()})}}
-document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal();else if(document.getElementById('track-overlay').classList.contains('open'))closeTrackModal();else if(document.getElementById('auth-overlay').style.pointerEvents==='all')closeAdminLogin()}});
+document.addEventListener('keydown',e=>{if(e.shiftKey&&e.ctrlKey&&e.key==='A'&&isAdmin()){e.preventDefault();document.getElementById('adm-panel').classList.contains('open')?closeAdmin():openAdmin()}if(e.key==='Escape'){if(document.getElementById('adm-panel').classList.contains('open'))closeAdmin();else if(document.getElementById('modal').classList.contains('active'))closeModal();else if(document.getElementById('track-overlay').classList.contains('open'))closeTrackModal();else if(document.getElementById('privacy-overlay').style.pointerEvents==='all')closePrivacyModal();else if(document.getElementById('auth-overlay').style.pointerEvents==='all')closeAdminLogin()}});
 
 /* FORM CONFIGS */
 const forms={
@@ -1416,6 +1454,7 @@ async function init(){
   applyLoggedInUI();
   window._lastSavedSnapshot=JSON.stringify(S);
   setInterval(updateUnsavedBanner,1500);
+  if(location.hash==='#privacy')openPrivacyModal();
 }
 window._cloudReady=init();
 </script>
