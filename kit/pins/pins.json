@@ -1,0 +1,207 @@
+{
+  "brand": "HERERA",
+  "productUrl": "https://YOURNAME.gumroad.com/l/small-business-toolkit",
+  "pins": [
+    {
+      "id": "01-hero-stack",
+      "template": "stack", "palette": "cream",
+      "kicker": "Small Business Toolkit",
+      "headline": "8 templates every [small business] actually needs",
+      "items": ["Invoice Template", "Client Proposal", "Service Contract", "Pricing Calculator", "Client Intake Form", "Income Tracker", "Content Planner", "Onboarding Checklist"],
+      "pinTitle": "8 Essential Small Business Templates (Invoice, Contract, Pricing & More)",
+      "pinDescription": "Everything you need to run your business professionally in one pack — invoice template, client proposal, service contract, pricing calculator, income tracker and more. Editable, printable, and ready to send to clients today. Perfect for freelancers, service providers, and small shop owners.",
+      "keywords": ["small business templates", "invoice template", "business printables", "freelance templates", "small business organization"],
+      "board": "Small Business Templates"
+    },
+    {
+      "id": "02-invoice-statement",
+      "template": "statement", "palette": "ivory",
+      "kicker": "Get Paid Faster",
+      "headline": "Your invoice is [costing you] clients",
+      "sub": "A messy invoice makes you look new. A clean one makes you look booked. Here's the template that changed how my clients pay me.",
+      "pinTitle": "Free-Style Invoice Template for Small Business Owners & Freelancers",
+      "pinDescription": "Stop sending invoices from your notes app. This editable invoice template looks professional, states your terms clearly, and gets you paid faster. Includes payment terms, late fee wording, and itemized service lines.",
+      "keywords": ["invoice template", "freelance invoice", "small business invoice", "get paid faster", "invoice design"],
+      "board": "Small Business Templates"
+    },
+    {
+      "id": "03-pricing-list",
+      "template": "list", "palette": "sage",
+      "kicker": "Pricing Mistakes",
+      "headline": "5 signs you are [undercharging]",
+      "items": ["Every client says yes immediately", "You dread opening your own invoices", "You round your prices down, always", "You work weekends to hit your goal", "You've never raised your rate"],
+      "pinTitle": "5 Signs You're Undercharging for Your Services (And How to Fix It)",
+      "pinDescription": "If every single client says yes right away, your prices are too low. Here are 5 signs you're undercharging as a freelancer or small business owner, plus a pricing calculator that tells you what to actually charge.",
+      "keywords": ["pricing your services", "how to price freelance work", "undercharging", "small business pricing", "freelance rates"],
+      "board": "Pricing & Money"
+    },
+    {
+      "id": "04-contract-split",
+      "template": "split", "palette": "navy",
+      "kicker": "Protect Your Work",
+      "headline": "Never start a project without [these 4 lines]",
+      "items": ["Exactly what is included — and what isn't", "Payment schedule with a deposit up front", "How many revision rounds are covered", "What happens if they go quiet"],
+      "pinTitle": "4 Clauses Every Freelance Contract Needs (Free Contract Template)",
+      "pinDescription": "Scope creep and unpaid invoices almost always trace back to a missing contract clause. These are the 4 lines that protect you — plus a plain-English service contract template you can send in minutes.",
+      "keywords": ["freelance contract template", "service agreement", "client contract", "scope creep", "small business contract"],
+      "board": "Client Onboarding"
+    },
+    {
+      "id": "05-stat-deposit",
+      "template": "stat", "palette": "charcoal",
+      "kicker": "Cash Flow",
+      "num": "50%",
+      "headline": "upfront. [Every time.]",
+      "sub": "The single policy that ended late payments in my business — and the contract wording that makes it easy to ask for.",
+      "pinTitle": "Why You Should Always Take a 50% Deposit (Small Business Cash Flow Tip)",
+      "pinDescription": "Taking a deposit up front is the fastest way to fix cash flow and filter out clients who were never going to pay. Here's how to word it in your contract without feeling awkward.",
+      "keywords": ["small business cash flow", "client deposit", "freelance payment terms", "late payments", "business money tips"],
+      "board": "Pricing & Money"
+    },
+    {
+      "id": "06-onboarding-list",
+      "template": "list", "palette": "blush",
+      "kicker": "Client Onboarding",
+      "headline": "The 6 steps of a [flawless] onboarding",
+      "items": ["Intake form before the first call", "Proposal sent within 24 hours", "Contract and deposit together", "Welcome email with next steps", "Shared timeline and deadlines", "Check-in at the halfway point"],
+      "pinTitle": "Client Onboarding Checklist: 6 Steps That Make You Look Established",
+      "pinDescription": "The difference between a freelancer and a business is onboarding. Follow these 6 steps for every new client — intake form, proposal, contract, welcome email, timeline, and check-in. Includes a printable checklist.",
+      "keywords": ["client onboarding", "onboarding checklist", "new client process", "freelance workflow", "client experience"],
+      "board": "Client Onboarding"
+    },
+    {
+      "id": "07-banner-organized",
+      "template": "banner", "palette": "cream",
+      "kicker": "Get Organized",
+      "headline": "Run your business like a [real one]",
+      "sub": "Invoices, contracts, pricing, and client intake — all in one editable toolkit. Set it up once, use it forever.",
+      "pinTitle": "How to Organize Your Small Business in One Weekend",
+      "pinDescription": "You don't need software. You need a system. This toolkit gives you the 8 documents that turn scattered freelance work into an organized business — invoices, contracts, proposals, pricing, and tracking.",
+      "keywords": ["small business organization", "business systems", "freelance organization", "business planner", "solopreneur"],
+      "board": "Business Organization"
+    },
+    {
+      "id": "08-intake-statement",
+      "template": "statement", "palette": "sage",
+      "kicker": "Stop Wasting Calls",
+      "headline": "Send this [before] the first call",
+      "sub": "A one-page client intake form filters out tire-kickers, kills the back-and-forth, and lets you quote with confidence.",
+      "pinTitle": "Client Intake Form Template — Stop Wasting Time on the Wrong Clients",
+      "pinDescription": "A good intake form does the qualifying for you. Budget, timeline, scope, and decision-maker — answered before you ever get on a call. Editable template included.",
+      "keywords": ["client intake form", "client questionnaire", "freelance discovery call", "qualify clients", "business forms"],
+      "board": "Client Onboarding"
+    },
+    {
+      "id": "09-tracker-split",
+      "template": "split", "palette": "ivory",
+      "kicker": "Know Your Numbers",
+      "headline": "You can't grow what you [don't track]",
+      "items": ["Income by month and by client", "Expenses sorted for tax season", "Profit margin, calculated for you", "Your best and worst months, visible"],
+      "pinTitle": "Simple Income & Expense Tracker for Small Business (Spreadsheet)",
+      "pinDescription": "No accounting software needed. This spreadsheet tracks income by client, sorts expenses for tax time, and calculates your profit margin automatically. Built for freelancers and small shop owners.",
+      "keywords": ["income tracker", "small business bookkeeping", "expense tracker spreadsheet", "business finances", "profit tracker"],
+      "board": "Pricing & Money"
+    },
+    {
+      "id": "10-stat-hours",
+      "template": "stat", "palette": "blush",
+      "kicker": "Time Audit",
+      "num": "9h",
+      "headline": "a week on [admin]",
+      "sub": "That's what the average solo business owner loses to invoices, quotes, and chasing payments. Templates give it back.",
+      "pinTitle": "Small Business Owners Lose 9 Hours a Week to Admin — Here's the Fix",
+      "pinDescription": "Writing the same proposal from scratch every time is why you're behind. Templated invoices, contracts, and proposals hand you back most of a working day every week.",
+      "keywords": ["business productivity", "save time small business", "admin templates", "solopreneur tips", "work smarter"],
+      "board": "Business Organization"
+    },
+    {
+      "id": "11-proposal-list",
+      "template": "list", "palette": "navy",
+      "kicker": "Win The Job",
+      "headline": "What a [yes] proposal contains",
+      "items": ["Their problem, in their own words", "The outcome — not the task list", "Three pricing tiers, middle one best", "A clear start date", "One simple way to say yes"],
+      "pinTitle": "How to Write a Proposal Clients Actually Say Yes To (Template)",
+      "pinDescription": "Most proposals read like a receipt. A proposal that wins restates the client's problem, sells the outcome, and gives three tiers so the answer is which one, not whether. Template included.",
+      "keywords": ["client proposal template", "how to write a proposal", "freelance proposal", "win clients", "service business"],
+      "board": "Small Business Templates"
+    },
+    {
+      "id": "12-content-split",
+      "template": "split", "palette": "charcoal",
+      "kicker": "Show Up Consistently",
+      "headline": "Plan a month of content in [one hour]",
+      "items": ["Four content pillars, decided once", "A repeatable weekly posting rhythm", "Caption prompts so you never stare", "A place to log what actually worked"],
+      "pinTitle": "Monthly Social Media Content Planner for Small Business (Free Template)",
+      "pinDescription": "Batch your content instead of panicking daily. This planner sets your four content pillars, gives you a weekly posting rhythm, and tracks what performs so you stop guessing.",
+      "keywords": ["content planner", "social media planner", "content calendar", "small business marketing", "instagram planning"],
+      "board": "Business Organization"
+    },
+    {
+      "id": "13-banner-side",
+      "template": "banner", "palette": "sage",
+      "kicker": "Side Business",
+      "headline": "Look established from [day one]",
+      "sub": "Your clients can't tell how long you've been doing this. Your paperwork can.",
+      "pinTitle": "How to Look Professional When You're Just Starting Your Business",
+      "pinDescription": "Clients judge your business by your invoice, your contract, and your first email. Get those three right and nobody asks how long you've been open. Toolkit inside.",
+      "keywords": ["starting a small business", "side hustle tips", "new business owner", "look professional", "business branding"],
+      "board": "Small Business Templates"
+    },
+    {
+      "id": "14-statement-nope",
+      "template": "statement", "palette": "charcoal",
+      "kicker": "Boundaries",
+      "headline": "\"Just one small [change]\"",
+      "sub": "Two revision rounds. Written into the contract. Everything after is billed. That one sentence pays for itself in a week.",
+      "pinTitle": "How to Handle Scope Creep With Clients (The One Contract Line You Need)",
+      "pinDescription": "Endless 'small changes' are a contract problem, not a client problem. Cap your revision rounds in writing and bill for the rest — here's the exact wording.",
+      "keywords": ["scope creep", "client boundaries", "freelance contract", "revision policy", "difficult clients"],
+      "board": "Client Onboarding"
+    },
+    {
+      "id": "15-stack-what",
+      "template": "stack", "palette": "blush",
+      "kicker": "What's Inside",
+      "headline": "The whole [back office], done for you",
+      "items": ["Invoice", "Proposal", "Contract", "Pricing Calc", "Intake Form", "Income Tracker", "Content Plan", "Onboarding"],
+      "pinTitle": "Small Business Template Bundle — Invoice, Contract, Proposal & Pricing",
+      "pinDescription": "One bundle, eight documents, zero setup. Everything a service business needs to quote, sign, invoice, and track — editable and ready to use today.",
+      "keywords": ["business template bundle", "small business printables", "freelance starter kit", "business documents", "editable templates"],
+      "board": "Small Business Templates"
+    },
+    {
+      "id": "16-stat-price",
+      "template": "stat", "palette": "cream",
+      "kicker": "Raise Your Rate",
+      "num": "20%",
+      "headline": "and [nobody] left",
+      "sub": "The pricing calculator that shows you what your work actually costs to deliver — and what it should sell for.",
+      "pinTitle": "How to Raise Your Prices Without Losing Clients (Pricing Calculator)",
+      "pinDescription": "Most people price by feel and end up working for free. This calculator factors your hours, costs, and profit goal to tell you your real number — then helps you announce the change.",
+      "keywords": ["raise your prices", "pricing calculator", "freelance rates", "how much to charge", "small business pricing"],
+      "board": "Pricing & Money"
+    },
+    {
+      "id": "17-list-firstweek",
+      "template": "list", "palette": "ivory",
+      "kicker": "First Week",
+      "headline": "Setting up? Do [these] first",
+      "items": ["Pick one service and one price", "Write the contract before you need it", "Make an invoice you're proud of", "Build a one-page intake form", "Decide how you'll track money"],
+      "pinTitle": "New Small Business Checklist: 5 Things to Set Up in Week One",
+      "pinDescription": "Skip the logo. Do this instead. Five setup steps that make your first client feel like your fiftieth — service, price, contract, invoice, and tracking.",
+      "keywords": ["new business checklist", "start a business", "small business setup", "first week business", "business basics"],
+      "board": "Business Organization"
+    },
+    {
+      "id": "18-banner-paperwork",
+      "template": "banner", "palette": "navy",
+      "kicker": "Done For You",
+      "headline": "The paperwork you keep [putting off]",
+      "sub": "Written, formatted, and ready to edit. You fill in your name and send it.",
+      "pinTitle": "Business Paperwork Templates You Can Send Today",
+      "pinDescription": "Contracts, invoices, and proposals already written in plain language. Add your name and rates, export, send. No lawyers, no blank pages.",
+      "keywords": ["business paperwork", "editable business templates", "contract template", "invoice template", "small business admin"],
+      "board": "Small Business Templates"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+<meta charset="utf-8">
+<title>Pin Renderer</title>
+<link rel="stylesheet" href="../assets/fonts.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1000px;height:1500px;overflow:hidden}
+#pin{
+  width:1000px;height:1500px;position:relative;overflow:hidden;
+  background:var(--bg);color:var(--ink);
+  font-family:'Inter',sans-serif;
+  display:flex;flex-direction:column;
+}
+/* ---------- shared atoms ---------- */
+.kicker{
+  font-size:22px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--accent);
+}
+.rule{height:3px;width:96px;background:var(--accent);border-radius:2px}
+.h1{
+  font-family:'Playfair Display',serif;font-weight:800;
+  font-size:100px;line-height:1.02;letter-spacing:-.02em;
+}
+.h1 em{font-style:italic;font-weight:600;color:var(--accent)}
+.h1.sm{font-size:82px}
+.sub{font-size:29px;line-height:1.5;font-weight:400;color:var(--muted)}
+/* bottom bar is pinned to the canvas so every template balances the same way */
+.footer{
+  position:absolute;left:88px;right:88px;bottom:84px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.brand{
+  font-family:'DM Sans',sans-serif;font-size:21px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:14px;
+}
+.brand::before{content:'';width:34px;height:2px;background:var(--accent)}
+.cta{
+  font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+}
+.pad{padding:96px 88px 200px}
+.grow{flex:1}
+.badge{
+  display:inline-block;padding:14px 30px;border-radius:100px;
+  background:var(--accent);color:var(--bg);
+  font-size:22px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+}
+.badge.ghost{background:transparent;color:var(--accent);border:2.5px solid var(--accent)}
+
+/* ---------- t: statement ---------- */
+.t-statement{justify-content:center;gap:44px}
+.t-statement .h1{font-size:112px}
+
+/* ---------- t: list ---------- */
+.t-list{justify-content:center;gap:26px}
+.t-list ol{list-style:none;display:flex;flex-direction:column;gap:30px;margin-top:16px}
+.t-list li{display:flex;gap:22px;align-items:flex-start}
+.t-list .n{
+  flex:0 0 auto;width:52px;height:52px;border-radius:50%;
+  background:var(--accent);color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:700;font-family:'DM Sans',sans-serif;
+}
+.t-list .txt{font-size:31px;line-height:1.35;font-weight:500;padding-top:7px}
+
+/* ---------- t: split ---------- */
+.t-split{padding:0}
+.t-split .top{
+  background:var(--accent);color:var(--bg);
+  padding:104px 88px;display:flex;flex-direction:column;gap:30px;
+}
+.t-split .top .kicker{color:var(--bg);opacity:.72}
+.t-split .top .h1{font-size:94px}
+.t-split .top .h1 em{color:var(--bg);opacity:.78}
+.t-split .bot{flex:1;padding:76px 88px 200px;display:flex;flex-direction:column;justify-content:center;gap:30px}
+.t-split ul{list-style:none;display:flex;flex-direction:column;gap:22px}
+.t-split li{
+  font-size:30px;font-weight:500;line-height:1.35;
+  display:flex;gap:20px;align-items:flex-start;
+}
+.t-split li::before{
+  content:'';flex:0 0 auto;width:15px;height:15px;margin-top:11px;
+  border-radius:4px;background:var(--accent);transform:rotate(45deg);
+}
+
+/* ---------- t: stat ---------- */
+.t-stat{justify-content:center;align-items:center;text-align:center;gap:34px}
+.t-stat .num{
+  font-family:'Playfair Display',serif;font-weight:800;
+  font-size:280px;line-height:.86;color:var(--accent);letter-spacing:-.04em;
+}
+.t-stat .h1{font-size:76px}
+
+/* ---------- t: stack ---------- */
+.t-stack{gap:46px;justify-content:center}
+.t-stack .cards{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:24px;
+}
+.t-stack .card{
+  flex:0 0 calc(33.333% - 16px);
+  background:var(--soft);border-radius:14px;padding:26px 22px;
+  display:flex;flex-direction:column;gap:13px;min-height:232px;
+  border:2px solid color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.t-stack .card b{
+  font-size:19px;font-weight:700;line-height:1.25;
+  font-family:'DM Sans',sans-serif;letter-spacing:-.01em;
+}
+.t-stack .card i{display:block;height:8px;border-radius:4px;background:var(--ink);opacity:.16;font-style:normal}
+.t-stack .card i.s{width:58%}
+.t-stack .card i.m{width:82%}
+.t-stack .card .bar{height:8px;border-radius:4px;background:var(--accent);opacity:.5;width:42%}
+
+/* ---------- t: banner ---------- */
+.t-banner{justify-content:center;gap:40px}
+.t-banner .h1{font-size:104px}
+.t-banner .hl{
+  background:var(--accent);color:var(--bg);
+  padding:2px 20px 10px;border-radius:8px;display:inline-block;
+  font-style:normal;
+}
+</style>
+
+<div id="pin"></div>
+
+<script>
+const PALETTES = {
+  cream:    {bg:'#FBF7F0', ink:'#23201C', accent:'#B0654A', soft:'#EFE6D8', muted:'#6E6355'},
+  sage:     {bg:'#EEF1EA', ink:'#24291F', accent:'#5C7352', soft:'#DFE5D8', muted:'#5F6A57'},
+  charcoal: {bg:'#232322', ink:'#F5F1EA', accent:'#C9A24A', soft:'#32322F', muted:'#A7A196'},
+  blush:    {bg:'#F9EFEC', ink:'#3A2029', accent:'#A8465C', soft:'#F0DBD5', muted:'#7C5A60'},
+  navy:     {bg:'#1B2A3A', ink:'#F2EFE8', accent:'#D8A657', soft:'#26384B', muted:'#9FB0C0'},
+  ivory:    {bg:'#F6F3EC', ink:'#1F1E1C', accent:'#2F4F3E', soft:'#E4DFD2', muted:'#66625A'},
+};
+
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+// allow <em> only
+const rich = s => esc(s).replace(/\[(.+?)\]/g,'<em>$1</em>');
+
+const T = {
+  statement: d => `
+    <div class="pad t-statement" style="display:flex;flex-direction:column;height:100%">
+      <div class="kicker">${esc(d.kicker)}</div>
+      <h1 class="h1">${rich(d.headline)}</h1>
+      <div class="rule"></div>
+      <p class="sub">${esc(d.sub)}</p>
+    </div>`,
+
+  list: d => `
+    <div class="pad t-list" style="display:flex;flex-direction:column;height:100%;gap:26px">
+      <div class="kicker">${esc(d.kicker)}</div>
+      <h1 class="h1 sm">${rich(d.headline)}</h1>
+      <ol>${d.items.map((t,i)=>`<li><span class="n">${i+1}</span><span class="txt">${esc(t)}</span></li>`).join('')}</ol>
+    </div>`,
+
+  split: d => `
+    <div class="t-split" style="display:flex;flex-direction:column;height:100%">
+      <div class="top">
+        <div class="kicker">${esc(d.kicker)}</div>
+        <h1 class="h1">${rich(d.headline)}</h1>
+      </div>
+      <div class="bot">
+        <ul>${d.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+      </div>
+    </div>`,
+
+  stat: d => `
+    <div class="pad t-stat" style="display:flex;flex-direction:column;height:100%">
+      <div class="kicker">${esc(d.kicker)}</div>
+      <div class="num">${esc(d.num)}</div>
+      <h1 class="h1">${rich(d.headline)}</h1>
+      <p class="sub" style="max-width:720px">${esc(d.sub)}</p>
+    </div>`,
+
+  stack: d => `
+    <div class="pad t-stack" style="display:flex;flex-direction:column;height:100%">
+      <div class="kicker">${esc(d.kicker)}</div>
+      <h1 class="h1 sm">${rich(d.headline)}</h1>
+      <div class="cards">
+        ${d.items.map(t=>`<div class="card"><b>${esc(t)}</b><i class="m"></i><i class="s"></i><i class="m"></i><div class="grow"></div><div class="bar"></div></div>`).join('')}
+      </div>
+    </div>`,
+
+  banner: d => `
+    <div class="pad t-banner" style="display:flex;flex-direction:column;height:100%">
+      <div><span class="badge">${esc(d.kicker)}</span></div>
+      <h1 class="h1">${rich(d.headline).replace(/<em>(.+?)<\/em>/,'<em class="hl">$1</em>')}</h1>
+      <p class="sub">${esc(d.sub)}</p>
+    </div>`,
+};
+
+window.renderPin = function (d) {
+  const p = PALETTES[d.palette] || PALETTES.cream;
+  const el = document.getElementById('pin');
+  for (const [k, v] of Object.entries(p)) el.style.setProperty('--' + k, v);
+  el.className = '';
+  el.innerHTML = T[d.template](d) +
+    `<div class="footer"><div class="brand">${esc(d.brand)}</div>` +
+    (d.cta === null ? '' : `<div class="cta">${esc(d.cta || 'Free preview inside')}</div>`) +
+    `</div>`;
+  return document.fonts.ready.then(() => true);
+};
+</script>
