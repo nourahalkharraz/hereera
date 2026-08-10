@@ -5,8 +5,16 @@
   "use strict";
 
   // ------------------------------------------------------------------ state
-  var KEY = window.PANEL_KEY || new URLSearchParams(location.search).get("k") || "";
-  if (/^_+PANEL_KEY_+$/.test(KEY)) KEY = "";   // template not substituted
+  // The launch key arrives in the URL on the machine running the server; it is
+  // kept locally so a plain refresh still works. Remote devices never get one
+  // and sign in with the password instead.
+  var KEY = new URLSearchParams(location.search).get("k") ||
+            localStorage.getItem("mt5panel.key") || "";
+  if (/^_*PANEL_KEY_*$/.test(KEY)) KEY = "";
+  if (new URLSearchParams(location.search).get("k")) {
+    localStorage.setItem("mt5panel.key", KEY);
+    history.replaceState(null, "", location.pathname);   // keep it out of view
+  }
 
   var S = {
     lang: localStorage.getItem("mt5panel.lang") || "ar",
@@ -25,6 +33,9 @@
     busy: false,
     bot: null,
     botEditing: false,
+    bt: null,
+    btBars: 5000,
+    btSpread: 25,
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -42,8 +53,12 @@
   }
 
   // ------------------------------------------------------------------- api
+  var SESSION = localStorage.getItem("mt5panel.session") || "";
+
   function api(path, params, method) {
-    var opts = { method: method || "GET", headers: { "X-Panel-Key": KEY } };
+    var opts = { method: method || "GET", headers: {} };
+    if (KEY) opts.headers["X-Panel-Key"] = KEY;
+    if (SESSION) opts.headers["X-Panel-Session"] = SESSION;
     var url = path;
     if (method === "POST") {
       opts.headers["Content-Type"] = "application/json";
@@ -56,6 +71,9 @@
       return res.json().catch(function () {
         throw new Error("HTTP " + res.status);
       }).then(function (body) {
+        if (res.status === 401 && path.indexOf("/api/login") < 0) {
+          showLogin();
+        }
         if (!res.ok || body.ok === false) {
           throw new Error(body.error || ("HTTP " + res.status));
         }
@@ -138,6 +156,33 @@
     node.querySelector("[data-no]").onclick = closeSheet;
     node.querySelector("[data-yes]").onclick = function () { closeSheet(); onYes(); };
     openSheet(t("confirm_title"), node);
+  }
+
+  // --------------------------------------------------------------- login
+  function showLogin() {
+    var box = $("login");
+    if (!box || !box.classList.contains("hidden")) return;
+    box.classList.remove("hidden");
+    $("login-hint").textContent = t("login_hint");
+    $("login-go").textContent = t("login_go");
+    $("login-err").textContent = "";
+    setTimeout(function () { $("login-pass").focus(); }, 80);
+  }
+
+  function hideLogin() { $("login").classList.add("hidden"); }
+
+  function submitLogin(e) {
+    e.preventDefault();
+    var pass = $("login-pass").value;
+    api("/api/login", { password: pass }, "POST").then(function (d) {
+      SESSION = d.token;
+      localStorage.setItem("mt5panel.session", SESSION);
+      $("login-pass").value = "";
+      hideLogin();
+      refresh();
+    }).catch(function (err) {
+      $("login-err").textContent = err.message || t("login_wrong");
+    });
   }
 
   // ------------------------------------------------------------ rendering
@@ -922,7 +967,9 @@
       kv(t("bot_trades_today"), b.counters.trades + " / " + c.max_daily_trades) +
       kv(t("bot_realised"), money(b.counters.realised), cls(b.counters.realised)) +
       kv(t("bot_floating"), money(b.floating), cls(b.floating)) +
-      kv(t("bot_open"), b.paper_open.length + " / " + c.max_open);
+      kv(t("bot_open"), b.paper_open.length + " / " + c.max_open) +
+      kv(t("market_hours"), b.session_open ? t("session_open") : t("session_closed"),
+         b.session_open ? "up" : "");
     main.appendChild(stats);
 
     // halt banner
@@ -930,7 +977,8 @@
     halt.innerHTML = "";
     if (b.halted_reason) {
       var hb = el('<div class="halt-banner"><div class="grow">' +
-        esc(t("bot_halted")) + '</div><button>' + esc(t("bot_resume")) + "</button></div>");
+        esc(reason(b.halted_reason)) + '</div><button>' +
+        esc(t("bot_resume")) + "</button></div>");
       hb.querySelector("button").onclick = function () {
         botPost("/api/bot/resume", {}, t("bot_resume"));
       };
@@ -996,6 +1044,8 @@
     // settings (left alone while the user is typing in them)
     if (!S.botEditing) renderBotSettings(b);
 
+    renderBacktest();
+
     // log
     var logBox = $("bot-log");
     if (!b.log.length) {
@@ -1016,15 +1066,41 @@
     ["max_open", "s_max_open", "number", 1],
     ["max_daily_trades", "s_max_daily", "number", 1],
     ["daily_loss_percent", "s_daily_loss", "number", 0.5],
+    ["max_consecutive_losses", "s_streak", "number", 1],
     ["cooldown_minutes", "s_cooldown", "number", 5],
+    ["max_spread_points", "s_max_spread", "number", 1],
+    ["deviation", "s_deviation", "number", 1],
+    ["partial_at_r", "s_partial_r", "number", 0.1],
+    ["partial_fraction", "s_partial_frac", "number", 0.1],
+    ["break_even_at_r", "s_be_r", "number", 0.1],
+    ["trail_after_r", "s_trail_r", "number", 0.1],
+    ["trail_atr", "s_trail_atr", "number", 0.1],
     ["interval_seconds", "s_interval", "number", 5],
     ["entry_tf", "s_entry_tf", "tf", null],
     ["trend_tf", "s_trend_tf", "tf", null],
   ];
 
+  function windowsToText(list) {
+    return (list || []).map(function (w) {
+      return pad(w[0]) + ":" + pad(w[1]) + "-" + pad(w[2]) + ":" + pad(w[3]);
+    }).join(", ");
+  }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function textToWindows(text) {
+    return String(text || "").split(",").map(function (chunk) {
+      var m = chunk.trim().match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
+      return m ? [+m[1], +m[2], +m[3], +m[4]] : null;
+    }).filter(Boolean);
+  }
+
   function renderBotSettings(b) {
     var box = $("bot-settings");
     box.innerHTML = "";
+
+    box.appendChild(segRow(t("s_profile"), "",
+      [["scalp", t("p_scalp")], ["trend", t("p_trend")]], b.config.profile,
+      function (v) { botPost("/api/bot/config", { profile: v }, t("bot_saved")); }));
+
     BOT_FIELDS.forEach(function (f) {
       var row = el('<div class="setting-row"><label>' + esc(t(f[1])) + "</label></div>");
       var input;
@@ -1061,6 +1137,22 @@
     symRow.appendChild(symInput);
     box.appendChild(symRow);
 
+    [["sessions", "s_sessions"], ["blackouts", "s_blackouts"]].forEach(function (pair) {
+      var row = el('<div class="setting-row" style="display:block">' +
+        '<label style="display:block;margin-bottom:7px">' + esc(t(pair[1])) +
+        "</label></div>");
+      var inp = document.createElement("input");
+      inp.type = "text";
+      inp.style.width = "100%";
+      inp.dir = "ltr";
+      inp.placeholder = "07:00-20:30";
+      inp.value = windowsToText(b.config[pair[0]]);
+      inp.dataset.win = pair[0];
+      inp.onfocus = function () { S.botEditing = true; };
+      row.appendChild(inp);
+      box.appendChild(row);
+    });
+
     var saveRow = el('<div style="padding:12px 16px">' +
       '<button class="btn-line" id="bot-save">' + esc(t("bot_save")) + "</button></div>");
     saveRow.querySelector("#bot-save").onclick = function () {
@@ -1072,10 +1164,148 @@
       payload.symbols = symInput.value.split(",")
         .map(function (x) { return x.trim().toUpperCase(); })
         .filter(Boolean);
+      ["sessions", "blackouts"].forEach(function (key) {
+        var node = box.querySelector('[data-win="' + key + '"]');
+        if (node) payload[key] = textToWindows(node.value);
+      });
       S.botEditing = false;
       botPost("/api/bot/config", payload, t("bot_saved"));
     };
     box.appendChild(saveRow);
+  }
+
+
+  // ---------------------------------------------------------- backtest
+  function renderBacktest() {
+    $("t-bt").textContent = t("bt_title");
+    var box = $("bt-panel");
+    var st = S.bt;
+    box.innerHTML = "";
+
+    var form = el('<div style="padding:12px 16px 4px">' +
+      '<div class="two-col">' +
+      '<div class="field"><label>' + esc(t("bt_bars")) + '</label>' +
+      '<input type="number" id="bt-bars" step="500" value="' +
+      (S.btBars || 5000) + '"></div>' +
+      '<div class="field"><label>' + esc(t("bt_spread")) + '</label>' +
+      '<input type="number" id="bt-spread" step="1" value="' +
+      (S.btSpread || 25) + '"></div>' +
+      "</div></div>");
+    box.appendChild(form);
+
+    var running = st && st.state === "running";
+    var btn = el('<div style="padding:0 16px 12px"><button class="btn-line">' +
+      esc(running ? t("bt_cancel") : t("bt_run")) + "</button></div>");
+    btn.querySelector("button").onclick = function () {
+      S.btBars = parseInt($("bt-bars").value, 10) || 5000;
+      S.btSpread = parseFloat($("bt-spread").value) || 25;
+      if (running) { api("/api/backtest/cancel", {}, "POST").then(loadBacktest); return; }
+      api("/api/backtest/start", {
+        bars: S.btBars, spread_points: S.btSpread,
+        symbol: (S.bot && S.bot.config.symbols[0]) || "XAUUSD",
+      }, "POST").then(function (d) { S.bt = d; renderBacktest(); })
+        .catch(function (e) { toast(e.message, "err"); });
+    };
+    box.appendChild(btn);
+
+    if (running) {
+      box.appendChild(el('<div class="progress"><span style="width:' +
+        Math.round((st.progress || 0) * 100) + '%"></span></div>'));
+      box.appendChild(el('<div class="empty">' + esc(t("bt_running")) + " " +
+        Math.round((st.progress || 0) * 100) + "%</div>"));
+      return;
+    }
+    if (st && st.state === "error") {
+      box.appendChild(el('<div class="empty down">' + esc(st.error) + "</div>"));
+      return;
+    }
+    if (!st || !st.result) {
+      box.appendChild(el('<div class="empty">' + esc(t("bt_none")) + "</div>"));
+      return;
+    }
+
+    var r = st.result, m = r.stats;
+    box.appendChild(el(
+      '<div style="padding:4px 16px 0"><div class="acct-label">' +
+      esc(r.symbol) + " · " + esc(r.entry_tf) + "/" + esc(r.trend_tf) +
+      " · " + esc(r.profile) + "</div>" +
+      '<div class="acct-equity numeric ' + cls(m.net) + '">' +
+      money(m.net_percent, 2) + "%</div>" +
+      '<div class="tagline numeric">' + timeStr(r.from) + " → " + timeStr(r.to) +
+      " · " + r.bars + " bars</div></div>"));
+
+    box.appendChild(el('<div class="bt-metrics">' +
+      mv(t("bt_trades"), m.count) +
+      mv(t("bt_win"), fmt(m.win_rate, 1) + "%") +
+      mv(t("bt_pf"), m.profit_factor ? fmt(m.profit_factor, 2) : "—",
+         m.profit_factor >= 1 ? "up" : "down") +
+      mv(t("bt_exp"), fmt(m.expectancy_r, 3),
+         m.expectancy_r > 0 ? "up" : "down") +
+      mv(t("bt_dd"), fmt(m.max_drawdown_percent, 2) + "%", "down") +
+      mv(t("bt_streak"), m.longest_losing_streak) +
+      mv(t("bt_best"), money(m.best), "up") +
+      mv(t("bt_worst"), money(m.worst), "down") +
+      "</div>"));
+
+    var cv = el('<canvas id="bt-curve"></canvas>');
+    box.appendChild(cv);
+    setTimeout(function () { drawCurve(r.curve); }, 0);
+
+    if (r.skipped && r.skipped.length) {
+      box.appendChild(el('<div style="padding:6px 16px 12px">' +
+        '<div class="acct-label" style="margin-bottom:6px">' +
+        esc(t("bt_skipped")) + "</div><div class='tagline'>" +
+        r.skipped.map(function (kv) {
+          return '<span class="tag no">' + esc(reason(kv[0])) + " ×" + kv[1] + "</span>";
+        }).join(" ") + "</div></div>"));
+    }
+    box.appendChild(el('<div style="padding:0 16px 14px"><p class="note">' +
+      esc(t("bt_note")) + "</p></div>"));
+  }
+
+  function mv(k, v, klass) {
+    return '<div><span class="k">' + esc(k) + '</span><span class="v numeric ' +
+      (klass || "") + '">' + v + "</span></div>";
+  }
+
+  function drawCurve(points) {
+    var cv = $("bt-curve");
+    if (!cv || !points || points.length < 2) return;
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth, h = cv.clientHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    var ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    var css = getComputedStyle(document.documentElement);
+    var up = css.getPropertyValue("--up").trim();
+    var down = css.getPropertyValue("--down").trim();
+    var line = css.getPropertyValue("--line").trim();
+    var vals = points.map(function (p) { return p.equity; });
+    var hi = Math.max.apply(null, vals), lo = Math.min.apply(null, vals);
+    var span = (hi - lo) || 1;
+    var pad = 10;
+    function y(v) { return pad + (hi - v) / span * (h - pad * 2); }
+    function x(i) { return (i / (points.length - 1)) * (w - 2) + 1; }
+    ctx.strokeStyle = line;
+    ctx.beginPath();
+    ctx.moveTo(0, y(vals[0])); ctx.lineTo(w, y(vals[0]));
+    ctx.stroke();
+    ctx.strokeStyle = vals[vals.length - 1] >= vals[0] ? up : down;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    points.forEach(function (p, i) {
+      if (i === 0) ctx.moveTo(x(i), y(p.equity));
+      else ctx.lineTo(x(i), y(p.equity));
+    });
+    ctx.stroke();
+  }
+
+  function loadBacktest() {
+    return api("/api/backtest").then(function (d) {
+      S.bt = d;
+      if (S.view === "bot") renderBacktest();
+    }).catch(function () {});
   }
 
   // ---------------------------------------------------------------- polling
@@ -1102,7 +1332,10 @@
     pollTimer = setInterval(function () {
       if (document.hidden || S.busy) return;
       refresh();
-      if (S.view === "bot") loadBot();
+      if (S.view === "bot") {
+        loadBot();
+        if (S.bt && S.bt.state === "running") loadBacktest();
+      }
       if (S.view === "chart") {
         // refresh the last bar without refetching the whole series every tick
         var s = symbolOf(S.chartSymbol);
@@ -1147,7 +1380,7 @@
     });
     $("fab").style.display = (name === "quotes" || name === "trade") ? "" : "none";
     if (name === "history" && !S.history) loadHistory();
-    if (name === "bot") { S.botEditing = false; loadBot(); }
+    if (name === "bot") { S.botEditing = false; loadBot(); loadBacktest(); }
     if (name === "chart") {
       renderChartHead();
       if (!S.candles.length) loadCandles(); else drawChart();
@@ -1171,6 +1404,7 @@
       if (S.view === "bot") loadBot();
     };
     $("fab").onclick = function () { newOrderSheet(S.chartSymbol); };
+    $("login-card").onsubmit = submitLogin;
     $("sheet-close").onclick = closeSheet;
     $("scrim").onclick = closeSheet;
     $("btn-close-all").onclick = function () {

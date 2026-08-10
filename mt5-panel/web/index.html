@@ -2,13 +2,27 @@
 <html lang="ar" dir="rtl" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0e1116">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
 <meta name="referrer" content="no-referrer">
 <title>MT5 Panel</title>
 <link rel="stylesheet" href="app.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 </head>
 <body dir="rtl">
+
+<div id="login" class="hidden">
+  <form id="login-card" autocomplete="off">
+    <div class="login-logo">MT5 Panel</div>
+    <p class="note" id="login-hint"></p>
+    <input type="password" id="login-pass" autocomplete="current-password">
+    <button type="submit" class="big-btn buy" id="login-go" style="width:100%"></button>
+    <p class="warn" id="login-err"></p>
+  </form>
+</div>
 
 <div id="phone">
 
@@ -71,6 +85,8 @@
       <div class="card" id="bot-paper"></div>
       <div class="section-title" id="t-bot-settings">Settings</div>
       <div class="card" id="bot-settings"></div>
+      <div class="section-title" id="t-bt">Backtest</div>
+      <div class="card" id="bt-panel"></div>
       <div class="section-title" id="t-bot-log">Log</div>
       <div class="card" id="bot-log"></div>
       <div class="card" style="padding:14px 16px">

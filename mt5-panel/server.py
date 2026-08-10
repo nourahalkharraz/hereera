@@ -21,6 +21,7 @@ import os
 import secrets
 import sys
 import threading
+import time
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
@@ -31,9 +32,64 @@ CONFIG_PATH = os.path.join(HERE, "config.json")
 
 bridge = None          # set in main(): mt5_bridge or demo_bridge
 bot = None             # AutoTrader instance
+tester = None          # BacktestJob instance
 API_KEY = ""
+PASSWORD = ""          # required when the panel is reachable off this machine
+LAN = False
 READ_ONLY = False
 _trade_lock = threading.Lock()
+
+# session tokens handed out by /api/login, and failed-attempt tracking
+SESSIONS = {}
+SESSION_TTL = 12 * 3600
+_login_fails = {}
+_auth_lock = threading.Lock()
+
+
+def _new_session():
+    token = secrets.token_urlsafe(32)
+    now = time.time()
+    with _auth_lock:
+        for t, exp in list(SESSIONS.items()):
+            if exp < now:
+                SESSIONS.pop(t, None)
+        SESSIONS[token] = now + SESSION_TTL
+    return token
+
+
+def _session_valid(token):
+    if not token:
+        return False
+    with _auth_lock:
+        exp = SESSIONS.get(token)
+        if not exp:
+            return False
+        if exp < time.time():
+            SESSIONS.pop(token, None)
+            return False
+    return True
+
+
+def _login(password, client):
+    """Returns a session token, or raises ApiError."""
+    now = time.time()
+    with _auth_lock:
+        fails, until = _login_fails.get(client, (0, 0))
+        if until > now:
+            raise ApiError("Too many attempts. Try again in %d seconds."
+                           % int(until - now), 429)
+    if not PASSWORD:
+        raise ApiError("No password is set on this panel.", 403)
+    if not secrets.compare_digest(str(password or ""), PASSWORD):
+        with _auth_lock:
+            fails += 1
+            lock_for = 300 if fails >= 5 else 0
+            _login_fails[client] = (fails, now + lock_for)
+        time.sleep(0.5)                     # slow down guessing
+        raise ApiError("Wrong password.", 401)
+    with _auth_lock:
+        _login_fails.pop(client, None)
+    return {"token": _new_session()}
 
 
 class ApiError(Exception):
@@ -218,6 +274,40 @@ def api_bot_resume(p):
     return bot.clear_halt()
 
 
+# --------------------------------------------------------------------------
+# backtest
+# --------------------------------------------------------------------------
+
+def api_backtest(p):
+    return tester.status()
+
+
+def api_backtest_start(p):
+    cfg = dict(bot.config)
+    cfg.update({
+        "symbol": _str(p, "symbol") or (bot.config["symbols"] or ["XAUUSD"])[0],
+        "bars": int(_num(p, "bars", 5000)),
+        "spread_points": _num(p, "spread_points", 25),
+        "balance": _num(p, "balance", 10000),
+    })
+    for key in ("entry_tf", "trend_tf", "profile"):
+        if p.get(key):
+            cfg[key] = _str(p, key)
+    for key in ("min_confidence", "risk_percent", "sl_atr", "tp_atr",
+                "partial_at_r", "partial_fraction", "break_even_at_r",
+                "trail_after_r", "trail_atr", "cooldown_minutes"):
+        if p.get(key) not in (None, ""):
+            cfg[key] = _num(p, key)
+    try:
+        return tester.start(cfg)
+    except RuntimeError as exc:
+        raise ApiError(str(exc))
+
+
+def api_backtest_cancel(p):
+    return tester.cancel()
+
+
 GET_ROUTES = {
     "/api/status": api_status,
     "/api/account": api_account,
@@ -228,6 +318,7 @@ GET_ROUTES = {
     "/api/history": api_history,
     "/api/calc_lot": api_calc_lot,
     "/api/bot": api_bot,
+    "/api/backtest": api_backtest,
 }
 
 POST_ROUTES = {
@@ -243,6 +334,8 @@ POST_ROUTES = {
     "/api/bot/stop": api_bot_stop,
     "/api/bot/config": api_bot_config,
     "/api/bot/resume": api_bot_resume,
+    "/api/backtest/start": api_backtest_start,
+    "/api/backtest/cancel": api_backtest_cancel,
 }
 
 
@@ -276,21 +369,25 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, code, payload):
         self._send(code, json.dumps(payload, default=str))
 
-    def _local_only(self):
-        """Reject anything that did not come from this machine's browser."""
-        host = (self.headers.get("Host") or "").split(":")[0]
-        if host not in ("127.0.0.1", "localhost", "[::1]", "::1"):
+    def _origin_ok(self):
+        """Block cross-site requests, and off-machine ones unless LAN is on."""
+        host = (self.headers.get("Host") or "").split(":")[0].strip("[]")
+        loopback = host in ("127.0.0.1", "localhost", "::1")
+        if not LAN and not loopback:
             return False
         origin = self.headers.get("Origin")
         if origin:
-            netloc = urlparse(origin).hostname
-            if netloc not in ("127.0.0.1", "localhost", "::1"):
+            # same-origin only: the page must be served from this host
+            if (urlparse(origin).hostname or "").strip("[]") != host:
                 return False
         return True
 
     def _authorised(self, query):
         key = self.headers.get("X-Panel-Key") or (query.get("k", [""])[0])
-        return secrets.compare_digest(key or "", API_KEY)
+        if key and secrets.compare_digest(key, API_KEY):
+            return True
+        return _session_valid(self.headers.get("X-Panel-Session")
+                              or (query.get("s", [""])[0]))
 
     # -- routing ----------------------------------------------------------
     def do_GET(self):
@@ -320,8 +417,21 @@ class Handler(BaseHTTPRequestHandler):
         return self._handle_api(url.path, query, POST_ROUTES, params)
 
     def _handle_api(self, path, query, routes, params):
-        if not self._local_only():
-            return self._json(403, {"error": "Only reachable from this PC"})
+        if not self._origin_ok():
+            return self._json(403, {"error": "Request refused: bad origin"})
+        if path == "/api/login":
+            if self.command != "POST":
+                return self._json(405, {"error": "POST only"})
+            try:
+                return self._json(200, {"ok": True,
+                                        "data": _login(params.get("password"),
+                                                       self.client_address[0])})
+            except ApiError as exc:
+                return self._json(exc.code, {"ok": False, "error": str(exc)})
+        if path == "/api/needs_login":
+            return self._json(200, {"ok": True, "data": {
+                "password_required": bool(PASSWORD),
+                "authorised": self._authorised(query)}})
         if not self._authorised(query):
             return self._json(401, {"error": "Bad or missing panel key"})
         handler = routes.get(path)
@@ -346,7 +456,10 @@ class Handler(BaseHTTPRequestHandler):
         with open(target, "rb") as fh:
             body = fh.read()
         if rel == "index.html":
-            body = body.replace(b"__PANEL_KEY__", API_KEY.encode())
+            # Never hand the key to whoever asks for the page — in LAN mode
+            # that would let any device skip the password. The key travels
+            # only in the launch URL printed on this machine's console.
+            body = body.replace(b"__PANEL_KEY__", b"")
         self._send(200, body, ctype)
 
 
@@ -364,7 +477,7 @@ def load_config():
 
 
 def main(argv=None):
-    global bridge, bot, API_KEY, READ_ONLY
+    global bridge, bot, tester, API_KEY, PASSWORD, LAN, READ_ONLY
 
     ap = argparse.ArgumentParser(description="MT5 mobile-style panel")
     ap.add_argument("--port", type=int, default=8777)
@@ -376,11 +489,26 @@ def main(argv=None):
                     help="open the panel in the default browser")
     ap.add_argument("--terminal", default=None,
                     help="path to terminal64.exe if it is not auto-detected")
+    ap.add_argument("--lan", action="store_true",
+                    help="also accept connections from other devices "
+                         "(phone). Requires a password.")
+    ap.add_argument("--host", default=None,
+                    help="interface to bind; implies --lan when not loopback")
+    ap.add_argument("--password", default=None,
+                    help="password for off-machine access; generated if absent")
     args = ap.parse_args(argv)
 
     cfg = load_config()
     READ_ONLY = args.read_only or bool(cfg.get("read_only"))
     API_KEY = secrets.token_urlsafe(24)
+
+    LAN = args.lan or bool(cfg.get("lan")) or bool(args.host)
+    host = args.host or ("0.0.0.0" if LAN else "127.0.0.1")
+    if host not in ("127.0.0.1", "localhost", "::1"):
+        LAN = True
+    if LAN:
+        PASSWORD = (args.password or cfg.get("panel_password")
+                    or secrets.token_urlsafe(9))
 
     if args.demo:
         import demo_bridge
@@ -407,7 +535,9 @@ def main(argv=None):
             return 1
 
     import autotrader
+    import backtest
     bot = autotrader.AutoTrader(bridge)
+    tester = backtest.BacktestJob(bridge)
     if bot.config["mode"] == "live" and READ_ONLY:
         bot.set_config({"mode": "paper"})
     print("  auto      : %s mode%s" % (bot.config["mode"],
@@ -415,7 +545,15 @@ def main(argv=None):
                                        if bot.halted_reason else ""))
 
     url = "http://127.0.0.1:%d/?k=%s" % (args.port, API_KEY)
-    httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    if LAN:
+        print("  network   : ON — reachable from other devices on this network")
+        print("  password  : %s" % PASSWORD)
+        print("              open http://<this-pc-address>:%d on the phone"
+              % args.port)
+        print("              (put the panel on a private network such as "
+              "Tailscale;")
+        print("               do not port-forward it to the open internet)")
+    httpd = ThreadingHTTPServer((host, args.port), Handler)
     httpd.daemon_threads = True
     print("  open this : %s" % url)
     print("  (Ctrl+C to stop)")

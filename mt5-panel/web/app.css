@@ -310,3 +310,43 @@ input::placeholder { color: var(--ink-3); }
 .setting-row:last-child { border-bottom: none; }
 .setting-row label { flex: 1; font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
 .setting-row input, .setting-row select { width: 108px; flex: none; padding: 8px 10px; font-size: 14px; }
+
+/* ------------------------------------------------------------- login */
+#login {
+  position: fixed; inset: 0; z-index: 200; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; padding: 22px;
+}
+#login.hidden { display: none; }
+#login-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 20px; padding: 30px 26px; width: 100%; max-width: 340px;
+}
+.login-logo { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+#login-card .note { text-align: center; margin-bottom: 18px; }
+#login-card input { margin-bottom: 14px; text-align: center; font-size: 18px; letter-spacing: 2px; }
+#login-card .warn { text-align: center; }
+
+/* ------------------------------------------------------------ backtest */
+.bt-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 12px; padding: 14px 16px; }
+.bt-metrics .k { font-size: 11px; color: var(--ink-3); display: block; }
+.bt-metrics .v { font-size: 15px; font-weight: 700; display: block; margin-top: 2px; }
+#bt-curve { width: 100%; height: 150px; display: block; padding: 0 8px; }
+.progress { height: 6px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 10px 16px; }
+.progress span { display: block; height: 100%; background: var(--buy); width: 0; transition: width .3s; }
+
+/* --------------------------------------------------- real phone screens */
+@media (max-width: 560px) {
+  body { padding: 0; align-items: stretch; }
+  #phone {
+    max-width: none; width: 100%; height: 100vh; height: 100dvh;
+    border: none; border-radius: 0; box-shadow: none;
+  }
+  #topbar { padding-top: max(14px, env(safe-area-inset-top)); }
+  #tabbar { padding-bottom: env(safe-area-inset-bottom); }
+  .tab { font-size: 9.5px; }
+  .tab svg { width: 19px; height: 19px; }
+  #fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .row { padding: 13px 14px; }
+  .price { font-size: 17px; }
+  .big-btn { padding: 16px 10px; }
+}

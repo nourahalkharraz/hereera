@@ -4,7 +4,11 @@
   "terminal_path": "C:/Program Files/MetaTrader 5/terminal64.exe",
   "read_only": false,
 
-  "_credentials_note": "login/password/server are only needed if you want the panel to log the terminal in itself. Leave them out otherwise — config.json is git-ignored, but a file on disk is still a file on disk.",
+  "_phone_note": "Set 'lan' to true and pick a strong 'panel_password' to reach the panel from your phone. Keep it on a private network such as Tailscale — never port-forward this to the open internet.",
+  "lan": false,
+  "panel_password": null,
+
+  "_credentials_note": "login/password/server below are the MT5 ACCOUNT credentials, and are only needed if you want the panel to log the terminal in itself. Leave them out otherwise — config.json is git-ignored, but a file on disk is still a file on disk.",
   "login": null,
   "password": null,
   "server": null
