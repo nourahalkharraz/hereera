@@ -4,28 +4,51 @@
 (function () {
   "use strict";
 
+  // Preferences fall back to memory where localStorage is unavailable —
+  // a sandboxed frame or a browser with site data switched off.
+  var store = (function () {
+    var mem = {}, ls = null;
+    try {
+      ls = window.localStorage;
+      ls.setItem("__probe", "1");
+      ls.removeItem("__probe");
+    } catch (e) {
+      ls = null;
+    }
+    return {
+      get: function (k) {
+        try { return ls ? ls.getItem(k) : (k in mem ? mem[k] : null); }
+        catch (e) { return null; }
+      },
+      set: function (k, v) {
+        try { if (ls) { ls.setItem(k, v); return; } } catch (e) { /* fall through */ }
+        mem[k] = String(v);
+      },
+    };
+  })();
+
   // ------------------------------------------------------------------ state
   // The launch key arrives in the URL on the machine running the server; it is
   // kept locally so a plain refresh still works. Remote devices never get one
   // and sign in with the password instead.
   var KEY = new URLSearchParams(location.search).get("k") ||
-            localStorage.getItem("mt5panel.key") || "";
+            store.get("mt5panel.key") || "";
   if (/^_*PANEL_KEY_*$/.test(KEY)) KEY = "";
   if (new URLSearchParams(location.search).get("k")) {
-    localStorage.setItem("mt5panel.key", KEY);
-    history.replaceState(null, "", location.pathname);   // keep it out of view
+    store.set("mt5panel.key", KEY);
+    try { history.replaceState(null, "", location.pathname); } catch (e) { /* opaque origin */ }
   }
 
   var S = {
-    lang: localStorage.getItem("mt5panel.lang") || "ar",
-    theme: localStorage.getItem("mt5panel.theme") || "dark",
-    wide: localStorage.getItem("mt5panel.wide") === "1",
-    refresh: parseInt(localStorage.getItem("mt5panel.refresh") || "1500", 10),
+    lang: store.get("mt5panel.lang") || "ar",
+    theme: store.get("mt5panel.theme") || "dark",
+    wide: store.get("mt5panel.wide") === "1",
+    refresh: parseInt(store.get("mt5panel.refresh") || "1500", 10),
     view: "quotes",
     snap: null,
     status: null,
-    chartSymbol: localStorage.getItem("mt5panel.chartSymbol") || "",
-    tf: localStorage.getItem("mt5panel.tf") || "M15",
+    chartSymbol: store.get("mt5panel.chartSymbol") || "",
+    tf: store.get("mt5panel.tf") || "M15",
     candles: [],
     historyDays: 30,
     history: null,
@@ -53,7 +76,7 @@
   }
 
   // ------------------------------------------------------------------- api
-  var SESSION = localStorage.getItem("mt5panel.session") || "";
+  var SESSION = store.get("mt5panel.session") || "";
 
   function api(path, params, method) {
     var opts = { method: method || "GET", headers: {} };
@@ -176,7 +199,7 @@
     var pass = $("login-pass").value;
     api("/api/login", { password: pass }, "POST").then(function (d) {
       SESSION = d.token;
-      localStorage.setItem("mt5panel.session", SESSION);
+      store.set("mt5panel.session", SESSION);
       $("login-pass").value = "";
       hideLogin();
       refresh();
@@ -376,12 +399,12 @@
       S.lang, function (v) { setLang(v); }));
     ap.appendChild(segRow(t("theme"), "", [["dark", t("dark")], ["light", t("light")]],
       S.theme, function (v) {
-        S.theme = v; localStorage.setItem("mt5panel.theme", v);
+        S.theme = v; store.set("mt5panel.theme", v);
         document.documentElement.setAttribute("data-theme", v); renderSettings();
       }));
     ap.appendChild(segRow(t("width"), "", [["0", t("phone")], ["1", t("wide")]],
       S.wide ? "1" : "0", function (v) {
-        S.wide = v === "1"; localStorage.setItem("mt5panel.wide", v);
+        S.wide = v === "1"; store.set("mt5panel.wide", v);
         document.body.classList.toggle("wide", S.wide);
         renderSettings(); drawChart();
       }));
@@ -389,7 +412,7 @@
       [["1000", "1s"], ["1500", "1.5s"], ["3000", "3s"], ["6000", "6s"]],
       String(S.refresh), function (v) {
         S.refresh = parseInt(v, 10);
-        localStorage.setItem("mt5panel.refresh", v);
+        store.set("mt5panel.refresh", v);
         restartPolling(); renderSettings();
       }));
 
@@ -757,7 +780,7 @@
   // ------------------------------------------------------------- chart tab
   function setChartSymbol(name) {
     S.chartSymbol = name;
-    localStorage.setItem("mt5panel.chartSymbol", name);
+    store.set("mt5panel.chartSymbol", name);
     loadCandles();
   }
 
@@ -775,7 +798,7 @@
       TFS.forEach(function (tf) {
         var c = el('<button class="chip">' + tf + "</button>");
         c.onclick = function () {
-          S.tf = tf; localStorage.setItem("mt5panel.tf", tf);
+          S.tf = tf; store.set("mt5panel.tf", tf);
           renderChartHead(); loadCandles();
         };
         chips.appendChild(c);
@@ -1359,7 +1382,7 @@
   // -------------------------------------------------------------- language
   function setLang(lang) {
     S.lang = lang;
-    localStorage.setItem("mt5panel.lang", lang);
+    store.set("mt5panel.lang", lang);
     var dir = t("_dir");
     document.documentElement.lang = lang;
     document.documentElement.dir = dir;
