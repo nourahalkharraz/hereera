@@ -1,0 +1,11 @@
+{
+  "_comment": "Optional. Copy to config.json only if you need it. The panel normally attaches to whatever MT5 terminal is already open and logged in — no credentials required.",
+
+  "terminal_path": "C:/Program Files/MetaTrader 5/terminal64.exe",
+  "read_only": false,
+
+  "_credentials_note": "login/password/server are only needed if you want the panel to log the terminal in itself. Leave them out otherwise — config.json is git-ignored, but a file on disk is still a file on disk.",
+  "login": null,
+  "password": null,
+  "server": null
+}

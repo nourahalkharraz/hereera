@@ -1,0 +1,3 @@
+# Only one dependency — the official MetaTrader 5 python API (Windows only).
+# The web server and the interface use the python standard library.
+MetaTrader5>=5.0.45
