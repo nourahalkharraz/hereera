@@ -465,6 +465,22 @@ class Handler(BaseHTTPRequestHandler):
 
 # --------------------------------------------------------------------------
 
+PASSWORD_PATH = os.path.join(HERE, "panel-password.txt")
+
+
+def _read_password_file():
+    """Panel password from panel-password.txt, which git ignores.
+
+    Kept out of both the config file and the launcher scripts so that editing
+    it can never stage a secret for commit.
+    """
+    try:
+        with open(PASSWORD_PATH, "r", encoding="utf-8") as fh:
+            return fh.read().strip() or None
+    except OSError:
+        return None
+
+
 def load_config():
     if not os.path.isfile(CONFIG_PATH):
         return {}
@@ -507,7 +523,9 @@ def main(argv=None):
     if host not in ("127.0.0.1", "localhost", "::1"):
         LAN = True
     if LAN:
-        PASSWORD = (args.password or cfg.get("panel_password")
+        PASSWORD = (args.password
+                    or os.environ.get("MT5_PANEL_PASSWORD")
+                    or _read_password_file()
                     or secrets.token_urlsafe(9))
 
     if args.demo:
@@ -521,9 +539,14 @@ def main(argv=None):
     print("  mode      : %s%s" % ("demo (offline)" if args.demo else "live terminal",
                                   " · read-only" if READ_ONLY else ""))
     try:
+        # Account credentials are read from the environment only, never from
+        # a file in the project — a file is one `git add .` away from being
+        # published. Normally none of this is needed: the panel attaches to
+        # the terminal you already logged into.
         bridge.start(terminal_path=args.terminal or cfg.get("terminal_path"),
-                     login=cfg.get("login"), password=cfg.get("password"),
-                     server=cfg.get("server"))
+                     login=os.environ.get("MT5_LOGIN"),
+                     password=os.environ.get("MT5_PASSWORD"),
+                     server=os.environ.get("MT5_SERVER"))
         acc = bridge.account()
         print("  account   : %s (%s) %s %.2f"
               % (acc["login"], acc["server"], acc["currency"], acc["balance"]))

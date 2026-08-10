@@ -155,6 +155,37 @@ M15. زر واحد كبير للتشغيل والإيقاف.
 > ما فيه تركيبة مؤشرات تضمن نجاح الصفقات. اللي فوق يخلي الاحتمالات في صفك
 > ويحدّد الخسارة، لكن السوق ممكن يعطيك أسبوع خاسر مهما كان النظام حلو.
 
+## بيانات حسابك والمستودع
+
+**اللوحة ما تحتاج بيانات حسابك أصلاً.** ما تعرف رقم حسابك ولا كلمة سره — تتصل
+بترمنال MT5 اللي أنتِ مسجّلة دخول فيه أصلاً، وتاخذ منه. ما فيه مكان في المشروع
+تكتبين فيه بيانات الحساب، وهذا مقصود.
+
+هالمستودع **عام**، فكل شي يقدر يحمل سر مقفول عليه من ناحيتين:
+
+| الملف | فيه إيش | محمي كيف |
+|---|---|---|
+| `panel-password.txt` | كلمة سر اللوحة للجوال | في `.gitignore` — ينشأ لحاله أول تشغيل |
+| `config.json` | إعدادات محلية (بدون أي بيانات حساب) | في `.gitignore` |
+| `bot_state.json` | صفقاتك وسجل الروبوت | في `.gitignore` |
+
+ولا واحد من الملفات المرفوعة فيه كلمة سر — **ولا حتى ملفات التشغيل**. كلمة سر
+الجوال ما تنكتب داخل `START-PHONE.bat`، البرنامج يسألك عنها أول مرة ويحفظها في
+ملف متجاهَل.
+
+لو احتجتي يوماً اللوحة تسجّل دخول الترمنال بنفسها (نادر جداً)، تحطين
+`MT5_LOGIN` و`MT5_PASSWORD` و`MT5_SERVER` **كمتغيرات بيئة في ويندوز** — تعيش
+في جلستك مو في ملف يقدر git يلتقطه.
+
+### تحققي بنفسك قبل أي رفع
+
+```
+git status
+```
+
+لو ظهر `panel-password.txt` أو `config.json` أو `bot_state.json` في القائمة،
+لا ترفعين — كلميني. المفروض ما يظهرون أبداً.
+
 ## الأمان
 
 - الخادم يستمع على `127.0.0.1` فقط — ما ينفتح على الشبكة ولا على الإنترنت.
@@ -320,6 +351,19 @@ web/i18n.js       Arabic + English strings
 The only dependency is `MetaTrader5` (Windows only, since that is where the
 terminal runs). Everything else is the python standard library and plain
 browser JavaScript — no build step, no npm, no CDN.
+
+### Credentials and this public repository
+
+The panel needs no account credentials: it attaches to the MT5 terminal you are
+already logged into. There is deliberately nowhere in the project to write an
+account number or password.
+
+Everything that could hold a secret is gitignored — `panel-password.txt` (created
+on first run, never written into the launcher scripts), `config.json`, and
+`bot_state.json`. No tracked file contains a password. If the terminal ever needs
+to log itself in, `MT5_LOGIN` / `MT5_PASSWORD` / `MT5_SERVER` are read from the
+environment, never from disk. Run `git status` before pushing: those files should
+never appear.
 
 ### Security model
 

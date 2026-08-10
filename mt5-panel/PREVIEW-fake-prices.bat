@@ -11,7 +11,6 @@ REM  demo account -- real gold prices, real spreads, real order
 REM  execution, virtual money -- log into it in MetaTrader 5 and
 REM  run START.bat instead.
 REM ============================================================
-set PANEL_PASSWORD=change-me-please
 
 title MT5 Panel (fake prices - interface preview)
 cd /d "%~dp0"
@@ -24,9 +23,9 @@ echo   PREVIEW MODE - FAKE prices. Not the real market.
 echo.
 echo   On this PC:   http://127.0.0.1:8777
 echo   On the phone: http://^<this-pc-address^>:8777
-echo   Password:     %PANEL_PASSWORD%
+echo   Password:     printed by the server below
 echo.
-%PY% server.py --demo --lan --password "%PANEL_PASSWORD%"
+%PY% server.py --demo --lan
 echo.
 echo The panel has stopped. Press any key to close this window.
 pause >nul

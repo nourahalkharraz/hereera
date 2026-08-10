@@ -1,5 +1,16 @@
+# Anything that could carry a secret or personal trading data.
+# This project lives in a public repository — keep it that way.
 config.json
+panel-password.txt
+.env
+*.key
+*.pem
+
+# Local state: your trades, your counters. Not for publishing.
 bot_state.json
+bot_state.json.tmp
+
+# Build output
 preview.html
 __pycache__/
 *.pyc

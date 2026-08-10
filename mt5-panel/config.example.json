@@ -1,15 +1,11 @@
 {
-  "_comment": "Optional. Copy to config.json only if you need it. The panel normally attaches to whatever MT5 terminal is already open and logged in — no credentials required.",
+  "_comment": "Optional. Copy to config.json (which git ignores) only if you need it. The panel needs NO account credentials: it attaches to whatever MT5 terminal is already open and logged in.",
 
   "terminal_path": "C:/Program Files/MetaTrader 5/terminal64.exe",
   "read_only": false,
 
-  "_phone_note": "Set 'lan' to true and pick a strong 'panel_password' to reach the panel from your phone. Keep it on a private network such as Tailscale — never port-forward this to the open internet.",
+  "_phone_note": "Set 'lan' to true to reach the panel from your phone. The password is NOT set here — it lives in panel-password.txt, which git ignores. Keep the panel on a private network such as Tailscale; never port-forward it to the open internet.",
   "lan": false,
-  "panel_password": null,
 
-  "_credentials_note": "login/password/server below are the MT5 ACCOUNT credentials, and are only needed if you want the panel to log the terminal in itself. Leave them out otherwise — config.json is git-ignored, but a file on disk is still a file on disk.",
-  "login": null,
-  "password": null,
-  "server": null
+  "_no_credentials_here": "There is deliberately no place in this file for an account number or password. If you ever need the panel to log the terminal in itself, set MT5_LOGIN / MT5_PASSWORD / MT5_SERVER as environment variables instead — they live in your Windows session, not in a file that git can pick up."
 }
