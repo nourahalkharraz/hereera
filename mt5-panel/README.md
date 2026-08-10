@@ -24,14 +24,27 @@ pip install MetaTrader5
 python server.py --open
 ```
 
-### تبين تجربينها قبل ما تربطينها بحسابك؟
+### كلمة «ديمو» لها معنيين — انتبهي للفرق
 
-```
-python server.py --demo --open
-```
+| | الأسعار | الفلوس | تحتاج MT5؟ |
+|---|---|---|---|
+| **حساب ديمو من الوسيط** ← هذا اللي تبينه | حقيقية ١٠٠٪ | افتراضية | نعم |
+| `PREVIEW-fake-prices.bat` | **مولّدة بالبرنامج** | افتراضية | لا |
 
-يشغّل اللوحة بأسعار وهمية وحساب وهمي، بدون أي اتصال بـ MT5 وبدون أي أمر حقيقي.
-مناسب عشان تتعوّدين على الواجهة أول.
+**حساب الديمو من الوسيط** هو حساب MT5 كامل: نفس أسعار الذهب اللحظية، نفس
+السبريد، نفس تنفيذ الأوامر ورفضها — الفرق الوحيد إن الفلوس مو حقيقية. اللوحة
+ما تفرّق بينه وبين الحساب الحقيقي، تشتغل معه بالكامل وبدون أي تعديل: افتحي MT5،
+سجّلي دخول بحساب الديمو، وشغّلي `START.bat` العادي. **هذي هي الطريقة الصح
+للتجربة.**
+
+كيف تفتحين حساب ديمو (دقيقتين): سجّلي في أي وسيط تثقين فيه واطلبي حساب تجريبي،
+بيعطونك رقم حساب وكلمة سر واسم سيرفر، تدخلينهم في MT5 من
+`File ← Login to Trade Account`. اختاري وسيط سبريد الذهب عنده قريب من اللي
+بتتداولين عليه فعلاً — لأن السبريد هو أهم عامل في السكالبينج.
+
+**وضع الأسعار الوهمية** (`PREVIEW-fake-prices.bat` أو `--demo`) غرضه الوحيد إنك
+تشوفين شكل الواجهة وقت ما يكون MT5 مو متاح. الأسعار فيه مخترعة وما تمثّل السوق،
+فلا تحكمين على النظام من نتائجه.
 
 ### وضع العرض فقط (بدون تداول)
 
@@ -208,9 +221,21 @@ M15. زر واحد كبير للتشغيل والإيقاف.
 A small local web app that mirrors the MetaTrader 5 **mobile** layout on a
 desktop, for people who find the MT5 desktop terminal hard to navigate.
 
+### "Demo" means two different things
+
+A **broker demo account** is a full MT5 account — real gold prices, real
+spreads, real order execution and rejection — with virtual money. The panel
+treats it exactly like a live account and needs no special mode: log into it in
+MT5 and run `START.bat`. That is the right way to test.
+
+`--demo` / `PREVIEW-fake-prices.bat` is something else entirely: prices
+invented by the script, so the interface can be looked at with no terminal
+running. Never judge the strategy by what happens there.
+
 ### Run
 
-1. Open MetaTrader 5 and log in. Leave it running.
+1. Open MetaTrader 5 and log in (a broker demo account is fine — and is where
+   you should start). Leave it running.
 2. Double-click `START.bat` (or `pip install MetaTrader5 && python server.py --open`).
 3. The browser opens the panel at `http://127.0.0.1:8777`.
 
