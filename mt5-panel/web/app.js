@@ -23,6 +23,8 @@
     history: null,
     lastError: "",
     busy: false,
+    bot: null,
+    botEditing: false,
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -393,6 +395,7 @@
     else if (S.view === "history") renderHistory();
     else if (S.view === "settings") renderSettings();
     else if (S.view === "chart") renderChartHead();
+    else if (S.view === "bot") renderBot();
     if (sheetTick) sheetTick();
   }
 
@@ -850,6 +853,231 @@
     });
   }
 
+
+  // ---------------------------------------------------------------- bot tab
+  function reason(code) {
+    var s = t("r_" + code);
+    return s === "r_" + code ? code.replace(/_/g, " ") : s;
+  }
+
+  function loadBot() {
+    return api("/api/bot").then(function (d) {
+      S.bot = d;
+      if (S.view === "bot") renderBot();
+    }).catch(function (e) { toast(e.message, "err"); });
+  }
+
+  function botPost(path, body, okMsg) {
+    return api(path, body || {}, "POST").then(function (d) {
+      S.bot = d;
+      if (okMsg) toast(okMsg, "ok");
+      renderBot();
+    }).catch(function (e) { toast(e.message, "err"); });
+  }
+
+  function renderBot() {
+    $("t-bot-scan").textContent = t("bot_scan");
+    $("t-bot-paper").textContent = t("bot_paper_open");
+    $("t-bot-settings").textContent = t("bot_settings");
+    $("t-bot-log").textContent = t("bot_log");
+    $("bot-note").textContent = t("bot_note");
+
+    var b = S.bot;
+    var main = $("bot-main");
+    if (!b) { main.innerHTML = '<div class="empty">' + esc(t("connecting")) + "</div>"; return; }
+    var c = b.config;
+    var live = c.mode === "live";
+
+    main.innerHTML = "";
+    var head = el(
+      '<div class="bot-head">' +
+      '<div class="grow">' +
+      '<div class="acct-label">' + esc(t("bot_title")) + "</div>" +
+      '<div class="bot-state ' + (b.running ? "on" : "off") + '">' +
+      esc(b.running ? t("bot_on") : t("bot_off")) + "</div>" +
+      "</div>" +
+      '<button class="power' + (b.running ? " stop" : "") + '" id="bot-power">' +
+      esc(b.running ? t("bot_turn_off") : t("bot_turn_on")) + "</button></div>");
+    main.appendChild(head);
+    head.querySelector("#bot-power").onclick = function () {
+      botPost(b.running ? "/api/bot/stop" : "/api/bot/start");
+    };
+
+    main.appendChild(segRow(t("bot_mode"),
+      live ? t("mode_live_desc") : t("mode_paper_desc"),
+      [["paper", t("mode_paper")], ["live", t("mode_live")]], c.mode,
+      function (v) {
+        if (v === c.mode) return;
+        if (v === "live") {
+          confirmAction(t("live_confirm"), function () {
+            botPost("/api/bot/config", { mode: "live" });
+          });
+        } else {
+          botPost("/api/bot/config", { mode: "paper" });
+        }
+      }));
+
+    var stats = el('<div class="acct-grid" style="margin-top:6px"></div>');
+    stats.innerHTML =
+      kv(t("bot_trades_today"), b.counters.trades + " / " + c.max_daily_trades) +
+      kv(t("bot_realised"), money(b.counters.realised), cls(b.counters.realised)) +
+      kv(t("bot_floating"), money(b.floating), cls(b.floating)) +
+      kv(t("bot_open"), b.paper_open.length + " / " + c.max_open);
+    main.appendChild(stats);
+
+    // halt banner
+    var halt = $("bot-halt");
+    halt.innerHTML = "";
+    if (b.halted_reason) {
+      var hb = el('<div class="halt-banner"><div class="grow">' +
+        esc(t("bot_halted")) + '</div><button>' + esc(t("bot_resume")) + "</button></div>");
+      hb.querySelector("button").onclick = function () {
+        botPost("/api/bot/resume", {}, t("bot_resume"));
+      };
+      halt.appendChild(hb);
+    }
+
+    // market read
+    var scanBox = $("bot-scan");
+    var syms = Object.keys(b.scan);
+    if (!syms.length) {
+      scanBox.innerHTML = '<div class="empty">' + esc(t("no_scan")) + "</div>";
+    } else {
+      scanBox.innerHTML = "";
+      syms.sort(function (x, y) {
+        return (b.scan[y].confidence || 0) - (b.scan[x].confidence || 0);
+      });
+      syms.forEach(function (name) {
+        var d = b.scan[name];
+        if (d.error) {
+          scanBox.appendChild(el('<div class="scan-row"><div class="scan-top">' +
+            '<div class="grow"><b>' + esc(name) + "</b></div>" +
+            '<span class="down">' + esc(d.error) + "</span></div></div>"));
+          return;
+        }
+        var ready = d.side != null;
+        var tags = (d.reasons || []).map(function (r) {
+          return '<span class="tag ok">' + esc(reason(r)) + "</span>";
+        }).concat((d.blockers || []).map(function (r) {
+          return '<span class="tag no">' + esc(reason(r)) + "</span>";
+        })).join(" ");
+        scanBox.appendChild(el(
+          '<div class="scan-row">' +
+          '<div class="scan-top"><div class="grow"><b>' + esc(name) + "</b>" +
+          (ready ? ' <span class="pill ' + d.side + '">' + esc(t(d.side)) + "</span>"
+                 : ' <span class="tagline">' + esc(t("waiting")) + "</span>") + "</div>" +
+          '<span class="numeric" style="font-weight:700">' +
+          (d.confidence || 0) + "%</span></div>" +
+          '<div class="bar"><span class="' + (ready ? "ready" : "") +
+          '" style="width:' + Math.max(2, d.confidence || 0) + '%"></span></div>' +
+          '<div class="tagline">' + tags + "</div></div>"));
+      });
+    }
+
+    // paper trades
+    var paper = $("bot-paper");
+    if (!b.paper_open.length) {
+      paper.innerHTML = '<div class="empty">' + esc(t("no_positions")) + "</div>";
+    } else {
+      paper.innerHTML = "";
+      b.paper_open.forEach(function (p) {
+        paper.appendChild(el(
+          '<div class="row" style="cursor:default"><div class="grow">' +
+          '<div class="name">' + esc(p.symbol) +
+          ' <span class="pill ' + p.side + '">' + esc(t(p.side)) + " " +
+          fmt(p.volume, 2) + "</span></div>" +
+          '<div class="meta numeric">' + fmt(p.price_open, p.digits) +
+          " → " + fmt(p.price_current, p.digits) +
+          " · SL " + fmt(p.sl, p.digits) + " · TP " + fmt(p.tp, p.digits) + "</div></div>" +
+          '<div class="price numeric ' + cls(p.profit) + '">' + money(p.profit) + "</div></div>"));
+      });
+    }
+
+    // settings (left alone while the user is typing in them)
+    if (!S.botEditing) renderBotSettings(b);
+
+    // log
+    var logBox = $("bot-log");
+    if (!b.log.length) {
+      logBox.innerHTML = '<div class="empty">' + esc(t("no_log")) + "</div>";
+    } else {
+      logBox.innerHTML = "";
+      b.log.slice().reverse().forEach(function (e) {
+        logBox.appendChild(el('<div class="log-row ' + esc(e.kind) + '">' +
+          esc(e.message) +
+          '<div class="when numeric">' + timeStr(e.time) + "</div></div>"));
+      });
+    }
+  }
+
+  var BOT_FIELDS = [
+    ["min_confidence", "s_min_conf", "number", 1],
+    ["risk_percent", "s_risk", "number", 0.05],
+    ["max_open", "s_max_open", "number", 1],
+    ["max_daily_trades", "s_max_daily", "number", 1],
+    ["daily_loss_percent", "s_daily_loss", "number", 0.5],
+    ["cooldown_minutes", "s_cooldown", "number", 5],
+    ["interval_seconds", "s_interval", "number", 5],
+    ["entry_tf", "s_entry_tf", "tf", null],
+    ["trend_tf", "s_trend_tf", "tf", null],
+  ];
+
+  function renderBotSettings(b) {
+    var box = $("bot-settings");
+    box.innerHTML = "";
+    BOT_FIELDS.forEach(function (f) {
+      var row = el('<div class="setting-row"><label>' + esc(t(f[1])) + "</label></div>");
+      var input;
+      if (f[2] === "tf") {
+        input = document.createElement("select");
+        TFS.forEach(function (tf) {
+          var o = document.createElement("option");
+          o.value = o.textContent = tf;
+          if (b.config[f[0]] === tf) o.selected = true;
+          input.appendChild(o);
+        });
+      } else {
+        input = document.createElement("input");
+        input.type = "number";
+        input.step = f[3];
+        input.value = b.config[f[0]];
+      }
+      input.dataset.key = f[0];
+      input.onfocus = function () { S.botEditing = true; };
+      row.appendChild(input);
+      box.appendChild(row);
+    });
+
+    var symRow = el('<div class="setting-row" style="display:block">' +
+      '<label style="display:block;margin-bottom:7px">' + esc(t("s_symbols")) + "</label></div>");
+    var symInput = document.createElement("input");
+    symInput.type = "text";
+    symInput.style.width = "100%";
+    symInput.value = (b.config.symbols || []).join(", ");
+    symInput.placeholder = ((S.snap && S.snap.symbols) || [])
+      .slice(0, 6).map(function (s) { return s.symbol; }).join(", ");
+    symInput.dataset.key = "symbols";
+    symInput.onfocus = function () { S.botEditing = true; };
+    symRow.appendChild(symInput);
+    box.appendChild(symRow);
+
+    var saveRow = el('<div style="padding:12px 16px">' +
+      '<button class="btn-line" id="bot-save">' + esc(t("bot_save")) + "</button></div>");
+    saveRow.querySelector("#bot-save").onclick = function () {
+      var payload = {};
+      BOT_FIELDS.forEach(function (f) {
+        var node = box.querySelector('[data-key="' + f[0] + '"]');
+        payload[f[0]] = f[2] === "tf" ? node.value : parseFloat(node.value);
+      });
+      payload.symbols = symInput.value.split(",")
+        .map(function (x) { return x.trim().toUpperCase(); })
+        .filter(Boolean);
+      S.botEditing = false;
+      botPost("/api/bot/config", payload, t("bot_saved"));
+    };
+    box.appendChild(saveRow);
+  }
+
   // ---------------------------------------------------------------- polling
   var pollTimer = null;
   function refresh() {
@@ -874,6 +1102,7 @@
     pollTimer = setInterval(function () {
       if (document.hidden || S.busy) return;
       refresh();
+      if (S.view === "bot") loadBot();
       if (S.view === "chart") {
         // refresh the last bar without refetching the whole series every tick
         var s = symbolOf(S.chartSymbol);
@@ -918,6 +1147,7 @@
     });
     $("fab").style.display = (name === "quotes" || name === "trade") ? "" : "none";
     if (name === "history" && !S.history) loadHistory();
+    if (name === "bot") { S.botEditing = false; loadBot(); }
     if (name === "chart") {
       renderChartHead();
       if (!S.candles.length) loadCandles(); else drawChart();
@@ -938,6 +1168,7 @@
     $("btn-refresh").onclick = function () {
       refresh(); if (S.view === "chart") loadCandles();
       if (S.view === "history") loadHistory();
+      if (S.view === "bot") loadBot();
     };
     $("fab").onclick = function () { newOrderSheet(S.chartSymbol); };
     $("sheet-close").onclick = closeSheet;

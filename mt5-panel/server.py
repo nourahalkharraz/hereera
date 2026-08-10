@@ -30,6 +30,7 @@ WEB_DIR = os.path.join(HERE, "web")
 CONFIG_PATH = os.path.join(HERE, "config.json")
 
 bridge = None          # set in main(): mt5_bridge or demo_bridge
+bot = None             # AutoTrader instance
 API_KEY = ""
 READ_ONLY = False
 _trade_lock = threading.Lock()
@@ -100,6 +101,12 @@ def api_snapshot(p):
         "orders": bridge.pending_orders(),
         "symbols": watch,
         "demo": getattr(bridge, "DEMO", False),
+        "bot": {
+            "running": bot.running,
+            "mode": bot.config["mode"],
+            "halted_reason": bot.halted_reason,
+            "trades_today": bot.counters["trades"],
+        },
     }
 
 
@@ -177,6 +184,40 @@ def _guard_trading():
                        "(started with --read-only).", 403)
 
 
+# --------------------------------------------------------------------------
+# automatic trader
+# --------------------------------------------------------------------------
+
+def api_bot(p):
+    return bot.status()
+
+
+def api_bot_start(p):
+    if bot.config["mode"] == "live":
+        _guard_trading()
+    try:
+        return bot.start()
+    except RuntimeError as exc:
+        raise ApiError(str(exc))
+
+
+def api_bot_stop(p):
+    return bot.stop()
+
+
+def api_bot_config(p):
+    if str(p.get("mode", "")) == "live":
+        _guard_trading()
+    try:
+        return bot.set_config(p)
+    except ValueError as exc:
+        raise ApiError(str(exc))
+
+
+def api_bot_resume(p):
+    return bot.clear_halt()
+
+
 GET_ROUTES = {
     "/api/status": api_status,
     "/api/account": api_account,
@@ -186,6 +227,7 @@ GET_ROUTES = {
     "/api/snapshot": api_snapshot,
     "/api/history": api_history,
     "/api/calc_lot": api_calc_lot,
+    "/api/bot": api_bot,
 }
 
 POST_ROUTES = {
@@ -197,6 +239,10 @@ POST_ROUTES = {
     "/api/cancel": api_cancel,
     "/api/select": api_select,
     "/api/calc_lot": api_calc_lot,
+    "/api/bot/start": api_bot_start,
+    "/api/bot/stop": api_bot_stop,
+    "/api/bot/config": api_bot_config,
+    "/api/bot/resume": api_bot_resume,
 }
 
 
@@ -318,7 +364,7 @@ def load_config():
 
 
 def main(argv=None):
-    global bridge, API_KEY, READ_ONLY
+    global bridge, bot, API_KEY, READ_ONLY
 
     ap = argparse.ArgumentParser(description="MT5 mobile-style panel")
     ap.add_argument("--port", type=int, default=8777)
@@ -360,6 +406,14 @@ def main(argv=None):
             print("  Tip: run `python server.py --demo` to preview the panel.")
             return 1
 
+    import autotrader
+    bot = autotrader.AutoTrader(bridge)
+    if bot.config["mode"] == "live" and READ_ONLY:
+        bot.set_config({"mode": "paper"})
+    print("  auto      : %s mode%s" % (bot.config["mode"],
+                                       ", halted: " + bot.halted_reason
+                                       if bot.halted_reason else ""))
+
     url = "http://127.0.0.1:%d/?k=%s" % (args.port, API_KEY)
     httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     httpd.daemon_threads = True
@@ -373,6 +427,8 @@ def main(argv=None):
         print("\nstopping...")
     finally:
         httpd.server_close()
+        if bot:
+            bot.stop("panel closed")
         bridge.stop()
     return 0
 

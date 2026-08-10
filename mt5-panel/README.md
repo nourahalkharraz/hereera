@@ -48,6 +48,7 @@ python server.py --read-only
 | **الأسعار** | قائمة المتابعة بأسعار حيّة (بيع/شراء + السبريد)، وإضافة أو حذف رموز بالبحث. الضغط على أي رمز يفتح شاشة أمر جديد. |
 | **الرسم** | شموع يابانية مع اختيار الفريم (M1 → W1)، وخط يوضّح سعر فتح صفقاتك على نفس الرمز. |
 | **التداول** | ملخص الحساب (صافي رأس المال، الرصيد، الربح العائم، الهامش)، الصفقات المفتوحة بأرباحها اللحظية، والأوامر المعلّقة. الضغط على أي صفقة يفتح: إغلاق، إغلاق نصف، تعديل الوقف والهدف، عرض الرسم. |
+| **الروبوت** | التداول الآلي: زر تشغيل/إيقاف، درجة الثقة لكل رمز مع سبب القرار، حدود المخاطرة، وسجل القرارات. تفاصيله تحت. |
 | **السجل** | الصفقات المغلقة خلال اليوم/الأسبوع/الشهر/٣ شهور، مع صافي الربح ونسبة الصفقات الرابحة ومعامل الربح وأفضل وأسوأ صفقة. |
 | **الإعدادات** | اللغة (عربي/إنجليزي)، الثيم (غامق/فاتح)، عرض الواجهة (جوال/واسع)، سرعة التحديث، وبيانات الاتصال. |
 
@@ -56,6 +57,58 @@ python server.py --read-only
 
 **وقف الخسارة والهدف**: تقدرين تكتبينها **بالنقاط** (المسافة من سعر الدخول)
 أو **بالسعر** مباشرة — الزر الصغير جنب العنوان يبدّل بين الطريقتين.
+
+## تبويب «الروبوت» — التداول الآلي
+
+محرّك يدرس السوق كل ٢٠ ثانية ويفتح صفقة لحاله لما تتفق المؤشرات. زر واحد
+كبير للتشغيل والإيقاف.
+
+### كيف يقرر
+
+يمشي على ثلاث مراحل، ولو فشلت أي مرحلة ما يدخل:
+
+1. **هل السوق قابل للتداول أصلاً؟** يرفض إذا كان السبريد واسع مقارنة بحركة
+   السوق (أكثر من ١٥٪ من متوسط المدى الحقيقي)، أو إذا كان السوق هادي أكثر من
+   اللازم.
+2. **وش اتجاه الفريم الأكبر؟** (H1 افتراضياً) — متوسط ٥٠ فوق متوسط ٢٠٠ والسعر
+   فوقهم = اتجاه صاعد، والعكس هابط. لو الفريم الأكبر متردد، ما فيه صفقة.
+3. **ست فحوصات على فريم الدخول** (M15 افتراضياً)، لكل وحدة وزن ومجموعها ١٠٠:
+   توافق الاتجاه (٢٥) · السعر بصف الاتجاه (١٥) · الزخم يتزايد بالـ MACD (٢٠) ·
+   RSI في نطاق صحي مو متشبّع (٢٠) · المتوسط يلتف للاتجاه (١٠) · الدخول مو
+   متأخر عن الحركة (١٠).
+
+المجموع = **درجة الثقة**. ما يدخل إلا إذا تجاوزت الحد اللي تحددينه (٧٠٪
+افتراضياً). وفي التبويب تشوفين لكل رمز درجته والفحوصات اللي نجحت (أخضر) واللي
+فشلت (أحمر) — يعني تعرفين بالضبط ليش دخل أو ليش امتنع.
+
+وقف الخسارة = ١.٥ × متوسط المدى الحقيقي، والهدف = ٢.٥ × — يعني الربح المتوقع
+أكبر من الخسارة المحتملة بنسبة ١.٦٧ تقريباً.
+
+### الحدود (تتغير من نفس التبويب)
+
+| الحد | الافتراضي |
+|---|---|
+| المخاطرة لكل صفقة | ٠.٥٪ من الرصيد — وحجم اللوت يتحسب منها |
+| أقصى صفقات مفتوحة | ١ |
+| أقصى صفقات باليوم | ٣ |
+| حد الخسارة اليومي | ٢٪ — يوقف الروبوت لبقية اليوم |
+| فترة انتظار بعد كل صفقة | ٦٠ دقيقة لنفس الرمز |
+| أقل ثقة للدخول | ٧٠٪ |
+
+فوق هذا: كل صفقة لها وقف خسارة إجباري، وما يفتح صفقة على رمز فيه صفقة مفتوحة
+(لا منه ولا منك)، والحدود اليومية محفوظة على القرص فما تنمسح لو أغلقتي البرنامج
+وفتحتيه.
+
+### يبدأ في وضع المحاكاة
+
+الروبوت يبدأ على **«محاكاة»**: يعطي الإشارات ويتابعها بأسعار حقيقية ويحسب
+أرباحها وخسائرها، **بدون ما يرسل أي أمر للوسيط**. شغّليه أسبوع على المحاكاة
+وشوفي النتيجة في «سجل القرارات» قبل ما تحولينه لـ «حقيقي» (وفيه شاشة تأكيد
+قبل التحويل).
+
+> بصراحة: هذا محرّك قواعد فنية شفاف، مو تنبؤ بالمستقبل. المؤشرات تصف اللي صار،
+> والسوق يتغيّر. ممكن يمر عليه أيام خاسرة. الحدود أعلاه موجودة عشان الخسارة
+> تبقى محدودة، مو عشان تختفي. لا تشغّلينه على فلوس ما تتحملين خسارتها.
 
 ## الأمان
 
@@ -95,6 +148,26 @@ desktop, for people who find the MT5 desktop terminal hard to navigate.
 Flags: `--demo` (fake prices, no terminal needed), `--read-only` (no trading),
 `--port N`, `--terminal <path to terminal64.exe>`, `--open`.
 
+### Automatic trading
+
+The **Auto** tab runs a signal engine every 20 seconds and can open trades on
+its own. It gates on a higher-timeframe trend, refuses markets where the spread
+is wide relative to ATR or volatility has died, then scores six weighted checks
+on the entry timeframe (trend agreement, price side, MACD momentum, RSI band,
+moving-average slope, and how extended the entry is). It enters only above your
+confidence threshold, and the tab shows which checks passed and which failed
+for every symbol, so each decision is inspectable.
+
+Risk manager, all editable in the tab: position size from a risk percentage
+(0.5% default), mandatory ATR-based stop loss, one open trade, three trades a
+day, a 2% daily loss limit that halts the engine until tomorrow, and a
+per-symbol cooldown. Daily counters survive a restart.
+
+It starts in **paper** mode — signals are tracked against live prices but no
+order reaches the broker until you switch to live and confirm. This is a
+transparent rule-based engine, not a prediction: it can and will have losing
+runs, and the limits exist to bound that, not to remove it.
+
 ### Features
 
 Live Market Watch quotes · candlestick chart with M1–W1 timeframes · account
@@ -108,6 +181,8 @@ dark and light themes.
 ```
 server.py         stdlib HTTP server: routing, loopback + key auth, static files
 mt5_bridge.py     every call into the official MetaTrader5 python package
+strategy.py       indicators and the weighted signal engine (pure python)
+autotrader.py     the engine loop, risk manager and paper-trade tracking
 demo_bridge.py    same interface, simulated market — used by --demo
 web/index.html    layout
 web/app.css       phone-shaped, theme- and RTL-aware styling
