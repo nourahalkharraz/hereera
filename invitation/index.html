@@ -18,189 +18,228 @@
    عقد قران — نورة و سند
 
    الفكرة: الغلاف حقل لون واحد مشقوق في منتصفه، والاسمان مكتوبان
-   على الشقّ فيقطعهما. باللمس ينفصل النصفان — فيظهر تحتهما الإعلان
-   حيث الاسمان مجتمعان. الانفصال يكشف الاجتماع.
+   على الشقّ فيقطعهما. تسحبين النصفين بإصبعك فينفصلان — ويظهر تحتهما
+   الإعلان حيث الاسمان مجتمعان. الانفصال هو الذي يكشف الاجتماع.
 
    كل ما يُكتب موجود في كائن DATA بآخر الملف.
    ═══════════════════════════════════════════════════════════════════ */
 :root {
-  --pine:     #25403A;   /* حقل الغلاف */
-  --pine-lit: #38564E;   /* حافة الشقّ */
-  --bone:     #EDEAE3;   /* أرضية الإعلان */
-  --paper:    #F5F3EE;
+  --pine:     #25403A;
+  --pine-lit: #38564E;
+  --bone:     #EDEAE3;
   --ink:      #16150F;
   --soft:     #5B574F;
   --line:     #D3CEC4;
-  --split: .55s;
-  --cut-y: -.12em;   /* يُنزل النصّ حتى يمرّ الشقّ في وسط الحروف لا تحتها */
+  --p: 0;            /* تقدّم الفتح ٠..١ — يقوده الإصبع */
+  --cut-y: -.12em;   /* يُنزل النصّ حتى يمرّ الشقّ في وسط الحروف */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; }
 body {
-  direction: rtl;
-  min-height: 100dvh;
-  background: var(--bone);
-  color: var(--ink);
-  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
-  font-weight: 300;
+  direction: rtl; min-height: 100dvh;
+  background: var(--bone); color: var(--ink);
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-weight: 300;
   overflow: hidden;
 }
 
 /* ═══════════ الغلاف ═══════════ */
-#cover { position: fixed; inset: 0; z-index: 10; }
+#cover { position: fixed; inset: 0; z-index: 10; cursor: grab; touch-action: none; }
+#cover.grabbing { cursor: grabbing; }
 .half {
   position: absolute; left: 0; right: 0; height: 50%;
-  background: var(--pine); overflow: hidden;
-  transition: transform 1.15s cubic-bezier(.76,0,.16,1);
-  will-change: transform;
+  background: var(--pine); overflow: hidden; will-change: transform;
+  transition: transform 1s cubic-bezier(.76,0,.16,1);
 }
-.half.t { top: 0; }
-.half.b { bottom: 0; }
-.opened .half.t { transform: translateY(-100%); }
-.opened .half.b { transform: translateY(100%); }
+.dragging .half { transition: none; }
+.half.t { top: 0;    transform: translateY(calc(var(--p) * -100%)); }
+.half.b { bottom: 0; transform: translateY(calc(var(--p) *  100%)); }
+.opened { --p: 1; }
+.revealed #cover { visibility: hidden; }
 
-/* الاسمان مرسومان مرّتين ومحاذيان لنفس الموضع على الشاشة،
-   فيبدوان نصّاً واحداً يمرّ فيه الشقّ */
+/* الاسمان مرسومان مرّتين ومحاذيان لنفس الموضع، فيبدوان نصّاً واحداً يمرّ فيه الشقّ */
 .cut {
   position: absolute; left: 0; right: 0; text-align: center;
   font-family: 'Reem Kufi', system-ui, sans-serif; font-weight: 700;
   font-size: clamp(44px, 21vw, 130px); line-height: 1;
   color: var(--bone); letter-spacing: .01em; white-space: nowrap;
+  user-select: none; -webkit-user-select: none;
 }
 .half.t .cut { bottom: 0; transform: translateY(50%)  translateY(var(--cut-y)); }
 .half.b .cut { top: 0;    transform: translateY(-50%) translateY(var(--cut-y)); }
-.cut i { font-style: normal; opacity: .42; font-size: .5em; margin: 0 .34em;
-  vertical-align: .12em; }
+.cut i { font-style: normal; opacity: .42; font-size: .5em; margin: 0 .34em; vertical-align: .12em; }
 
-/* الفاصلة الوحيدة على الغلاف: شعرة تمتد من الحافة إلى الحافة */
+/* الشقّ: شعرة تمتد من الحافة إلى الحافة، ويلمع منها ما تحت المؤشّر */
 #seam {
-  position: fixed; left: 0; right: 0; top: 50%; height: 1px; z-index: 11; pointer-events: none;
-  background: rgba(237,234,227,.28); transform-origin: 50% 50%;
-  transition: opacity .35s ease;
+  position: fixed; left: 0; right: 0; top: 50%; height: 1px; z-index: 11;
+  background: rgba(237,234,227,.28); pointer-events: none;
+  opacity: calc(1 - var(--p) * 2);
 }
-.opened #seam { opacity: 0; }
-.revealed #cover { visibility: hidden; }
+#spark {
+  position: fixed; top: 50%; left: 0; width: 320px; height: 130px; z-index: 11;
+  margin: -65px 0 0 -160px; pointer-events: none; opacity: 0;
+  transform: translateX(var(--sx, 50vw));
+  background: radial-gradient(ellipse 50% 34% at 50% 50%, rgba(237,234,227,.30), transparent 70%);
+  transition: opacity .4s ease;
+}
+@media (hover: hover) and (pointer: fine) { #cover:hover ~ #spark { opacity: calc(1 - var(--p)); } }
+
+/* مقبض السحب: خطّان أسفل الشاشة يتباعدان مع السحب، بعيداً عن الاسمين */
+#grip {
+  position: fixed; left: 50%; z-index: 12; pointer-events: none;
+  bottom: calc(62px + env(safe-area-inset-bottom));
+  width: 26px; margin-left: -13px; opacity: calc(1 - var(--p) * 1.8);
+}
+#grip b { display: block; height: 2px; border-radius: 2px; background: var(--bone); opacity: .45; }
+#grip b:first-child { transform: translateY(calc(-3px - var(--p) * 26px)); }
+#grip b:last-child  { transform: translateY(calc( 3px + var(--p) * 26px)); }
+@media (prefers-reduced-motion: no-preference) {
+  #grip b:first-child { animation: nudgeU 2.4s ease-in-out infinite; }
+  #grip b:last-child  { animation: nudgeD 2.4s ease-in-out infinite; }
+}
+@keyframes nudgeU { 0%,100% { margin-top: 0 } 50% { margin-top: -3px } }
+@keyframes nudgeD { 0%,100% { margin-bottom: 0 } 50% { margin-bottom: -3px } }
 
 #hint {
   position: fixed; left: 0; right: 0; z-index: 12; pointer-events: none;
-  bottom: calc(30px + env(safe-area-inset-bottom));
-  text-align: center; color: var(--bone);
-  font-size: 12px; font-weight: 500; letter-spacing: .38em; opacity: .55;
-  transition: opacity .3s ease;
+  bottom: calc(30px + env(safe-area-inset-bottom)); text-align: center;
+  color: var(--bone); font-size: 12px; font-weight: 500; letter-spacing: .38em;
+  opacity: calc((1 - var(--p) * 2) * .55);
 }
-.opened #hint { opacity: 0; }
 
 /* ═══════════ الإعلان ═══════════ */
-#sheet {
-  position: fixed; inset: 0; z-index: 1;
-  background: transparent;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  display: flex; flex-direction: column; justify-content: flex-start;
-  padding: calc(34px + env(safe-area-inset-top)) clamp(26px, 8vw, 96px)
-           calc(76px + env(safe-area-inset-bottom));
-}
-
-/* علامة هندسية واحدة تنزف خارج الإطار — كل التوتر البصري فيها */
 #mark {
   position: fixed; z-index: 0; left: -22%; bottom: -18%;
   width: min(82vw, 520px); height: min(82vw, 520px);
   color: var(--pine); pointer-events: none;
+  transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+  transition: transform .9s cubic-bezier(.2,.8,.3,1);
 }
 #mark svg { width: 100%; height: 100%; display: block; }
+#mark .spin { transform-origin: 100px 100px; }
+@media (prefers-reduced-motion: no-preference) { #mark .spin { animation: turn 90s linear infinite; } }
+@keyframes turn { to { transform: rotate(360deg); } }
 
+#sheet {
+  position: fixed; inset: 0; z-index: 1; background: transparent;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  padding: calc(30px + env(safe-area-inset-top)) clamp(26px, 8vw, 96px)
+           calc(76px + env(safe-area-inset-bottom));
+}
 .content { position: relative; z-index: 2; width: 100%; max-width: 620px;
   margin-inline-start: auto; margin-block: auto; }
 .content > * { clip-path: inset(0 0 100% 0); transform: translateY(18px);
-  transition: clip-path .95s cubic-bezier(.22,.9,.3,1), transform .95s cubic-bezier(.22,.9,.3,1); }
+  transition: clip-path .9s cubic-bezier(.22,.9,.3,1), transform .9s cubic-bezier(.22,.9,.3,1); }
 .revealed .content > * { clip-path: inset(0 0 0 0); transform: none; }
-.revealed .content > *:nth-child(1){transition-delay:.10s}
-.revealed .content > *:nth-child(2){transition-delay:.20s}
-.revealed .content > *:nth-child(3){transition-delay:.42s}
-.revealed .content > *:nth-child(4){transition-delay:.52s}
-.revealed .content > *:nth-child(5){transition-delay:.62s}
-.revealed .content > *:nth-child(6){transition-delay:.72s}
+.revealed .content > *:nth-child(1){transition-delay:.06s}
+.revealed .content > *:nth-child(2){transition-delay:.14s}
+.revealed .content > *:nth-child(3){transition-delay:.34s}
+.revealed .content > *:nth-child(4){transition-delay:.42s}
+.revealed .content > *:nth-child(5){transition-delay:.50s}
+.revealed .content > *:nth-child(6){transition-delay:.58s}
+.revealed .content > *:nth-child(7){transition-delay:.66s}
+.revealed .content > *:nth-child(8){transition-delay:.74s}
 
 .label { font-weight: 500; font-size: clamp(11px, 2.7vw, 13px); letter-spacing: .46em;
-  color: var(--pine); margin-bottom: clamp(20px, 5vw, 30px); }
-
+  color: var(--pine); margin-bottom: clamp(18px, 4.5vw, 28px); }
 .names { font-family: 'Reem Kufi', system-ui, sans-serif; font-weight: 700;
-  font-size: clamp(52px, 19vw, 128px); line-height: .96; letter-spacing: -.015em;
-  color: var(--ink); }
+  font-size: clamp(50px, 18vw, 122px); line-height: .96; letter-spacing: -.015em; color: var(--ink); }
 .names > span { display: block; }
 .names .two { margin-top: .06em; }
 .names em { font-style: normal; color: var(--pine); font-size: .42em;
   vertical-align: .34em; margin-left: .22em; opacity: .8; }
-
-.rule { height: 1px; background: var(--line); margin: clamp(26px, 7vw, 42px) 0 clamp(20px, 5vw, 28px); }
-
-.full { font-size: clamp(14px, 3.6vw, 17px); line-height: 2.1; color: var(--soft); }
+.rule { height: 1px; background: var(--line); margin: clamp(22px, 6vw, 38px) 0 clamp(18px, 4.5vw, 26px); }
+.full { font-size: clamp(14px, 3.6vw, 17px); line-height: 2.05; color: var(--soft); }
 .date { font-weight: 500; font-size: clamp(14px, 3.6vw, 17px); letter-spacing: .3em;
-  color: var(--ink); margin-top: clamp(18px, 4.5vw, 26px); }
-.dua  { font-size: clamp(13px, 3.4vw, 16px); line-height: 2.1; color: var(--soft);
-  margin-top: clamp(22px, 5.5vw, 32px); max-width: 34ch; }
+  color: var(--ink); margin-top: clamp(14px, 3.5vw, 20px); }
 
-/* ═══════════ الإعادة ═══════════ */
+/* ── العدّاد الحيّ ── */
+.count { display: flex; gap: clamp(14px, 4.5vw, 26px); margin-top: clamp(18px, 4.5vw, 26px);
+  flex-wrap: wrap; }
+.count div { min-width: 44px; }
+.count b { display: block; font-weight: 500; font-variant-numeric: tabular-nums;
+  font-size: clamp(22px, 6.4vw, 32px); line-height: 1.1; color: var(--ink); }
+.count span { display: block; font-size: 10.5px; letter-spacing: .22em; color: var(--soft);
+  margin-top: 6px; }
+.count.done { display: block; font-size: clamp(14px, 3.6vw, 17px); color: var(--pine); font-weight: 500; }
+
+.dua { font-size: clamp(13px, 3.4vw, 16px); line-height: 2.05; color: var(--soft);
+  margin-top: clamp(20px, 5vw, 30px); max-width: 34ch; }
+
+/* ── الأزرار ── */
+.acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: clamp(22px, 5.5vw, 32px); }
+.btn {
+  min-height: 44px; padding: 0 18px; display: inline-flex; align-items: center; gap: 9px;
+  background: transparent; color: var(--soft);
+  border: 1px solid var(--line); border-radius: 2px;
+  font-family: inherit; font-size: 12.5px; font-weight: 500; letter-spacing: .16em;
+  cursor: pointer; text-decoration: none;
+  transition: color .2s ease, border-color .2s ease, background-color .2s ease;
+}
+.btn:hover, .btn:focus-visible { color: var(--pine); border-color: var(--pine); background: rgba(37,64,58,.04); }
+.btn:active { transform: translateY(1px); }
+.btn svg { width: 14px; height: 14px; flex: none; }
+.btn.ok { color: var(--pine); border-color: var(--pine); }
+
 #replay {
   position: fixed; z-index: 20; inset-inline-end: clamp(20px, 6vw, 40px);
   bottom: calc(20px + env(safe-area-inset-bottom));
-  min-height: 44px; min-width: 44px; padding: 0 18px;
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--soft);
-  border: 1px solid var(--line); border-radius: 2px;
-  font-family: inherit; font-size: 12px; font-weight: 500; letter-spacing: .2em;
-  cursor: pointer; opacity: 0; pointer-events: none;
-  transition: opacity .5s ease 1.2s, color .2s ease, border-color .2s ease;
+  min-height: 44px; min-width: 44px; padding: 0 16px;
+  opacity: 0; pointer-events: none; transition: opacity .5s ease 1.1s;
 }
 .revealed #replay { opacity: 1; pointer-events: auto; }
-#replay:hover, #replay:focus-visible { color: var(--pine); border-color: var(--pine); }
 :focus-visible { outline: 2px solid var(--pine); outline-offset: 3px; }
 #cover:focus { outline: none; }
 #cover:focus-visible { outline: 2px solid var(--bone); outline-offset: -6px; }
 
-/* الشاشات القصيرة والأفقية */
+/* ── مُبلِّغ للقارئ الآلي ── */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 @media (min-width: 940px) {
   .content { margin-inline: auto; }
   #mark { left: 4%; bottom: -14%; }
 }
-
-@media (max-height: 560px) {
-  #sheet { padding: 22px clamp(26px, 8vw, 96px) 20px; }
-  .names { font-size: clamp(34px, 10.5vh, 56px); }
-  .label { margin-bottom: 14px; }
-  .rule { margin: 16px 0 13px; }
-  .full, .dua { line-height: 1.8; }
-  .date { margin-top: 13px; }
-  .dua { margin-top: 15px; }
+@media (max-height: 620px) {
+  #sheet { padding: 16px clamp(26px, 8vw, 96px) 14px; }
+  .names { font-size: clamp(30px, 8.6vh, 48px); }
+  .label { margin-bottom: 10px; font-size: 10.5px; }
+  .rule { margin: 12px 0 9px; }
+  .full, .dua { line-height: 1.7; font-size: 13px; }
+  .date { margin-top: 9px; font-size: 13px; }
+  .count { margin-top: 10px; gap: 18px; }
+  .count b { font-size: 18px; }
+  .count span { margin-top: 3px; font-size: 9.5px; }
+  .dua { margin-top: 10px; }
+  .acts { margin-top: 12px; }
+  .btn { min-height: 38px; font-size: 11.5px; padding: 0 13px; }
+  #replay { min-height: 38px; }
   #mark { display: none; }
   #hint { bottom: 12px; }
 }
 
 @media print {
-  #cover, #seam, #hint, #replay { display: none !important; }
+  #cover, #seam, #spark, #grip, #hint, #replay, .acts, #mark { display: none !important; }
   #sheet { position: static; overflow: visible; padding: 12mm; }
   .content > * { clip-path: none !important; transform: none !important; }
   body { overflow: visible; background: #fff; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .half, .content > *, #seam, #hint, #replay { transition-duration: .01ms !important; }
+  .half, .content > *, #replay, #mark { transition-duration: .01ms !important; }
 }
 </style>
 
 <noscript><style>
-  #cover, #seam, #hint, #replay { display: none !important; }
+  #cover, #seam, #spark, #grip, #hint, #replay, .acts { display: none !important; }
   .content > * { clip-path: none !important; transform: none !important; }
 </style></noscript>
 
 <!-- الإعلان -->
-<main id="sheet" tabindex="-1" role="region" aria-label="إعلان عقد القران">
-</main>
 <div id="mark" aria-hidden="true">
-    <svg viewBox="0 0 200 200">
-      <circle cx="100" cy="100" r="99" fill="none" stroke="currentColor" stroke-width=".7" opacity=".16"/>
-      <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" stroke-width=".7" opacity=".16"/>
-      <circle cx="100" cy="1"   r="2.4" fill="currentColor" opacity=".42"/>
-    </svg>
+  <svg viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="99" fill="none" stroke="currentColor" stroke-width=".7" opacity=".16"/>
+    <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" stroke-width=".7" opacity=".16"/>
+    <g class="spin"><circle cx="100" cy="1" r="2.4" fill="currentColor" opacity=".42"/></g>
+  </svg>
 </div>
 
 <main id="sheet" tabindex="-1" role="region" aria-label="إعلان عقد القران">
@@ -212,20 +251,34 @@ body {
     </h1>
     <div class="rule"></div>
     <p class="full" id="d-full">نورة عبدالوهاب الخرّاز<br>سند عبدالله الفايز</p>
-    <p class="date" id="d-date">١٥ · ٠٣ · ٢٠٢٦</p>
+    <p class="date" id="d-date">٢٠ · ١١ · ٢٠٢٦</p>
+    <div class="count" id="d-count" aria-live="off"></div>
     <p class="dua" id="d-dua">سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق</p>
+    <div class="acts">
+      <a class="btn" id="cal" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        أضِفه لتقويمك</a>
+      <button class="btn" id="share" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M12 16V4M12 4 8 8M12 4l4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
+        <span id="share-t">مشاركة</span></button>
+    </div>
   </div>
 </main>
 
 <!-- الغلاف -->
-<div id="cover" role="button" tabindex="0" aria-label="افتح الإعلان">
+<div id="cover" role="button" tabindex="0" aria-label="اسحب أو انقر لفتح الإعلان">
   <div class="half t"><div class="cut" data-cut></div></div>
   <div class="half b"><div class="cut" data-cut></div></div>
 </div>
 <div id="seam" aria-hidden="true"></div>
-<div id="hint">للفتح · انقر</div>
+<div id="spark" aria-hidden="true"></div>
+<div id="grip" aria-hidden="true"><b></b><b></b></div>
+<div id="hint">اسحب للفتح</div>
 
-<button id="replay">إعادة</button>
+<button class="btn" id="replay" type="button">إعادة</button>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
 
 <script>
 /* ═══════════ عدّلي المحتوى من هنا ═══════════ */
@@ -234,8 +287,10 @@ var DATA = {
   one:   "نورة",
   two:   "سند",
   full:  "نورة عبدالوهاب الخرّاز<br>سند عبدالله الفايز",
-  date:  "١٥ · ٠٣ · ٢٠٢٦",
-  dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق"
+  date:  "٢٠ · ١١ · ٢٠٢٦",              /* ← مؤقّت، بدّليه */
+  iso:   "2026-11-20T19:00:00+03:00",   /* ← مؤقّت أيضاً: للعدّاد وزرّ التقويم */
+  dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق",
+  after: "تمّ بحمد الله"                 /* يظهر مكان العدّاد بعد الموعد */
 };
 /* ═══════════════════════════════════════════ */
 
@@ -250,41 +305,135 @@ $("#d-full").innerHTML    = DATA.full;
 $("#d-date").textContent  = DATA.date;
 $("#d-dua").innerHTML     = DATA.dua;
 document.title = DATA.one + " و " + DATA.two;
-
-/* النسختان على جانبَي الشقّ لا بد أن تتطابقا حرفاً بحرف */
 [].forEach.call(document.querySelectorAll("[data-cut]"), function (el) {
-  el.innerHTML = DATA.one + '<i>و</i>' + DATA.two;
+  el.innerHTML = DATA.one + "<i>و</i>" + DATA.two;
 });
 
-var opened = false, timer = null;
+/* ─────────── الفتح بالسحب ─────────── */
+var body = document.body, cover = $("#cover");
+var drag = null, opened = false, timer = null;
+
+function setP(v) { body.style.setProperty("--p", v); }
+
+cover.addEventListener("pointerdown", function (e) {
+  if (opened) return;
+  drag = { y: e.clientY, t: Date.now(), p: 0, moved: false };
+  body.classList.add("dragging"); cover.classList.add("grabbing");
+  cover.setPointerCapture(e.pointerId);
+});
+cover.addEventListener("pointermove", function (e) {
+  if (!drag) {                                   /* بلا سحب: الوهج يتبع المؤشّر */
+    body.style.setProperty("--sx", e.clientX + "px");
+    return;
+  }
+  var reach = Math.max(120, innerHeight * 0.30);
+  drag.p = Math.min(1, Math.abs(e.clientY - drag.y) / reach);
+  if (drag.p > 0.02) drag.moved = true;
+  setP(drag.p);
+});
+function release(e) {
+  if (!drag) return;
+  var speed = drag.p / Math.max(1, Date.now() - drag.t) * 1000;   /* تقدّم بالثانية */
+  var go = drag.p > 0.38 || speed > 1.6;
+  body.classList.remove("dragging"); cover.classList.remove("grabbing");
+  body.style.removeProperty("--p");
+  var wasTap = !drag.moved;
+  drag = null;
+  if (go || wasTap) open(); 
+}
+cover.addEventListener("pointerup", release);
+cover.addEventListener("pointercancel", release);
+cover.addEventListener("keydown", function (e) {
+  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); open(); }
+});
+/* عجلة الفأرة تفتح أيضاً — أقرب حركة طبيعية على الكمبيوتر */
+cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(); } }, { passive: false });
+
 function open() {
   if (!opened) {
     opened = true;
-    document.body.classList.add("opened");
-    timer = setTimeout(finish, 550);            /* المحتوى يبدأ والنصفان ما زالا يتباعدان */
-  } else if (!document.body.classList.contains("revealed")) {
-    clearTimeout(timer); finish();              /* نقرة أثناء الحركة تقفز للنهاية */
+    body.classList.add("opened");
+    if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
+    timer = setTimeout(finish, 480);
+  } else if (!body.classList.contains("revealed")) {
+    clearTimeout(timer); finish();               /* لمسة أثناء الحركة تقفز للنهاية */
   }
 }
 function finish() {
-  document.body.classList.add("revealed");
-  var c = $("#cover");
-  c.setAttribute("aria-hidden", "true"); c.setAttribute("tabindex", "-1");
+  body.classList.add("revealed");
+  cover.setAttribute("aria-hidden", "true"); cover.setAttribute("tabindex", "-1");
   $("#sheet").removeAttribute("aria-hidden");
   $("#sheet").focus({ preventScroll: true });
+  $("#d-count").setAttribute("aria-live", "off");
 }
 function reset() {
   clearTimeout(timer); opened = false;
-  document.body.classList.remove("opened", "revealed");
-  var c = $("#cover");
-  c.removeAttribute("aria-hidden"); c.setAttribute("tabindex", "0");
+  body.classList.remove("opened", "revealed");
+  body.style.removeProperty("--p");
+  cover.removeAttribute("aria-hidden"); cover.setAttribute("tabindex", "0");
   $("#sheet").setAttribute("aria-hidden", "true");
-  c.focus({ preventScroll: true });
+  cover.focus({ preventScroll: true });
 }
 $("#sheet").setAttribute("aria-hidden", "true");
-$("#cover").addEventListener("click", open);
-$("#cover").addEventListener("keydown", function (e) {
-  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
-});
 $("#replay").addEventListener("click", function (e) { e.stopPropagation(); reset(); });
+addEventListener("keydown", function (e) { if (e.key === "Escape" && opened) reset(); });
+
+/* ─────────── العلامة تتبع الحركة ─────────── */
+var mark = $("#mark");
+addEventListener("pointermove", function (e) {
+  var dx = (e.clientX / innerWidth - .5), dy = (e.clientY / innerHeight - .5);
+  mark.style.setProperty("--mx", (dx * -26).toFixed(1) + "px");
+  mark.style.setProperty("--my", (dy * -26).toFixed(1) + "px");
+});
+$("#sheet").addEventListener("scroll", function () {
+  mark.style.setProperty("--my", (-$("#sheet").scrollTop * .18).toFixed(1) + "px");
+});
+
+/* ─────────── العدّاد الحيّ ─────────── */
+var AR = "٠١٢٣٤٥٦٧٨٩";
+function ar(n, pad) { n = String(n); if (pad) while (n.length < 2) n = "0" + n;
+  return n.replace(/\d/g, function (d) { return AR[+d]; }); }
+
+var when = new Date(DATA.iso).getTime(), box = $("#d-count"), tickTimer;
+function tick() {
+  var left = when - Date.now();
+  if (isNaN(when)) { box.style.display = "none"; return; }
+  if (left <= 0) {
+    box.className = "count done"; box.textContent = DATA.after;
+    clearInterval(tickTimer); return;
+  }
+  var s = Math.floor(left / 1000), d = Math.floor(s / 86400),
+      h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  var cells = [[d, "يوم"], [h, "ساعة"], [m, "دقيقة"], [sec, "ثانية"]];
+  if (!box.firstChild) {
+    box.innerHTML = cells.map(function (c) { return "<div><b></b><span>" + c[1] + "</span></div>"; }).join("");
+  }
+  var bs = box.querySelectorAll("b");
+  cells.forEach(function (c, i) { var t = ar(c[0], i > 0); if (bs[i].textContent !== t) bs[i].textContent = t; });
+}
+tick(); tickTimer = setInterval(tick, 1000);
+
+/* ─────────── التقويم والمشاركة ─────────── */
+function stamp(t) { return new Date(t).toISOString().replace(/[-:]|\.\d{3}/g, ""); }
+if (!isNaN(when)) {
+  var title = DATA.label + " " + DATA.one + " و " + DATA.two;
+  $("#cal").href = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+    + "&text=" + encodeURIComponent(title)
+    + "&dates=" + stamp(when) + "/" + stamp(when + 3 * 3600 * 1000)
+    + "&details=" + encodeURIComponent(location.href);
+} else { $("#cal").remove(); }
+
+$("#share").addEventListener("click", async function () {
+  var payload = { title: DATA.one + " و " + DATA.two, text: DATA.label, url: location.href };
+  try {
+    if (navigator.share) { await navigator.share(payload); return; }
+    await navigator.clipboard.writeText(location.href);
+    said("نُسخ الرابط");
+  } catch (err) { if (err && err.name !== "AbortError") said("تعذّرت المشاركة — انسخي الرابط من المتصفح"); }
+});
+function said(msg) {
+  var b = $("#share"), t = $("#share-t"), was = t.textContent;
+  t.textContent = msg; b.classList.add("ok"); $("#live").textContent = msg;
+  setTimeout(function () { t.textContent = was; b.classList.remove("ok"); }, 2200);
+}
 </script>
