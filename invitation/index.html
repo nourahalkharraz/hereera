@@ -2,10 +2,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#CFDCE0">
 <title>عقد قران</title>
-<meta name="description" content="بحمد الله وتوفيقه، يسرّنا أن نزفّ إليكم خبر عقد قران نورة و سند">
+<meta name="description" content="بحمد الله وتوفيقه، تمّ عقد قران نورة على سند">
 <meta property="og:type" content="website">
-<meta property="og:title" content="عقد قران نورة و سند">
-<meta property="og:description" content="بحمد الله وتوفيقه، يسرّنا أن نزفّ إليكم الخبر">
+<meta property="og:title" content="تمّ عقد قران نورة على سند">
+<meta property="og:description" content="بحمد الله وتوفيقه">
 <meta property="og:locale" content="ar_SA">
 
 <style>
@@ -48,7 +48,7 @@
 
   --fold: 46%;
   --p: 0;
-  --cut-y: -.12em;
+  --cut-y: -.28em;   /* يمرّ الشقّ في وسط الحرفين لا فوقهما */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -122,13 +122,13 @@ body {
 .cut {
   position: absolute; left: 0; right: 0; text-align: center;
   font-family: 'Reem Kufi', system-ui, sans-serif; font-weight: 700;
-  font-size: clamp(42px, 19vw, 116px); line-height: 1; letter-spacing: .01em;
+  font-size: clamp(88px, 33vw, 210px); line-height: 1;
   color: var(--ink); white-space: nowrap; user-select: none; -webkit-user-select: none;
+  display: flex; align-items: baseline; justify-content: center; gap: .26em;
 }
 .half.t .cut { bottom: 0; transform: translateY(50%)  translateY(var(--cut-y)); }
 .half.b .cut { top: 0;    transform: translateY(-50%) translateY(var(--cut-y)); }
-.cut i { font-style: normal; color: var(--blue-dp); font-size: .5em; margin: 0 .3em;
-  vertical-align: .1em; opacity: .8; }
+.cut span { display: block; }
 
 #bloom {
   position: fixed; left: -12%; right: -12%; top: var(--fold); height: 60dvh; z-index: 9;
@@ -203,7 +203,7 @@ body {
 /* همس */
 .bism { font-family:'Amiri', serif; font-weight: 400; color: var(--blue-dp);
   font-size: clamp(16px, 4.3vw, 20px); --o: .92; }
-.news { margin-top: var(--s4); font-size: clamp(13.5px, 3.5vw, 16px);
+.news { margin-top: var(--s3); font-size: clamp(13.5px, 3.5vw, 16px);
   line-height: 2.05; color: var(--ink-2); }
 .news b { display: block; font-weight: 300; }
 
@@ -214,8 +214,8 @@ body {
 /* اللحظة */
 .names {
   margin-top: var(--s3); font-family: 'Reem Kufi', system-ui, sans-serif; font-weight: 700;
-  font-size: clamp(48px, 17vw, 94px); line-height: 1.05; letter-spacing: .01em;
-  display: flex; align-items: center; justify-content: center; gap: .1em;
+  font-size: clamp(42px, 15vw, 84px); line-height: 1.08; letter-spacing: .01em;
+  display: flex; align-items: baseline; justify-content: center; gap: .04em;
   filter: none !important; position: relative;
 }
 .names b, .names i { position: relative; z-index: 1; }
@@ -226,7 +226,8 @@ body {
               rgba(214,230,235,.42) 40%, rgba(214,230,235,0) 72%);
   opacity: 0; transform: translate(-50%, -50%) scale(.15);
 }
-.revealed .names::after { animation: meet 1.7s cubic-bezier(.2,.8,.3,1) 1.42s forwards; }
+.names.pulse::after { animation: meet 1.7s cubic-bezier(.2,.8,.3,1) forwards; }
+.names { cursor: pointer; }
 @keyframes meet {
   0%   { opacity: 0;  transform: translate(-50%,-50%) scale(.15) }
   20%  { opacity: .95 }
@@ -250,7 +251,10 @@ body {
   }
   .revealed .names b { animation: sky 30s ease-in-out 2s infinite alternate; }
 }
-@keyframes sky { from { background-position: 26% 30% } to { background-position: 74% 68% } }
+@keyframes sky {
+  from { background-position: calc(26% + var(--px, 0px)) calc(30% + var(--py, 0px)) }
+  to   { background-position: calc(74% + var(--px, 0px)) calc(68% + var(--py, 0px)) }
+}
 
 /* المشهد: الاسمان يقبلان من طرفَي الشاشة فيلتقيان في المنتصف */
 .names .one { transform: translateX(62vw); }
@@ -260,13 +264,13 @@ body {
 .revealed .names .two { transition-delay: .38s; }
 
 .names i {
-  font-style: normal; color: var(--blue); font-size: .44em;
-  margin: 0 .12em; opacity: 0; transform: scale(.4);
+  font-style: normal; color: var(--blue); font-size: .40em;
+  margin: 0 .18em; opacity: 0; transform: scale(.55);
   transition: opacity .8s ease 1.35s, transform .9s cubic-bezier(.2,1.5,.4,1) 1.35s;
 }
 .revealed .names i { opacity: .9; transform: none; }
 
-.full { margin-top: var(--s2); font-size: clamp(13px, 3.4vw, 15.5px);
+.full { margin-top: var(--s3); font-size: clamp(13px, 3.4vw, 15.5px);
   line-height: 2; color: var(--ink-2); --o: .88; }
 
 /* الوقائع — بعد صمت طويل، وبصوت خافت */
@@ -334,7 +338,7 @@ body {
 
 @media (min-width: 900px) and (max-height: 1000px) {
   :root { --s4: 26px; --s5: 40px; }
-  .names { font-size: 86px; }
+  .names { font-size: 80px; }
   .verse p { font-size: 22px; line-height: 2.05; }
 }
 @media (max-width: 899px) and (max-height: 800px) {
@@ -342,7 +346,7 @@ body {
   .bism { font-size: clamp(14px, 3.7vw, 17px); }
   .news { font-size: clamp(12.5px, 3.3vw, 14.5px); line-height: 1.75; }
   .event { font-size: clamp(19px, 5.2vw, 25px); }
-  .names { font-size: clamp(34px, 9.4vh, 64px); }
+  .names { font-size: clamp(31px, 8.6vh, 58px); }
   .full  { font-size: clamp(12px, 3.1vw, 13.5px); line-height: 1.75; }
   .date  { font-size: 12.5px; }
   .count b { font-size: 20px; } .count span { margin-top: 3px; font-size: 9px; }
@@ -366,7 +370,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .half, .content > *, #bloom, .names b, .names i, .sprig,
   .verse p span { transition-duration: .01ms !important; transition-delay: 0s !important; }
-  .revealed .names::after { animation: none !important; }
+  .names.pulse::after { animation: none !important; }
   .revealed .names b { animation: none !important; }
 }
 </style>
@@ -384,9 +388,9 @@ body {
 <main id="sheet" tabindex="-1" role="region" aria-label="إعلان عقد القران">
   <div class="content">
     <p class="bism">بسم الله الرحمن الرحيم</p>
-    <p class="news" id="d-news">بحمد الله وتوفيقه<b>يسرّنا أن نزفّ إليكم خبر</b></p>
-    <p class="event" id="d-event">عقد قراننا</p>
-    <h1 class="names" id="d-names"><b class="one">نورة</b><i>و</i><b class="two">سند</b></h1>
+    <p class="news" id="d-news">بحمد الله وتوفيقه</p>
+    <p class="event" id="d-event">تمّ عقد قران</p>
+    <h1 class="names" id="d-names"><b class="one">نورة</b><i>على</i><b class="two">سند</b></h1>
     <p class="full" id="d-full">نورة عبدالوهاب الخرّاز &nbsp;·&nbsp; سند عبدالله الفايز</p>
 
     <div class="when">
@@ -422,8 +426,8 @@ body {
 
 <!-- الغلاف -->
 <div id="cover" role="button" tabindex="0" aria-label="اسحب أو انقر لفتح الإعلان">
-  <div class="half t"><div class="flora-in" data-flora="b"></div><div class="cut" data-cut>نورة<i>و</i>سند</div></div>
-  <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut>نورة<i>و</i>سند</div></div>
+  <div class="half t"><div class="flora-in" data-flora="b"></div><div class="cut" data-cut><span>ن</span><span>س</span></div></div>
+  <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut><span>ن</span><span>س</span></div></div>
 </div>
 <div id="bloom" aria-hidden="true"></div>
 <div id="spark" aria-hidden="true"></div>
@@ -438,10 +442,11 @@ body {
 <script>
 /* ═══════════ عدّلي المحتوى من هنا ═══════════ */
 var DATA = {
-  news:  "بحمد الله وتوفيقه<b>يسرّنا أن نزفّ إليكم خبر</b>",
-  event: "عقد قراننا",
+  news:  "بحمد الله وتوفيقه",
+  event: "تمّ عقد قران",
   one:   "نورة",
   two:   "سند",
+  join:  "على",          /* الرابط بين الاسمين */
   full:  "نورة عبدالوهاب الخرّاز &nbsp;·&nbsp; سند عبدالله الفايز",
   date:  "٥ سبتمبر ٢٠٢٦",
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
@@ -465,7 +470,8 @@ document.documentElement.dir  = "rtl";
 
 $("#d-news").innerHTML  = DATA.news;
 $("#d-event").textContent = DATA.event;
-$("#d-names").innerHTML = '<b class="one">' + DATA.one + '</b><i>و</i><b class="two">' + DATA.two + '</b>';
+$("#d-names").innerHTML = '<b class="one">' + DATA.one + '</b><i>' + DATA.join
+  + '</i><b class="two">' + DATA.two + '</b>';
 $("#d-full").innerHTML  = DATA.full;
 $("#d-date").textContent = DATA.date;
 /* الآية تظهر كلمةً كلمة، كأنها تُتلى */
@@ -476,10 +482,10 @@ $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
 }).join(" ");
 $("#d-verse-src").textContent = DATA.verseSrc;
 $("#d-dua").innerHTML = DATA.dua;
-document.title = DATA.event + " · " + DATA.one + " و " + DATA.two;
-[].forEach.call(document.querySelectorAll("[data-cut]"), function (el) {
-  el.innerHTML = DATA.one + "<i>و</i>" + DATA.two;
-});
+document.title = DATA.event + " " + DATA.one + " " + DATA.join + " " + DATA.two;
+/* الغلاف لا يحمل إلا حرفَي العروسين، والشقّ يمرّ فيهما */
+var initials = "<span>" + DATA.one.charAt(0) + "</span><span>" + DATA.two.charAt(0) + "</span>";
+[].forEach.call(document.querySelectorAll("[data-cut]"), function (el) { el.innerHTML = initials; });
 
 /* الأغصان نفسها تُستنسخ داخل نصفَي الغلاف، فتفترق معهما */
 [].forEach.call(document.querySelectorAll("[data-flora]"), function (slot) {
@@ -536,10 +542,12 @@ function finish() {
   sheet.removeAttribute("aria-hidden");
   sheet.focus({ preventScroll: true });
   setTimeout(moreCue, 60);
+  setTimeout(pulse, 1420);
 }
 function reset() {
   clearTimeout(timer); opened = false;
   body.classList.remove("opened", "revealed", "more");
+  namesEl.classList.remove("pulse");
   body.style.removeProperty("--p");
   cover.removeAttribute("aria-hidden"); cover.setAttribute("tabindex", "0");
   sheet.setAttribute("aria-hidden", "true"); sheet.scrollTop = 0;
@@ -548,6 +556,22 @@ function reset() {
 sheet.setAttribute("aria-hidden", "true");
 $("#replay").addEventListener("click", function (e) { e.stopPropagation(); reset(); });
 addEventListener("keydown", function (e) { if (e.key === "Escape" && opened) reset(); });
+
+/* السماء داخل الحروف تتبع الإصبع أو المؤشّر — الصفحة تردّ على اللمس أينما كان */
+var namesEl = $("#d-names");
+sheet.addEventListener("pointermove", function (e) {
+  var x = (e.clientX / innerWidth - .5), y = (e.clientY / innerHeight - .5);
+  namesEl.style.setProperty("--px", (x * -34).toFixed(1) + "px");
+  namesEl.style.setProperty("--py", (y * -34).toFixed(1) + "px");
+}, { passive: true });
+
+/* ولمسة على الاسمين تُعيد نبضة اللقاء */
+function pulse() {
+  namesEl.classList.remove("pulse");
+  void namesEl.offsetWidth;               /* إجبار المتصفّح على إعادة تشغيل الحركة */
+  namesEl.classList.add("pulse");
+}
+namesEl.addEventListener("click", pulse);
 
 function moreCue() {
   var over = sheet.scrollHeight - sheet.clientHeight > 24;
