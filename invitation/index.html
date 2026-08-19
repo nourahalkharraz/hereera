@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#f2e7e2">
+<meta name="theme-color" content="#ecdfde">
 <title>عقد قران</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8,223 +8,199 @@
 
 <style>
 /* ═══════════════════════════════════════════════════════════════════════
-   إعلان عقد قران — الظرف يُفتح، النور الذهبي يغمر الشاشة، ثم تظهر الصفحة.
-   ثلاث مراحل: الظرف ← فيضان النور ← صفحة الإعلان كاملة الشاشة.
-   عدّلي المحتوى من كائن DATA بالأسفل، والألوان من متغيرات :root.
+   إعلان عقد قران — ظرف يملأ الشاشة كاملة، يُفتح فيغمر النور الشاشة،
+   ثم تظهر صفحة الإعلان. عدّلي المحتوى من كائن DATA بالأسفل.
+
+   هندسة الظرف: أربع طيّات تلتقي كلها عند نقطة المركز (45% من الارتفاع)،
+   فتتكوّن الـ X التي تميّز ظهر الظرف — الطيّة العليا هي التي تُفتح.
    ═══════════════════════════════════════════════════════════════════════ */
 :root {
-  --blush: #f2dedd;
-  --blush-2: #e8cbca;
-  --blush-3: #dbb5b5;
+  --fold: 50%;              /* الطيّات تلتقي في مركز الشاشة تماماً */
+  --paper:   #ecdfde;       /* لون الورق الأساسي — كل الطيّات بنفس اللون */
+  --paper-2: #e5d4d3;       /* الجانبان، أغمق بلمسة فقط */
+  --paper-3: #e9d9d8;       /* الطيّة السفلى */
   --cream: #fdf8f2;
-  --cream-2: #f5ebdd;
+  --cream-2: #f6ece0;
   --ink: #6d4a4c;
-  --ink-deep: #4a2e30;
-  --gold: #b98a4b;
-  --gold-lite: #e5c68e;
+  --ink-deep: #472b2d;
+  --gold: #b3853f;
   --wax: #8f2b34;
-  --bg-1: #f2e7e2;
-  --bg-2: #dcc6c2;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
 body {
   font-family: 'Aref Ruqaa', 'Amiri', serif;
-  background: radial-gradient(130% 100% at 50% 0%, #faf0ec 0%, var(--bg-1) 45%, var(--bg-2) 100%);
-  color: var(--ink);
+  background: #ded0cf; color: var(--ink);
   min-height: 100dvh; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  padding: env(safe-area-inset-top) 14px env(safe-area-inset-bottom);
 }
-#sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+#sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 6; }
 
-/* ════════════ المرحلة ١: الظرف ════════════ */
+/* ════════════ المرحلة ١: الظرف — ملء الشاشة ════════════ */
 #stage {
-  position: relative; z-index: 2;
-  width: min(88vw, 370px, 52dvh);
-  height: min(148vw, 600px, 85dvh);
-  perspective: 1500px;
-  transition: opacity .7s ease, transform .9s ease;
+  position: fixed; inset: 0; z-index: 2;
+  perspective: 1400px; perspective-origin: 50% 30%;
+  transition: opacity .8s ease, transform 1s ease;
 }
-.revealed #stage { opacity: 0; transform: scale(1.12); pointer-events: none; }
+.revealed #stage { opacity: 0; transform: scale(1.06); pointer-events: none; }
 
+/* نقش زهري دقيق بارز، درجة على درجة */
 .paper {
-  background-color: var(--blush);
   background-image:
-    radial-gradient(circle at 50% 0, rgba(255,255,255,.55), transparent 62%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='62' height='62'%3E%3Cg fill='none' stroke='%23cfa5a5' stroke-opacity='0.45' stroke-width='.9'%3E%3Cpath d='M31 7c6 6 6 13 0 19-6-6-6-13 0-19zM31 55c-6-6-6-13 0-19 6 6 6 13 0 19zM7 31c6-6 13-6 19 0-6 6-13 6-19 0zM55 31c-6 6-13 6-19 0 6-6 13-6 19 0z'/%3E%3Ccircle cx='31' cy='31' r='2.6'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: cover, 56px 56px;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.38' stroke-width='.9'%3E%3Cpath d='M32 6c6 6.4 6 14.2 0 20.6-6-6.4-6-14.2 0-20.6zM32 58c-6-6.4-6-14.2 0-20.6 6 6.4 6 14.2 0 20.6zM6 32c6.4-6 14.2-6 20.6 0-6.4 6-14.2 6-20.6 0zM58 32c-6.4 6-14.2 6-20.6 0 6.4-6 14.2-6 20.6 0z'/%3E%3Ccircle cx='32' cy='32' r='3.4'/%3E%3C/g%3E%3Cg fill='none' stroke='%23a87a74' stroke-opacity='.15' stroke-width='.75'%3E%3Cpath d='M32 8c5.6 6.2 5.6 13.6 0 19.8-5.6-6.2-5.6-13.6 0-19.8zM32 56c-5.6-6.2-5.6-13.6 0-19.8 5.6 6.2 5.6 13.6 0 19.8zM8 32c6.2-5.6 13.6-5.6 19.8 0-6.2 5.6-13.6 5.6-19.8 0zM56 32c-6.2 5.6-13.6 5.6-19.8 0 6.2-5.6 13.6-5.6 19.8 0z'/%3E%3Ccircle cx='32' cy='32' r='2.6'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 64px;
 }
 
-#back { position: absolute; inset: 0; border-radius: 12px; z-index: 0;
-  box-shadow: 0 28px 64px rgba(120,70,62,.34); }
+/* ظهر الظرف — ما يظهر منه هو داخل الظرف عند الفتح */
+#back { position: absolute; inset: 0; z-index: 0; background-color: #c9a9a6; }
+#vignette {
+  position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  background: radial-gradient(ellipse 88% 78% at 50% 46%, transparent 42%, rgba(140,96,94,.16) 100%);
+}
 
-/* الضوء داخل الظرف. مبني ليتصرّف كضوء لا كطبقة لون:
-   مصدره عميق عند الطيّة فيسطع من فوق ويخفت للأسفل، ويتجمّع عند فتحة الـ V،
-   و screen يجعله يُضيء نقش الورق بدل أن يغطيه. */
+/* الطيّات الثابتة — كلها بنفس درجة الورق تقريباً؛ الـ X تُرسم بخيط ظل رفيع
+   لا بفرق لون صارخ، تماماً كما في الظرف الحقيقي */
+#sideL, #sideR, #bottom { position: absolute; inset: 0; z-index: 5; }
+#sideL {
+  clip-path: polygon(0 0, 0 100%, 50% var(--fold));
+  background-color: var(--paper-2);
+  box-shadow: inset 6px 0 22px rgba(150,105,102,.10);
+}
+#sideR {
+  clip-path: polygon(100% 0, 100% 100%, 50% var(--fold));
+  background-color: var(--paper-2); filter: brightness(.975);
+  box-shadow: inset -6px 0 22px rgba(150,105,102,.10);
+}
+#bottom {
+  clip-path: polygon(0 100%, 100% 100%, 50% var(--fold));
+  background-color: var(--paper-3);
+}
+
+/* خطوط الطيّ السفلية: ظل شعري رفيع يتبع نسبة الشاشة مهما تغيّرت */
+#seams {
+  position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  width: 100%; height: 100%;
+}
+
+/* الضوء داخل الظرف — ليس بقعة دائرية، بل خطّان دافئان يركبان حافتَي الـ V:
+   أسطعهما عند الختم ويخفتان نحو الزاويتين العلويتين، كما في الظرف الحقيقي */
 #vglow {
-  position: absolute; left: 0; right: 0; top: 0; height: 56%;
-  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-  /* لون كهرماني مباشر — لا screen، لأن المزج الفاتح فوق ورق فاتح يُبيّض
-     الضوء ويفقده الدفء. شبه شفاف كي يبقى نقش الورق ظاهراً تحته. */
-  background:
-    radial-gradient(ellipse 96% 82% at 50% 100%,
-      rgba(255,240,200,.98) 0%,
-      rgba(255,206,130,.93) 16%,
-      rgba(248,175,90,.82) 34%,
-      rgba(234,150,72,.58) 54%,
-      rgba(218,130,62,.3) 72%,
-      rgba(205,118,56,.1) 88%,
-      transparent 100%);
-  opacity: 0; z-index: 4;
-  filter: blur(.6px);
-  transition: opacity .7s cubic-bezier(.4,0,.5,1) .12s;
+  position: absolute; inset: 0; z-index: 8; pointer-events: none;
+  width: 100%; height: 100%;
+  opacity: 0; transition: opacity .8s cubic-bezier(.4,0,.5,1) .22s;
 }
 .opened #vglow { opacity: 1; }
 
-/* حافتا الطيّة تلتقطان الضوء كخطّين ساطعين — أوضح أثر في الأصل */
-#vrim {
-  position: absolute; left: 0; right: 0; top: 0; height: 56%;
-  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-  pointer-events: none;
-  background: conic-gradient(from 180deg at 50% 100%,
-    transparent 0deg,
-    rgba(255,196,104,.3) 22deg,
-    rgba(255,244,214,.98) 32deg,
-    rgba(255,196,104,.3) 42deg,
-    transparent 64deg,
-    transparent 296deg,
-    rgba(255,196,104,.3) 318deg,
-    rgba(255,244,214,.98) 328deg,
-    rgba(255,196,104,.3) 338deg,
-    transparent 360deg);
-  opacity: 0; z-index: 5; filter: blur(3px);
-  transition: opacity .6s ease .22s;
-}
-.opened #vrim { opacity: 1; }
-
-/* ظل الغطاء المرفوع على جسم الظرف — يمنح العمق ويزول مع ارتفاعه */
+/* ظل الطيّة العليا على ما تحتها، يزول وهي ترتفع */
 #flapShadow {
-  position: absolute; left: 0; right: 0; top: 0; height: 56%;
-  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-  background: linear-gradient(to bottom, rgba(96,52,48,.34), rgba(96,52,48,.1) 45%, transparent 70%);
-  opacity: 1; z-index: 3; pointer-events: none;
-  transition: opacity 1s ease;
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 50% var(--fold));
+  background: linear-gradient(to bottom, rgba(92,50,45,.16), rgba(92,50,45,.05) 55%, transparent 78%);
+  transition: opacity 1.05s ease;
 }
 .opened #flapShadow { opacity: 0; }
 
-/* جيوب الظرف الأمامية */
-#frontB, #frontL, #frontR { position: absolute; inset: 0; z-index: 5; border-radius: 12px; }
-#frontB { clip-path: polygon(0% 100%, 100% 100%, 50% 44%); box-shadow: inset 0 3px 9px rgba(255,255,255,.32); }
-#frontB.paper { background-color: var(--blush-2); }
-#frontL { clip-path: polygon(0% 0%, 0% 100%, 50% 50%); }
-#frontL.paper { background-color: var(--blush-3); filter: brightness(.98); }
-#frontR { clip-path: polygon(100% 0%, 100% 100%, 50% 50%); }
-#frontR.paper { background-color: var(--blush-3); filter: brightness(.94); }
-
-/* الغطاء: مثلث رأسه للأسفل، يرتفع حول حافته العليا */
+/* الطيّة العليا: تُفتح حول حافتها العليا، وتبقى مرئية بعد الفتح
+   كمثلث في الظل — لا تختفي */
 #flap {
-  position: absolute; left: -1px; right: -1px; top: 0; height: 56%;
-  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  position: absolute; inset: 0; z-index: 7;
+  clip-path: polygon(0 0, 100% 0, 50% var(--fold));
+  background-color: var(--paper);
   transform-origin: 50% 0%; transform: rotateX(0deg);
-  transition: transform 1.15s cubic-bezier(.55,.02,.25,1);
-  z-index: 8; backface-visibility: hidden; border-radius: 12px 12px 0 0;
-  box-shadow: 0 5px 12px rgba(120,70,60,.2);
+  filter: drop-shadow(0 2px 2px rgba(120,72,70,.30)) brightness(1);
+  transition: transform 1.25s cubic-bezier(.52,.02,.24,1), filter 1.25s ease;
 }
-#flap.paper { background-color: var(--blush-2); }
-.opened #flap { transform: rotateX(-148deg); }
+.opened #flap { transform: rotateX(-138deg); filter: drop-shadow(0 0 0 transparent) brightness(.80); }
 
-/* الختم يبقى مكانه ويلمع مع الغطاء */
+/* هالة حول الختم قبل الفتح */
+#halo {
+  position: absolute; top: var(--fold); left: 50%;
+  width: 170px; height: 170px; margin: -85px 0 0 -85px; z-index: 9;
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,206,138,.6), rgba(255,190,110,.2) 44%, transparent 70%);
+  animation: halo 3s ease-in-out infinite;
+}
+.opened #halo { opacity: 0; animation: none; transition: opacity .4s ease; }
+@keyframes halo { 0%,100%{opacity:.3;transform:scale(.9)} 50%{opacity:.75;transform:scale(1.05)} }
+
+/* ختم الشمع — يرتفع مع الطيّة ثم يتلاشى */
 #seal {
-  position: absolute; top: 44%; left: 50%;
-  width: 88px; height: 88px; margin: -44px 0 0 -44px;
-  z-index: 9; transform-origin: 50% 0%;
-  transition: transform 1.15s cubic-bezier(.55,.02,.25,1), opacity .5s ease .55s;
+  position: absolute; top: var(--fold); left: 50%;
+  width: 92px; height: 92px; margin: -46px 0 0 -46px; z-index: 10;
+  transition: transform 1.1s ease, opacity .7s ease 1.5s, filter .9s ease .3s;
 }
-.opened #seal { transform: translateY(-26%) rotateX(-40deg) scale(.94); opacity: 0; }
+.opened #seal { transform: translateY(-3%) scale(1.04); opacity: 0;
+  filter: drop-shadow(0 0 16px rgba(255,190,110,.85)) drop-shadow(0 5px 8px rgba(70,15,25,.35)); }
 #seal svg { width: 100%; height: 100%; display: block;
-  filter: drop-shadow(0 4px 7px rgba(70,15,25,.45)); }
-.seal-mono { font-family: 'Aref Ruqaa', serif; font-weight: 700; font-size: 25px; fill: #f2d2c8; }
-/* هالة الضوء حول الختم قبل الفتح */
-#sealHalo {
-  position: absolute; top: 44%; left: 50%; width: 150px; height: 150px; margin: -75px 0 0 -75px;
-  border-radius: 50%; z-index: 6; pointer-events: none;
-  background: radial-gradient(circle, rgba(255,215,150,.75), rgba(255,196,120,.25) 42%, transparent 68%);
-  animation: halo 2.8s ease-in-out infinite;
-}
-.opened #sealHalo { animation: none; opacity: 0; transition: opacity .4s ease; }
-@keyframes halo { 0%,100% { opacity: .35; transform: scale(.92); } 50% { opacity: .8; transform: scale(1.06); } }
+  filter: drop-shadow(0 5px 8px rgba(70,15,25,.42)); }
+.seal-mono { font-family: 'Aref Ruqaa', serif; font-weight: 700; font-size: 26px; fill: #f4d6cc; }
 
 /* ════════════ المرحلة ٢: فيضان النور ════════════ */
-/* توهّج عدسة دافئ ينمو من فتحة الظرف — لا ومضة بيضاء مسطّحة */
 #flash {
-  position: fixed; inset: -20%; z-index: 12; pointer-events: none;
-  background: radial-gradient(circle at 50% 47%,
-    rgba(255,250,238,.98) 0%, rgba(255,236,200,.92) 14%,
-    rgba(255,216,158,.72) 30%, rgba(255,198,132,.34) 48%,
-    rgba(255,186,116,.08) 66%, transparent 80%);
-  opacity: 0; transform: scale(.12);
-  filter: blur(8px);
-  transition: opacity .7s ease .2s, transform 1.35s cubic-bezier(.42,0,.3,1) .2s;
+  position: fixed; inset: -25%; z-index: 12; pointer-events: none;
+  background: radial-gradient(circle at 50% 45%,
+    rgba(255,251,240,.98) 0%, rgba(255,237,203,.93) 13%,
+    rgba(255,217,160,.74) 29%, rgba(255,199,134,.36) 47%,
+    rgba(255,187,118,.09) 65%, transparent 80%);
+  opacity: 0; transform: scale(.1); filter: blur(9px);
+  transition: opacity .9s ease 1.45s, transform 1.6s cubic-bezier(.42,0,.3,1) 1.35s;
 }
-.opened #flash { opacity: 1; transform: scale(2.6); }
-.revealed #flash { opacity: 0; transition: opacity 1.1s ease; }
+.opened #flash { opacity: 1; transform: scale(2.7); }
+.revealed #flash { opacity: 0; transition: opacity 1.15s ease; }
 
 /* ════════════ المرحلة ٣: صفحة الإعلان ════════════ */
 #reveal {
-  position: fixed; inset: 0; z-index: 14;
-  opacity: 0; pointer-events: none;
+  position: fixed; inset: 0; z-index: 14; opacity: 0; pointer-events: none;
   background: linear-gradient(170deg, #fefaf5 0%, var(--cream) 48%, var(--cream-2) 100%);
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center;
-  padding: calc(28px + env(safe-area-inset-top)) 22px calc(34px + env(safe-area-inset-bottom));
+  padding: calc(26px + env(safe-area-inset-top)) 22px calc(34px + env(safe-area-inset-bottom));
   transition: opacity 1s ease;
 }
 .revealed #reveal { opacity: 1; pointer-events: auto; }
+#arch { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  color: var(--gold); opacity: .45; }
 
-#arch { position: absolute; inset: 0; width: 100%; height: 100%;
-  pointer-events: none; color: var(--gold); opacity: .5; }
-
-.r-inner { position: relative; z-index: 2; max-width: 480px; width: 100%; }
+.r-inner { position: relative; z-index: 2; max-width: 470px; width: 100%; }
 .r-inner > * { opacity: 0; transform: translateY(14px);
   transition: opacity .8s ease, transform .8s ease; }
 .revealed .r-inner > * { opacity: 1; transform: none; }
-.revealed .r-inner > *:nth-child(1){ transition-delay:.25s }
-.revealed .r-inner > *:nth-child(2){ transition-delay:.4s }
-.revealed .r-inner > *:nth-child(3){ transition-delay:.55s }
-.revealed .r-inner > *:nth-child(4){ transition-delay:.75s }
-.revealed .r-inner > *:nth-child(5){ transition-delay:.9s }
-.revealed .r-inner > *:nth-child(6){ transition-delay:1.05s }
-.revealed .r-inner > *:nth-child(7){ transition-delay:1.2s }
-.revealed .r-inner > *:nth-child(8){ transition-delay:1.35s }
+.revealed .r-inner > *:nth-child(1){transition-delay:.25s}
+.revealed .r-inner > *:nth-child(2){transition-delay:.4s}
+.revealed .r-inner > *:nth-child(3){transition-delay:.55s}
+.revealed .r-inner > *:nth-child(4){transition-delay:.75s}
+.revealed .r-inner > *:nth-child(5){transition-delay:.9s}
+.revealed .r-inner > *:nth-child(6){transition-delay:1.05s}
+.revealed .r-inner > *:nth-child(7){transition-delay:1.2s}
+.revealed .r-inner > *:nth-child(8){transition-delay:1.35s}
+.revealed .r-inner > *:nth-child(9){transition-delay:1.5s}
 
-.r-bism { font-family: 'Amiri', serif; font-size: clamp(13px,3.7vw,17px); color: var(--gold); }
-.r-pre  { font-family: 'Amiri', serif; font-size: clamp(12.5px,3.5vw,16px); color: var(--ink); opacity: .9; margin-top: 14px; }
-.r-title{ font-family: 'Aref Ruqaa', serif; font-weight: 700;
-          font-size: clamp(34px,11vw,58px); color: var(--gold); line-height: 1.15; margin: 6px 0 4px;
-          text-shadow: 0 1px 0 rgba(255,255,255,.7); }
-.r-names{ font-family: 'Aref Ruqaa', serif; font-weight: 700;
-          font-size: clamp(24px,7.6vw,40px); color: var(--ink-deep); line-height: 1.35; margin-top: 14px; }
-.r-amp  { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-style: italic; }
-.r-full { font-family: 'Amiri', serif; font-size: clamp(11.5px,3vw,14px); color: var(--ink); opacity: .8; line-height: 1.9; margin-top: 6px; }
-.r-rule { width: 52%; max-width: 210px; height: 1px; margin: 20px auto;
-          background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-.r-date { font-family: 'Amiri', serif; font-weight: 700;
-          font-size: clamp(17px,5vw,24px); color: var(--gold); letter-spacing: 1px; }
-.r-dua  { font-family: 'Amiri', serif; font-size: clamp(12px,3.3vw,15px); color: var(--ink);
-          opacity: .85; line-height: 1.9; margin-top: 16px; }
-.r-flourish { width: 46%; max-width: 150px; height: auto; color: var(--gold); opacity: .7; margin-top: 20px; }
+.r-bism { font-family:'Amiri',serif; font-size:clamp(13px,3.7vw,17px); color:var(--gold); }
+.r-pre  { font-family:'Amiri',serif; font-size:clamp(12.5px,3.5vw,16px); color:var(--ink); opacity:.9; margin-top:14px; }
+.r-title{ font-family:'Aref Ruqaa',serif; font-weight:700; font-size:clamp(34px,11vw,58px);
+          color:var(--gold); line-height:1.15; margin:6px 0 4px; text-shadow:0 1px 0 rgba(255,255,255,.7); }
+.r-names{ font-family:'Aref Ruqaa',serif; font-weight:700; font-size:clamp(24px,7.6vw,40px);
+          color:var(--ink-deep); line-height:1.35; margin-top:14px; }
+.r-amp  { color:var(--gold); font-family:'Cormorant Garamond',serif; font-style:italic; }
+.r-full { font-family:'Amiri',serif; font-size:clamp(11.5px,3vw,14px); color:var(--ink); opacity:.8; line-height:1.9; margin-top:6px; }
+.r-rule { width:52%; max-width:210px; height:1px; margin:20px auto;
+          background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.r-date { font-family:'Amiri',serif; font-weight:700; font-size:clamp(17px,5vw,24px);
+          color:var(--gold); letter-spacing:1px; }
+.r-dua  { font-family:'Amiri',serif; font-size:clamp(12px,3.3vw,15px); color:var(--ink);
+          opacity:.85; line-height:1.9; margin-top:16px; }
+.r-flourish { width:46%; max-width:150px; height:auto; color:var(--gold); opacity:.7; margin-top:20px; }
 
 /* ── تلميح وإعادة ── */
 #hint {
-  position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom));
-  text-align: center; color: var(--gold); z-index: 3;
+  position: fixed; left: 0; right: 0; bottom: calc(30px + env(safe-area-inset-bottom));
+  text-align: center; color: #fff6ea; z-index: 8;
   font-family: 'Cormorant Garamond', serif; letter-spacing: 3px; font-size: 15px;
+  text-shadow: 0 1px 6px rgba(120,60,50,.5);
   animation: pulse 2.4s ease-in-out infinite;
 }
-.opened #hint { opacity: 0; transition: opacity .3s ease; pointer-events: none; }
-@keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:.95} }
+.opened #hint { opacity: 0; animation: none; transition: opacity .3s ease; pointer-events: none; }
+@keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
 
 #replay {
   position: fixed; left: 50%; transform: translateX(-50%);
@@ -232,78 +208,115 @@ body {
   background: rgba(255,255,255,.6); color: var(--ink-deep);
   border: 1px solid var(--gold); border-radius: 999px; padding: 7px 16px;
   font-family: 'Amiri', serif; font-size: 13px; cursor: pointer;
-  opacity: 0; pointer-events: none; transition: opacity .6s ease 1.6s;
-  backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity .6s ease 1.7s; backdrop-filter: blur(4px);
 }
 .revealed #replay { opacity: 1; pointer-events: auto; }
 
 @media (max-height: 520px) {
-  #stage { height: min(148vw, 600px, 76dvh); width: min(88vw, 370px, 46dvh); }
-  #reveal { padding: 20px 18px; justify-content: flex-start; }
-  .r-title { font-size: 30px; }
-  .r-names { font-size: 21px; margin-top: 8px; }
-  .r-rule { margin: 12px auto; }
-  .r-dua { margin-top: 10px; }
+  #reveal { padding: 18px; justify-content: flex-start; }
+  .r-title { font-size: 30px; } .r-names { font-size: 21px; margin-top: 8px; }
+  .r-rule { margin: 12px auto; } .r-dua { margin-top: 10px; }
   .r-flourish { margin-top: 10px; width: 34%; }
-  #hint { bottom: 8px; font-size: 13px; }
+  #hint { bottom: 10px; font-size: 13px; }
+  #seal { width: 70px; height: 70px; margin: -35px 0 0 -35px; }
+  .seal-mono { font-size: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  #flap,#seal,#vglow,#flash,#reveal,.r-inner > *,#stage { transition-duration: .01ms !important; }
-  #sealHalo { animation: none; }
+  #flap,#seal,#vglow,#flash,#reveal,.r-inner > *,#stage,#flapShadow { transition-duration:.01ms !important; }
+  #halo { animation: none; }
 }
 </style>
-
-<canvas id="sparkles"></canvas>
 
 <!-- المرحلة ١: الظرف -->
 <div id="stage" role="button" aria-label="افتح الإعلان" tabindex="0">
   <div id="back" class="paper"></div>
+  <div id="sideL" class="paper"></div>
+  <div id="sideR" class="paper"></div>
+  <div id="bottom" class="paper"></div>
+  <svg id="seams" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="none" stroke="#8a5b58" stroke-opacity=".16" stroke-width=".28" vector-effect="non-scaling-stroke">
+      <path d="M0 100 L50 50 L100 100"/>
+    </g>
+    <g fill="none" stroke="#fff" stroke-opacity=".26" stroke-width=".5" vector-effect="non-scaling-stroke">
+      <path d="M0 100.6 L50 50.6 L100 100.6"/>
+    </g>
+  </svg>
+  <div id="vignette"></div>
   <div id="flapShadow"></div>
-  <div id="vglow"></div>
-  <div id="vrim"></div>
-  <div id="frontB" class="paper"></div>
-  <div id="frontL" class="paper"></div>
-  <div id="frontR" class="paper"></div>
   <div id="flap" class="paper"></div>
-  <div id="sealHalo"></div>
+  <svg id="vglow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="glL" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="50" y2="50">
+        <stop offset="0%"   stop-color="#ffcf86" stop-opacity="0"/>
+        <stop offset="38%"  stop-color="#ffc271" stop-opacity=".45"/>
+        <stop offset="78%"  stop-color="#ffdda6" stop-opacity=".95"/>
+        <stop offset="100%" stop-color="#fff3d6" stop-opacity="1"/>
+      </linearGradient>
+      <linearGradient id="glR" gradientUnits="userSpaceOnUse" x1="100" y1="0" x2="50" y2="50">
+        <stop offset="0%"   stop-color="#ffcf86" stop-opacity="0"/>
+        <stop offset="38%"  stop-color="#ffc271" stop-opacity=".45"/>
+        <stop offset="78%"  stop-color="#ffdda6" stop-opacity=".95"/>
+        <stop offset="100%" stop-color="#fff3d6" stop-opacity="1"/>
+      </linearGradient>
+      <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="1.5"/>
+      </filter>
+      <filter id="softer" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="4"/>
+      </filter>
+    </defs>
+    <!-- انسكاب واسع خافت -->
+    <g filter="url(#softer)" opacity=".65">
+      <path d="M0 0 L50 50" stroke="url(#glL)" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M100 0 L50 50" stroke="url(#glR)" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </g>
+    <!-- الخيط الدافئ -->
+    <g filter="url(#soft)">
+      <path d="M0 0 L50 50" stroke="url(#glL)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M100 0 L50 50" stroke="url(#glR)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    </g>
+    <!-- القلب الساطع عند الختم -->
+    <g filter="url(#soft)" opacity=".9">
+      <path d="M0 0 L50 50" stroke="url(#glL)" stroke-width=".9" fill="none" stroke-linecap="round"/>
+      <path d="M100 0 L50 50" stroke="url(#glR)" stroke-width=".9" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>
+  <div id="halo"></div>
   <div id="seal">
     <svg viewBox="0 0 100 100">
       <defs>
         <radialGradient id="wax" cx="40%" cy="30%" r="72%">
-          <stop offset="0%" stop-color="#c4525c"/>
-          <stop offset="45%" stop-color="#8f2b34"/>
+          <stop offset="0%" stop-color="#c4525c"/><stop offset="45%" stop-color="#8f2b34"/>
           <stop offset="100%" stop-color="#5f1620"/>
         </radialGradient>
         <radialGradient id="waxHi" cx="36%" cy="26%" r="28%">
-          <stop offset="0%" stop-color="#fff" stop-opacity=".6"/>
+          <stop offset="0%" stop-color="#fff" stop-opacity=".55"/>
           <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
         </radialGradient>
       </defs>
       <g id="wax-blob"></g>
       <circle cx="50" cy="50" r="42" fill="url(#wax)"/>
       <circle cx="50" cy="50" r="42" fill="url(#waxHi)"/>
-      <circle cx="50" cy="50" r="35" fill="none" stroke="#f2d2c8" stroke-opacity=".3" stroke-width="1.2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="#f4d6cc" stroke-opacity=".3" stroke-width="1.2"/>
       <text class="seal-mono" x="50" y="59" text-anchor="middle" id="d-mono">ن&amp;س</text>
     </svg>
   </div>
 </div>
 
+<canvas id="sparkles"></canvas>
 <div id="hint">ــ المسي الظرف ــ</div>
 
-<!-- المرحلة ٢: فيضان النور -->
+<!-- المرحلة ٢ -->
 <div id="flash"></div>
 
-<!-- المرحلة ٣: صفحة الإعلان -->
+<!-- المرحلة ٣ -->
 <div id="reveal">
   <svg id="arch" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <g fill="none" stroke="currentColor" stroke-width="1.3">
       <path d="M40 780V300c0-88 72-160 160-160s160 72 160 160v480"/>
       <path d="M56 780V300c0-79 65-144 144-144s144 65 144 144v480" stroke-width=".8" opacity=".7"/>
     </g>
-    <g fill="currentColor" opacity=".5">
-      <circle cx="200" cy="128" r="4"/>
-      <circle cx="200" cy="112" r="2.2"/>
-    </g>
+    <g fill="currentColor" opacity=".5"><circle cx="200" cy="128" r="4"/><circle cx="200" cy="112" r="2.2"/></g>
     <g fill="none" stroke="currentColor" stroke-width="1" opacity=".55">
       <path d="M200 140c-16 14-16 30 0 44 16-14 16-30 0-44z"/>
       <path d="M92 250c14 6 22 18 24 32M308 250c-14 6-22 18-24 32"/>
@@ -316,7 +329,6 @@ body {
       <circle cx="92" cy="632" r="3"/><circle cx="308" cy="632" r="3"/>
     </g>
   </svg>
-
   <div class="r-inner">
     <div class="r-bism">بسم الله الرحمن الرحيم</div>
     <div class="r-pre" id="d-pre"></div>
@@ -328,8 +340,7 @@ body {
     <div class="r-dua" id="d-dua"></div>
     <svg class="r-flourish" viewBox="0 0 120 16" aria-hidden="true">
       <g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
-        <path d="M6 8h34M80 8h34"/>
-        <path d="M48 8c4-5 8-5 12 0-4 5-8 5-12 0z"/>
+        <path d="M6 8h34M80 8h34"/><path d="M48 8c4-5 8-5 12 0-4 5-8 5-12 0z"/>
         <path d="M72 8c-4-5-8-5-12 0 4 5 8 5 12 0z"/>
       </g>
       <circle cx="60" cy="8" r="1.8" fill="currentColor"/>
@@ -364,8 +375,7 @@ $("#d-dua").innerHTML = DATA.dua;
 $("#d-mono").textContent = DATA.mono;
 document.title = "عقد قران " + DATA.bride + " و " + DATA.groom;
 
-// حافة الشمع المموّجة
-(function () {
+(function () {   // حافة الشمع المموّجة
   var pts = [], n = 28;
   for (var i = 0; i < n; i++) {
     var a = (i / n) * Math.PI * 2, r = i % 2 === 0 ? 46 : 41;
@@ -377,20 +387,16 @@ document.title = "عقد قران " + DATA.bride + " و " + DATA.groom;
   $("#wax-blob").appendChild(path);
 })();
 
-/* ── التسلسل: ظرف ← نور ← صفحة ── */
 var opened = false, revealTimer = null;
 function open() {
   if (opened) return;
   opened = true;
   document.body.classList.add("opened");
   burst();
-  revealTimer = setTimeout(function () {
-    document.body.classList.add("revealed");
-  }, 1250);
+  revealTimer = setTimeout(function () { document.body.classList.add("revealed"); }, 2850);
 }
 function reset() {
-  clearTimeout(revealTimer);
-  opened = false;
+  clearTimeout(revealTimer); opened = false;
   document.body.classList.remove("opened", "revealed");
 }
 $("#stage").addEventListener("click", open);
@@ -399,7 +405,7 @@ $("#stage").addEventListener("keydown", function (e) {
 });
 $("#replay").addEventListener("click", function (e) { e.stopPropagation(); reset(); });
 
-/* ── بريق ── */
+/* بريق */
 var cv = $("#sparkles"), ctx = cv.getContext("2d"), parts = [], W, H, dpr;
 function resize() { dpr = devicePixelRatio || 1; W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr; }
 resize(); addEventListener("resize", resize);
@@ -409,9 +415,9 @@ function spark(x, y, big) {
     vy: (big ? -Math.random() * 2.4 - .4 : Math.random() * .25 + .05) * dpr,
     r: (Math.random() * 1.6 + .6) * dpr * (big ? 1.5 : 1),
     life: 1, decay: big ? .010 : .004 + Math.random() * .004,
-    hue: Math.random() > .5 ? "#e5c68e" : "#fdf4e4" };
+    hue: Math.random() > .5 ? "#f0d09a" : "#fff6e6" };
 }
-for (var i = 0; i < 34; i++) { var p = spark(Math.random() * W, Math.random() * H, false); p.ambient = true; parts.push(p); }
+for (var i = 0; i < 30; i++) { var p = spark(Math.random() * W, Math.random() * H, false); p.ambient = true; parts.push(p); }
 function burst() { var cx = W / 2, cy = H * .45; for (var i = 0; i < 100; i++) parts.push(spark(cx + (Math.random() - .5) * 70 * dpr, cy, true)); }
 function tick() {
   ctx.clearRect(0, 0, W, H);
@@ -419,7 +425,7 @@ function tick() {
     var p = parts[i]; p.x += p.vx; p.y += p.vy;
     if (p.ambient) { if (p.y > H) p.y = 0; if (p.x < 0) p.x = W; if (p.x > W) p.x = 0; }
     else { p.vy += .014 * dpr; p.life -= p.decay; if (p.life <= 0) { parts.splice(i, 1); continue; } }
-    ctx.globalAlpha = p.ambient ? .4 : Math.max(0, p.life);
+    ctx.globalAlpha = p.ambient ? .35 : Math.max(0, p.life);
     ctx.fillStyle = p.hue; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill();
   }
   ctx.globalAlpha = 1; requestAnimationFrame(tick);
