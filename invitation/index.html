@@ -1,0 +1,373 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#2a1720">
+<title>دعوة زفاف</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   دعوة زفاف رقمية — ظرف يُفتح. تصميم بعالم بصري واحد ثابت (رومانسي فاخر)،
+   يرسم كل ألوانه صراحةً فلا يتأثر بثيم الجهاز. عمودي، ويشتغل باللمس.
+   عدّلي المحتوى من كائن DATA في آخر الملف، والألوان من متغيرات :root.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root {
+  --rose: #e9d5d8;          /* لون الظرف الوردي المغبّر */
+  --rose-deep: #d9bcc2;
+  --rose-shadow: #c2a0a8;
+  --ink: #5a3b45;           /* لون الكتابة على الظرف */
+  --card: #fbf6f2;          /* لون بطاقة الدعوة */
+  --card-ink: #6a4a52;
+  --gold: #c99a5b;          /* التوهّج الذهبي والزخارف */
+  --gold-soft: #e7c99a;
+  --wax: #7d1f2e;           /* ختم الشمع العنابي */
+  --wax-hi: #a83243;
+  --bg-1: #2a1720;          /* خلفية المشهد */
+  --bg-2: #1a0e14;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: 'Amiri', 'Times New Roman', serif;
+  background:
+    radial-gradient(120% 90% at 50% 8%, #3a2029 0%, var(--bg-1) 42%, var(--bg-2) 100%);
+  color: var(--card-ink);
+  min-height: 100dvh; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+}
+
+/* ambient particles */
+#sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+/* ── stage ── */
+#stage {
+  position: relative; z-index: 1;
+  width: min(92vw, 400px); height: min(150vw, 640px);
+  perspective: 1500px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.scene {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── the card that slides out ── */
+#card {
+  position: absolute;
+  width: 80%; height: 74%;
+  background:
+    linear-gradient(160deg, #fffdfb 0%, var(--card) 60%, #f2e7de 100%);
+  border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.4);
+  transform: translateY(6%) scale(.94);
+  opacity: 0; z-index: 1;
+  transition: transform 1.15s cubic-bezier(.2,.8,.25,1) .35s, opacity .6s ease .35s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 8% 7%;
+  border: 1px solid #eaddd2;
+  overflow: hidden;
+}
+#card::before {  /* gold inner frame */
+  content: ""; position: absolute; inset: 12px;
+  border: 1px solid var(--gold); opacity: .5; border-radius: 4px;
+  pointer-events: none;
+}
+.opened #card {
+  transform: translateY(-42%) scale(1);
+  opacity: 1; z-index: 6;
+}
+
+.c-orn { font-size: 26px; color: var(--gold); line-height: 1; }
+.c-pre { font-size: clamp(12px, 3.4vw, 15px); color: var(--card-ink); letter-spacing: 1px; margin: 10px 0 4px; opacity: .85; }
+.c-names {
+  font-family: 'Amiri', serif; font-weight: 700;
+  font-size: clamp(26px, 8vw, 40px); color: #4a2c34; line-height: 1.25;
+  margin: 4px 0 6px;
+}
+.c-amp { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-style: italic; }
+.c-line { width: 46%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 10px 0; }
+.c-detail { font-size: clamp(12px, 3.6vw, 15.5px); color: var(--card-ink); margin: 3px 0; }
+.c-detail b { font-weight: 700; color: #4a2c34; }
+.c-date { font-family: 'Cormorant Garamond', serif; font-size: clamp(15px, 4.6vw, 20px); letter-spacing: 2px; color: var(--gold); margin-top: 4px; }
+
+/* stagger the card content in */
+#card > * { opacity: 0; transform: translateY(8px); transition: opacity .6s ease, transform .6s ease; }
+.opened #card > * { opacity: 1; transform: none; }
+.opened #card > *:nth-child(1){ transition-delay: 1.05s; }
+.opened #card > *:nth-child(2){ transition-delay: 1.15s; }
+.opened #card > *:nth-child(3){ transition-delay: 1.25s; }
+.opened #card > *:nth-child(4){ transition-delay: 1.35s; }
+.opened #card > *:nth-child(5){ transition-delay: 1.45s; }
+.opened #card > *:nth-child(6){ transition-delay: 1.55s; }
+.opened #card > *:nth-child(7){ transition-delay: 1.65s; }
+.opened #card > *:nth-child(8){ transition-delay: 1.75s; }
+
+/* ── envelope pieces ── */
+.env-face {
+  position: absolute; inset: 0; border-radius: 10px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 6px, transparent 6px 12px),
+    linear-gradient(150deg, var(--rose) 0%, var(--rose-deep) 100%);
+}
+
+/* back of envelope (behind card) */
+#back { z-index: 0; box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+#back::after {   /* embossed floral pattern */
+  content: ""; position: absolute; inset: 0; border-radius: 10px;
+  background-image:
+    radial-gradient(circle at 20% 25%, rgba(255,255,255,.35) 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 30%, rgba(160,120,130,.18) 0 3px, transparent 4px),
+    radial-gradient(circle at 35% 70%, rgba(160,120,130,.16) 0 3px, transparent 4px),
+    radial-gradient(circle at 68% 78%, rgba(255,255,255,.3) 0 2px, transparent 3px);
+  background-size: 46px 46px, 60px 60px, 54px 54px, 40px 40px;
+  opacity: .7;
+}
+
+/* front triangles (bottom + sides) create the closed-envelope look */
+#frontL, #frontR, #frontB { z-index: 5; }
+#frontB {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 100%;
+  clip-path: polygon(0% 100%, 100% 100%, 50% 42%);
+  background: linear-gradient(180deg, var(--rose-deep), var(--rose));
+  box-shadow: inset 0 2px 6px rgba(255,255,255,.25);
+}
+#frontL {
+  position: absolute; inset: 0;
+  clip-path: polygon(0% 0%, 0% 100%, 50% 50%);
+  background: linear-gradient(120deg, var(--rose), var(--rose-deep));
+  border-right: 1px solid rgba(180,140,150,.25);
+}
+#frontR {
+  position: absolute; inset: 0;
+  clip-path: polygon(100% 0%, 100% 100%, 50% 50%);
+  background: linear-gradient(240deg, var(--rose), var(--rose-deep));
+}
+.env-emboss::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,.22) 0 2px, transparent 3px),
+    radial-gradient(circle at 60% 65%, rgba(150,110,120,.15) 0 3px, transparent 4px);
+  background-size: 44px 44px, 52px 52px;
+  opacity: .6; pointer-events: none;
+}
+
+/* warm glow from inside, revealed as the flap opens */
+#glow {
+  position: absolute; left: 8%; right: 8%; top: 6%; height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(231,201,154,.9), rgba(201,154,91,.35) 45%, transparent 72%);
+  filter: blur(6px);
+  opacity: 0; z-index: 3;
+  transition: opacity .8s ease .3s;
+}
+.opened #glow { opacity: 1; }
+
+/* the top flap that opens */
+#flap {
+  position: absolute; left: 0; right: 0; top: 0; height: 58%;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  background: linear-gradient(180deg, var(--rose) 0%, var(--rose-deep) 100%);
+  transform-origin: 50% 0%;
+  transform: rotateX(0deg);
+  transition: transform 1s cubic-bezier(.6,.02,.2,1);
+  z-index: 7; backface-visibility: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+#flap::after {  /* underside tint when open */
+  content: ""; position: absolute; inset: 0;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  background: linear-gradient(180deg, rgba(160,110,120,.4), transparent);
+}
+.opened #flap { transform: rotateX(-165deg); z-index: 2; }
+
+/* wax seal */
+#seal {
+  position: absolute; top: 46%; left: 50%;
+  width: 92px; height: 92px; margin: -46px 0 0 -46px;
+  z-index: 9;
+  transform-origin: 50% 8%;
+  transition: transform .5s ease, opacity .5s ease;
+}
+.opened #seal { transform: translateY(-6px) rotate(-10deg) scale(.9); opacity: 0; }
+#seal svg { width: 100%; height: 100%; display: block;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+.seal-mono {
+  font-family: 'Cormorant Garamond', serif; font-weight: 600;
+  font-size: 30px; fill: #e9c7bf; font-style: italic;
+  letter-spacing: 1px;
+}
+
+/* hint + replay */
+#hint {
+  position: fixed; left: 0; right: 0; bottom: calc(28px + env(safe-area-inset-bottom));
+  text-align: center; color: #e7c99a; z-index: 8;
+  font-family: 'Cormorant Garamond', serif; letter-spacing: 3px;
+  font-size: 15px; opacity: .9; animation: pulse 2.4s ease-in-out infinite;
+}
+.opened #hint { display: none; }
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.95} }
+
+#replay {
+  position: fixed; top: calc(16px + env(safe-area-inset-top)); inset-inline-end: 16px;
+  z-index: 10; background: rgba(255,255,255,.12); color: #f0e0d4;
+  border: 1px solid rgba(231,201,154,.4); border-radius: 999px;
+  padding: 8px 14px; font-family: 'Amiri', serif; font-size: 13px;
+  cursor: pointer; display: none; backdrop-filter: blur(4px);
+}
+.opened #replay { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  #flap, #card, #card > *, #seal, #glow { transition-duration: .01ms !important; }
+}
+</style>
+
+<canvas id="sparkles"></canvas>
+
+<div id="stage" role="button" aria-label="افتح الدعوة" tabindex="0">
+  <div class="scene">
+    <div class="env-face" id="back"></div>
+
+    <div id="card">
+      <div class="c-orn">❧</div>
+      <div class="c-pre" id="d-pre">بكل حبٍّ ندعوكم لحضور حفل زفاف</div>
+      <div class="c-names" id="d-names"></div>
+      <div class="c-line"></div>
+      <div class="c-detail" id="d-when"></div>
+      <div class="c-date" id="d-date"></div>
+      <div class="c-detail" id="d-where"></div>
+      <div class="c-orn" style="font-size:18px;margin-top:8px">✦</div>
+    </div>
+
+    <div id="glow"></div>
+    <div class="env-face env-emboss" id="frontB"></div>
+    <div class="env-face" id="frontL"></div>
+    <div class="env-face" id="frontR"></div>
+
+    <div id="flap"></div>
+
+    <div id="seal">
+      <svg viewBox="0 0 100 100">
+        <defs>
+          <radialGradient id="wax" cx="42%" cy="35%" r="70%">
+            <stop offset="0%" stop-color="#a83243"/>
+            <stop offset="55%" stop-color="#7d1f2e"/>
+            <stop offset="100%" stop-color="#5c141f"/>
+          </radialGradient>
+        </defs>
+        <g id="wax-blob"></g>
+        <circle cx="50" cy="50" r="34" fill="none" stroke="#e9c7bf" stroke-opacity=".35" stroke-width="1.2"/>
+        <text class="seal-mono" x="50" y="60" text-anchor="middle" id="d-mono">ل&amp;ف</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div id="hint">ــ المسي الظرف لفتح الدعوة ــ</div>
+<button id="replay">↺ إعادة</button>
+
+<script>
+/* ═══════════ عدّلي محتوى الدعوة من هنا ═══════════ */
+var DATA = {
+  pre:   "بكل حبٍّ ندعوكم لحضور حفل زفاف",
+  bride: "لمياء",
+  groom: "فيصل",
+  mono:  "ل & ف",          // الأحرف على ختم الشمع
+  when:  "يوم الجمعة",
+  date:  "١٥ · ٠٣ · ٢٠٢٦",
+  where: "قاعة الماسة — الرياض"
+};
+/* ════════════════════════════════════════════════ */
+
+var $ = function (s) { return document.querySelector(s); };
+$("#d-pre").textContent = DATA.pre;
+$("#d-names").innerHTML = DATA.bride + ' <span class="c-amp">&</span> ' + DATA.groom;
+$("#d-when").textContent = DATA.when;
+$("#d-date").innerHTML = '<bdi dir="ltr">' + DATA.date + '</bdi>';
+$("#d-where").innerHTML = "<b>" + DATA.where + "</b>";
+$("#d-mono").textContent = DATA.mono;
+document.title = DATA.bride + " و " + DATA.groom;
+
+// build the scalloped wax-seal shape
+(function () {
+  var pts = [], n = 24, cx = 50, cy = 50;
+  for (var i = 0; i < n; i++) {
+    var a = (i / n) * Math.PI * 2;
+    var r = i % 2 === 0 ? 40 : 35;
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  var d = "M" + pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join("L") + "Z";
+  var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", d);
+  path.setAttribute("fill", "url(#wax)");
+  $("#wax-blob").appendChild(path);
+})();
+
+// open interaction
+var stage = $("#stage"), opened = false;
+function open() {
+  if (opened) return;
+  opened = true;
+  document.body.classList.add("opened");
+  burst();
+}
+function reset() {
+  opened = false;
+  document.body.classList.remove("opened");
+}
+stage.addEventListener("click", open);
+stage.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+$("#replay").addEventListener("click", function (e) { e.stopPropagation(); reset(); });
+
+/* ── ambient + burst sparkles ── */
+var cv = $("#sparkles"), ctx = cv.getContext("2d"), parts = [], W, H, dpr;
+function resize() {
+  dpr = window.devicePixelRatio || 1;
+  W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr;
+}
+resize(); addEventListener("resize", resize);
+
+function spark(x, y, big) {
+  return {
+    x: x, y: y,
+    vx: (Math.random() - .5) * (big ? 2.4 : .3) * dpr,
+    vy: (big ? -Math.random() * 2.2 - .4 : Math.random() * .25 + .05) * dpr,
+    r: (Math.random() * 1.6 + .6) * dpr * (big ? 1.4 : 1),
+    life: 1, decay: big ? .012 : .004 + Math.random() * .004,
+    hue: Math.random() > .5 ? "#e7c99a" : "#f6ede0"
+  };
+}
+// gentle ambient drift
+for (var i = 0; i < 40; i++) {
+  var p = spark(Math.random() * W, Math.random() * H, false);
+  p.ambient = true; parts.push(p);
+}
+function burst() {
+  var cx = W / 2, cy = H * 0.42;
+  for (var i = 0; i < 90; i++) parts.push(spark(cx + (Math.random() - .5) * 60 * dpr, cy, true));
+}
+function tick() {
+  ctx.clearRect(0, 0, W, H);
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var p = parts[i];
+    p.x += p.vx; p.y += p.vy;
+    if (p.ambient) {
+      if (p.y > H) p.y = 0;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    } else {
+      p.vy += .015 * dpr; p.life -= p.decay;
+      if (p.life <= 0) { parts.splice(i, 1); continue; }
+    }
+    ctx.globalAlpha = p.ambient ? .5 : Math.max(0, p.life);
+    ctx.fillStyle = p.hue;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
