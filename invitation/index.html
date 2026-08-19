@@ -90,6 +90,7 @@ body {
   margin: 4px 0 6px;
 }
 .c-amp { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-style: italic; }
+.c-full { font-size: clamp(11px, 3vw, 13.5px); color: var(--card-ink); opacity: .8; line-height: 1.7; margin-top: 2px; }
 .c-line { width: 46%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 10px 0; }
 .c-detail { font-size: clamp(12px, 3.6vw, 15.5px); color: var(--card-ink); margin: 3px 0; }
 .c-detail b { font-weight: 700; color: #4a2c34; }
@@ -106,6 +107,7 @@ body {
 .opened #card > *:nth-child(6){ transition-delay: 1.55s; }
 .opened #card > *:nth-child(7){ transition-delay: 1.65s; }
 .opened #card > *:nth-child(8){ transition-delay: 1.75s; }
+.opened #card > *:nth-child(9){ transition-delay: 1.85s; }
 
 /* ── envelope pieces ── */
 .env-face {
@@ -236,6 +238,7 @@ body {
       <div class="c-orn">❧</div>
       <div class="c-pre" id="d-pre">بكل حبٍّ ندعوكم لحضور حفل زفاف</div>
       <div class="c-names" id="d-names"></div>
+      <div class="c-full" id="d-full"></div>
       <div class="c-line"></div>
       <div class="c-detail" id="d-when"></div>
       <div class="c-date" id="d-date"></div>
@@ -274,9 +277,11 @@ body {
 /* ═══════════ عدّلي محتوى الدعوة من هنا ═══════════ */
 var DATA = {
   pre:   "بكل حبٍّ ندعوكم لحضور حفل زفاف",
-  bride: "لمياء",
-  groom: "فيصل",
-  mono:  "ل & ف",          // الأحرف على ختم الشمع
+  bride: "نورة",
+  groom: "سند",
+  brideFull: "نورة عبدالوهاب الخرّاز",
+  groomFull: "سند عبدالله الفايز",
+  mono:  "ن & س",          // الأحرف على ختم الشمع
   when:  "يوم الجمعة",
   date:  "١٥ · ٠٣ · ٢٠٢٦",
   where: "قاعة الماسة — الرياض"
@@ -286,6 +291,7 @@ var DATA = {
 var $ = function (s) { return document.querySelector(s); };
 $("#d-pre").textContent = DATA.pre;
 $("#d-names").innerHTML = DATA.bride + ' <span class="c-amp">&</span> ' + DATA.groom;
+$("#d-full").textContent = DATA.brideFull + "  و  " + DATA.groomFull;
 $("#d-when").textContent = DATA.when;
 $("#d-date").innerHTML = '<bdi dir="ltr">' + DATA.date + '</bdi>';
 $("#d-where").innerHTML = "<b>" + DATA.where + "</b>";
