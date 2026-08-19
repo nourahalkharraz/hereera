@@ -41,9 +41,12 @@ body {
 #sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 
 /* ── stage with a slight camera tilt for depth ── */
+/* The stage is capped by viewport height as well as width, so short screens
+   and landscape keep the whole envelope on screen instead of overflowing. */
 #stage {
   position: relative; z-index: 1;
-  width: min(90vw, 380px); height: min(150vw, 620px);
+  width: min(90vw, 380px, 53dvh);
+  height: min(150vw, 620px, 86dvh);
   perspective: 1600px;
   display: flex; align-items: center; justify-content: center;
 }
@@ -65,8 +68,10 @@ body {
 }
 
 /* ── the card that slides out ── */
+/* The card is sized and travels so that it always stays inside the stage —
+   it rises out of the envelope without ever leaving the viewport. */
 #card {
-  position: absolute; left: 10%; right: 10%; top: 8%; height: 80%;
+  position: absolute; left: 10%; right: 10%; top: 17%; height: 69%;
   background: linear-gradient(165deg, #fffdfa 0%, var(--cream) 55%, var(--cream-2) 100%);
   border-radius: 6px;
   box-shadow: 0 18px 44px rgba(90,50,40,.35);
@@ -75,13 +80,17 @@ body {
   transition: transform 1.2s cubic-bezier(.2,.8,.25,1) .4s, opacity .5s ease .4s;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 9% 8%;
-  border: 1px solid #ecdccb; overflow: hidden;
+  border: 1px solid #ecdccb;
+  /* safety net: if a very short screen squeezes the card, its text scrolls
+     rather than being silently cut off */
+  overflow: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
+#card::-webkit-scrollbar { display: none; }
 #card::before {
   content: ""; position: absolute; inset: 11px;
   border: 1px double var(--gold); opacity: .55; border-radius: 3px; pointer-events: none;
 }
-.opened #card { transform: translateY(-30%) scale(1); opacity: 1; z-index: 6; }
+.opened #card { transform: translateY(-22%) scale(1); opacity: 1; z-index: 6; }
 
 .c-bism { font-family: 'Amiri', serif; font-size: clamp(13px,3.6vw,16px); color: var(--gold); margin-bottom: 6px; }
 .c-orn { font-size: 22px; color: var(--gold); line-height: 1; }
@@ -98,8 +107,9 @@ body {
 .c-amp { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 600; }
 .c-full { font-size: clamp(11px,2.9vw,13px); color: var(--ink); opacity: .78; line-height: 1.8; }
 .c-line { width: 44%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 12px 0; }
-.c-date { font-family: 'Cormorant Garamond', serif; font-size: clamp(16px,5vw,22px); letter-spacing: 3px; color: var(--gold); }
+.c-date { font-family: 'Amiri', serif; font-weight: 700; font-size: clamp(16px,4.8vw,21px); letter-spacing: 1px; color: var(--gold); }
 .c-close { font-family: 'Amiri', serif; font-size: clamp(11.5px,3.1vw,13.5px); color: var(--ink); opacity: .85; margin-top: 4px; line-height: 1.7; }
+.c-flourish { width: 58%; max-width: 130px; height: auto; color: var(--gold); opacity: .75; margin-top: 10px; }
 
 #card > * { opacity: 0; transform: translateY(9px); transition: opacity .55s ease, transform .55s ease; }
 .opened #card > * { opacity: 1; transform: none; }
@@ -177,13 +187,35 @@ body {
 }
 .opened #hint { display: none; }
 @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:.95} }
+/* Sits at the bottom, where the envelope pocket is — never over the card. */
 #replay {
-  position: fixed; top: calc(14px + env(safe-area-inset-top)); inset-inline-start: 16px;
-  z-index: 10; background: rgba(255,255,255,.5); color: var(--ink-deep);
-  border: 1px solid var(--gold); border-radius: 999px; padding: 7px 15px;
-  font-family: 'Amiri', serif; font-size: 13px; cursor: pointer; display: none; backdrop-filter: blur(4px);
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 10; background: rgba(255,255,255,.55); color: var(--ink-deep);
+  border: 1px solid var(--gold); border-radius: 999px; padding: 7px 16px;
+  font-family: 'Amiri', serif; font-size: 13px; cursor: pointer; display: none;
+  backdrop-filter: blur(4px);
 }
 .opened #replay { display: block; }
+/* Short screens (landscape phones): tighten the card so everything still fits,
+   and give the hint room below the envelope. */
+@media (max-height: 520px) {
+  #stage { height: min(150vw, 620px, 78dvh); width: min(90vw, 380px, 48dvh); }
+  /* the vw-based type scale blows up on a wide-but-short viewport, so pin it */
+  #card { padding: 5% 6%; }
+  .c-bism { font-size: 11px; margin-bottom: 2px; }
+  .c-pre { font-size: 10.5px; margin: 3px 0 0; }
+  .c-title { font-size: 25px; margin: 0 0 3px; }
+  .c-names { font-size: 17px; margin: 2px 0; }
+  .c-full { font-size: 10px; line-height: 1.6; }
+  .c-date { font-size: 13.5px; }
+  .c-close { font-size: 10px; margin-top: 2px; line-height: 1.5; }
+  .c-line { margin: 6px 0; }
+  .c-flourish { width: 42%; margin-top: 4px; }
+  #hint { bottom: calc(8px + env(safe-area-inset-bottom)); font-size: 13px; }
+  #replay { bottom: calc(8px + env(safe-area-inset-bottom)); padding: 5px 13px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #flap,#card,#card > *,#seal,#glow,.scene { transition-duration:.01ms !important; }
 }
@@ -204,7 +236,14 @@ body {
       <div class="c-line"></div>
       <div class="c-date" id="d-date"></div>
       <div class="c-close" id="d-close"></div>
-      <div class="c-orn">۩</div>
+      <svg class="c-flourish" viewBox="0 0 120 16" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
+          <path d="M6 8h34M80 8h34"/>
+          <path d="M48 8c4-5 8-5 12 0-4 5-8 5-12 0z"/>
+          <path d="M72 8c-4-5-8-5-12 0 4 5 8 5 12 0z"/>
+        </g>
+        <circle cx="60" cy="8" r="1.8" fill="currentColor"/>
+      </svg>
     </div>
 
     <div id="glow"></div>
@@ -250,7 +289,7 @@ var DATA = {
   brideFull: "نورة عبدالوهاب الخرّاز",
   groomFull: "سند عبدالله الفايز",
   mono:   "ن & س",
-  date:   "١٥ · ٠٣ · ٢٠٢٦",
+  date:   "١٥ مارس ٢٠٢٦",
   close:  "سائلين المولى أن يديم علينا المحبة والوفاق"
 };
 /* ═══════════════════════════════════════════ */
@@ -260,7 +299,7 @@ $("#d-pre").textContent = DATA.pre;
 $("#d-title").textContent = DATA.title;
 $("#d-names").innerHTML = DATA.bride + ' <span class="c-amp">&</span> ' + DATA.groom;
 $("#d-full").textContent = DATA.brideFull + "   و   " + DATA.groomFull;
-$("#d-date").innerHTML = '<bdi dir="ltr">' + DATA.date + '</bdi>';
+$("#d-date").textContent = DATA.date;
 $("#d-close").textContent = DATA.close;
 $("#d-mono").textContent = DATA.mono;
 document.title = "عقد قران " + DATA.bride + " و " + DATA.groom;
