@@ -136,9 +136,9 @@ body {
   transition: opacity .45s ease;
 }
 #c-meta .n { font-weight: 500; color: var(--blue-dp);
-  font-size: clamp(15px, 4vw, 19px); letter-spacing: .34em; }
+  font-size: clamp(16px, 4.4vw, 21px); letter-spacing: .04em; }
 #c-meta .d { font-weight: 300; color: var(--blue); margin-top: clamp(9px, 2.4vw, 13px);
-  font-size: clamp(11.5px, 3vw, 13.5px); letter-spacing: .3em; }
+  font-size: clamp(12px, 3.2vw, 14px); letter-spacing: .12em; }
 #c-meta .r { width: 34px; height: 1px; margin: clamp(11px, 3vw, 15px) auto 0;
   background: var(--sand); opacity: .85; }
 .opened #c-meta { opacity: 0; }
@@ -797,6 +797,7 @@ var DATA = {
   one:   "نورة",
   two:   "سند",
   join:  "على",          /* الرابط بين الاسمين */
+  kashida: 4,            /* مقدار مدّ الحروف على الغلاف */
   full:  "نورة عبدالوهاب الخرّاز &nbsp;·&nbsp; سند عبدالله الفايز",
   date:  "٥ سبتمبر ٢٠٢٦",
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
@@ -836,8 +837,27 @@ document.title = DATA.event + " " + DATA.one + " " + DATA.join + " " + DATA.two;
 /* الغلاف لا يحمل إلا شعار الحرفين المندمجين، والشقّ يمرّ في وسطه */
 var monoSrc = $("#mono-src").innerHTML;
 [].forEach.call(document.querySelectorAll("[data-cut]"), function (el) { el.innerHTML = monoSrc; });
-$("#c-names").textContent = DATA.one + "  و  " + DATA.two;
-$("#c-date").textContent  = DATA.date;
+/* التطويل (الكشيدة): تُمدّ الوصلات بين الحروف كما يفعل الخطّاط.
+   الحروف التي لا تتّصل بما بعدها لا تقبل مدّاً، فتُترك كما هي. */
+var NO_JOIN = "اأإآدذرزوؤةىءٱ";
+function stretch(word, n) {
+  var out = "";
+  for (var i = 0; i < word.length; i++) {
+    out += word.charAt(i);
+    if (i < word.length - 1 && NO_JOIN.indexOf(word.charAt(i)) === -1) {
+      out += new Array(n + 1).join("ـ");
+    }
+  }
+  return out;
+}
+function stretchLine(line, n) {
+  return line.split(" ").map(function (w) {
+    return /[\u0621-\u064A]/.test(w) && w.length > 1 ? stretch(w, n) : w;
+  }).join(" ");
+}
+
+$("#c-names").textContent = stretch(DATA.one, DATA.kashida) + "  و  " + stretch(DATA.two, DATA.kashida);
+$("#c-date").textContent  = stretchLine(DATA.date, Math.max(2, DATA.kashida - 1));
 
 /* الأغصان نفسها تُستنسخ داخل نصفَي الغلاف، فتفترق معهما */
 [].forEach.call(document.querySelectorAll("[data-flora]"), function (slot) {
