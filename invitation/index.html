@@ -375,6 +375,36 @@ body {
   margin: 0 auto var(--s3); }
 .date { font-family:'Tajawal', sans-serif; font-weight: 500;
   font-size: clamp(13px, 3.4vw, 15px); letter-spacing: .14em; color: var(--ink-2); }
+.hijri { margin-top: var(--s1); font-family:'Tajawal', sans-serif; font-weight: 300;
+  font-size: clamp(11px, 2.9vw, 12.5px); letter-spacing: .1em; color: var(--blue); --o: .8; }
+.at { margin-top: var(--s2); font-family:'Tajawal', sans-serif; font-weight: 500;
+  font-size: clamp(12.5px, 3.3vw, 14.5px); letter-spacing: .06em; color: var(--ink-2); }
+.venue { margin-top: var(--s1); font-family:'Tajawal', sans-serif; font-weight: 300;
+  font-size: clamp(12px, 3.1vw, 13.5px); line-height: 1.7; color: var(--ink-2); --o: .9; }
+.at:empty, .venue:empty, .hijri:empty { display: none; }
+
+/* العدّاد — يظهر قبل الموعد وحده */
+.count { display: flex; justify-content: center; gap: clamp(16px, 5vw, 30px);
+  margin-top: var(--s3); flex-wrap: wrap; }
+.count div { min-width: 40px; }
+.count b { display: block; font-family:'Tajawal', sans-serif; font-weight: 500;
+  font-variant-numeric: tabular-nums; font-size: clamp(21px, 5.6vw, 27px); line-height: 1;
+  color: var(--ink); }
+.count span { display: block; margin-top: var(--s1); font-size: 9px;
+  letter-spacing: .2em; color: var(--ink-2); --o: .75; }
+.count:empty { display: none; }
+
+/* زرّ الصوت — زاويةٌ هادئة لا تزاحم النصّ */
+#mute { position: fixed; z-index: 12; top: calc(10px + env(safe-area-inset-top));
+  inset-inline-start: 10px; width: 38px; height: 38px; display: inline-flex;
+  align-items: center; justify-content: center; padding: 0; cursor: pointer;
+  background: rgba(243,247,248,.55); backdrop-filter: blur(6px);
+  border: 1px solid rgba(143,170,180,.45); border-radius: 999px;
+  color: var(--blue-dp); opacity: .55; transition: opacity .3s ease; }
+#mute:hover, #mute:focus-visible { opacity: 1; }
+#mute svg { width: 17px; height: 17px; }
+#mute[hidden] { display: none; }
+
 /* القلب — بلا إطار؛ الفراغ وحده يحملها */
 .verse { margin-top: var(--s5); }
 .verse p span { display: inline-block; opacity: 0; filter: blur(5px); transform: translateY(7px);
@@ -402,6 +432,7 @@ body {
 .btn:active { transform: translateY(1px); }
 .btn svg { width: 14px; height: 14px; flex: none; }
 .btn.ok { color: var(--ink); border-color: var(--blue); }
+.btn[hidden] { display: none; }
 #replay { width: 44px; min-width: 44px; padding: 0; justify-content: center;
   opacity: .78; }
 #replay svg { width: 16px; height: 16px; }
@@ -436,6 +467,7 @@ body {
   .date  { font-size: 12.5px; }
   .verse p { font-size: clamp(13.5px, 4.2vw, 18px); line-height: 1.85; }
   .verse cite { margin-top: var(--s2); }
+  .count b { font-size: 19px; } .count span { margin-top: 3px; font-size: 8.5px; }
   .dua { font-size: clamp(12.5px, 3.2vw, 14px); line-height: 1.8; }
   .acts { margin-top: var(--s3); }
   .btn { min-height: 40px; font-size: 12px; padding: 0 15px; }
@@ -480,7 +512,11 @@ body {
 
     <div class="when">
       <hr>
-      <p class="date" id="d-date">٥ سبتمبر ٢٠٢٦</p>
+      <p class="date" id="d-date">السبت ٥ سبتمبر ٢٠٢٦</p>
+      <p class="hijri" id="d-hijri">٢٣ ربيع الأول ١٤٤٨</p>
+      <p class="at" id="d-at"></p>
+      <p class="venue" id="d-venue"></p>
+      <div class="count" id="d-count"></div>
     </div>
 
     <blockquote class="verse">
@@ -491,6 +527,10 @@ body {
     <p class="dua" id="d-dua">سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق</p>
 
     <div class="acts">
+      <a class="btn" id="map" href="#" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        الموقع</a>
       <a class="btn" id="cal" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
@@ -514,6 +554,13 @@ body {
   <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut></div>
     <div id="c-meta"><p class="n" id="c-names"></p><div class="r"></div><p class="d" id="c-date"></p></div></div>
 </div>
+<button id="mute" type="button" hidden aria-label="كتم الصوت" title="كتم الصوت">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7"/>
+    <path class="off" d="M17 9.5l4 5M21 9.5l-4 5" style="display:none"/></svg>
+</button>
+<audio id="tune" loop preload="none"></audio>
 <div id="well" aria-hidden="true"></div>
 <div id="halo" aria-hidden="true"></div>
 <div id="bloom" aria-hidden="true"></div>
@@ -530,14 +577,25 @@ body {
 <script>
 /* ═══════════ عدّلي المحتوى من هنا ═══════════ */
 var DATA = {
-  news:  "بحمد الله وتوفيقه",
-  event: "تمّ عقد قران",
+  /* الدعوة تعرف بنفسها أين هي من الموعد: قبله تدعو، وبعده تُعلن.
+     الرابط واحد — يُوزَّع اليوم، ويتحوّل ليلة الحفل بلا تدخّل. */
+  news:  "بمشيئة الله وتوفيقه · يسرّنا دعوتكم لحضور",
+  event: "حفل عقد قران",
+  newsAfter:  "بحمد الله وتوفيقه",
+  eventAfter: "تمّ عقد قران",
   one:   "نورة",
   two:   "سند",
   join:  "|",            /* الرابط بين الاسمين */
   kashida: 7,            /* مقدار المدّ الكلّي لكل اسم على الغلاف */
   full:  "سند عبدالله الفايز &nbsp;·&nbsp; نورة عبدالوهاب الخرّاز",
+  day:   "السبت",
   date:  "٥ سبتمبر ٢٠٢٦",
+  hijri: "٢٣ ربيع الأول ١٤٤٨",
+  time:  "",            /* مثال: "الساعة ٨:٣٠ مساءً" — يُخفى إن تُرك فارغاً */
+  venue: "",            /* مثال: "قاعة الماسة — حيّ الياسمين، الرياض" */
+  maps:  "",            /* رابط الموقع على الخرائط — يُخفى الزر إن تُرك فارغاً */
+  note:  "",            /* مثال: "الحفل نسائي" */
+  tune:  "",            /* رابط أو data: للنشيد — يُخفى زر الصوت إن تُرك فارغاً */
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
   verse: "﴿ وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",   /* المقطع الذي يسع سطراً واحداً بحجمٍ مقروء */
   verseSrc: "سورة الرّوم — الآية ٢١",
@@ -556,12 +614,26 @@ addEventListener("orientationchange", function () { setTimeout(lockHeight, 120);
 document.documentElement.lang = "ar";
 document.documentElement.dir  = "rtl";
 
-$("#d-news").innerHTML  = DATA.news;
-$("#d-event").textContent = DATA.event;
+/* لحظة الحفل تفصل الحالتين. قبلها: دعوة وعدّاد وموعد ومكان.
+   بعدها: إعلانٌ بأنّ الأمر تمّ — وتختفي تفاصيل الحضور من تلقاء نفسها. */
+var when = new Date(DATA.iso).getTime();
+var BEFORE = !isNaN(when) && Date.now() < when;
+
+$("#d-news").innerHTML  = BEFORE ? DATA.news  : (DATA.newsAfter  || DATA.news);
+$("#d-event").textContent = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
 $("#d-names").innerHTML = '<b class="one">' + DATA.two + '</b><i>' + DATA.join
   + '</i><b class="two">' + DATA.one + '</b>';
 $("#d-full").innerHTML  = DATA.full;
-$("#d-date").textContent = DATA.date;
+$("#d-date").textContent = (BEFORE && DATA.day ? DATA.day + " " : "") + DATA.date;
+$("#d-hijri").textContent = DATA.hijri || "";
+$("#d-at").textContent    = BEFORE ? (DATA.time  || "") : "";
+$("#d-venue").textContent = BEFORE ? (DATA.venue || "") : "";
+if (DATA.note && BEFORE) {
+  var noteEl = document.createElement("p");
+  noteEl.className = "venue"; noteEl.textContent = DATA.note;
+  $("#d-venue").after(noteEl);
+}
+if (BEFORE && DATA.maps) { $("#map").href = DATA.maps; $("#map").hidden = false; }
 /* الآية تظهر كلمةً كلمة، كأنها تُتلى */
 $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
   return '<span style="transition-delay:' + (1.55 + i * .085).toFixed(2) + 's">'
@@ -674,6 +746,7 @@ function open() {
   if (!opened) {
     opened = true;
     body.classList.add("opened");
+    playTune();          /* سفاري لا يأذن بالصوت إلا بلمسة — وفتح الظرف هو اللمسة */
     if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
     timer = setTimeout(finish, 980);
   } else if (!body.classList.contains("revealed")) {
@@ -688,6 +761,38 @@ function finish() {
   setTimeout(moreCue, 60);
   setTimeout(pulse, 1420);
 }
+/* ─────────── النشيد ───────────
+   يبدأ مع انفتاح الظرف لأن الجوّالات لا تسمح بالتشغيل التلقائي بلا لمسة،
+   ويعلو تدريجياً حتى لا يفاجئ من يفتحها ورفعُ الصوت عالٍ. */
+var tune = $("#tune"), muteBtn = $("#mute"), tuneOn = false, fadeTimer;
+if (DATA.tune) {
+  tune.src = DATA.tune;
+  tune.volume = 0;
+  muteBtn.hidden = false;
+}
+function playTune() {
+  if (!DATA.tune || tuneOn) return;
+  tuneOn = true;
+  var target = 0.55;
+  try {
+    var pr = tune.play();
+    if (pr && pr.catch) pr.catch(function () { tuneOn = false; });
+  } catch (e) { tuneOn = false; return; }
+  clearInterval(fadeTimer);
+  fadeTimer = setInterval(function () {
+    tune.volume = Math.min(target, tune.volume + target / 40);
+    if (tune.volume >= target - 1e-3) clearInterval(fadeTimer);
+  }, 60);
+}
+if (muteBtn) muteBtn.addEventListener("click", function () {
+  tune.muted = !tune.muted;
+  muteBtn.setAttribute("aria-label", tune.muted ? "تشغيل الصوت" : "كتم الصوت");
+  muteBtn.setAttribute("title", muteBtn.getAttribute("aria-label"));
+  muteBtn.querySelector(".on").style.display  = tune.muted ? "none" : "";
+  muteBtn.querySelector(".off").style.display = tune.muted ? "" : "none";
+  if (!tune.muted && !tuneOn) playTune();
+});
+
 function reset() {
   clearTimeout(timer); opened = false;
   body.classList.remove("opened", "revealed", "more");
@@ -728,7 +833,24 @@ addEventListener("resize", moreCue);
 var AR = "٠١٢٣٤٥٦٧٨٩";
 /* أرقام العدّاد تبقى لاتينية عمداً: الصفر في الأرقام الهندية نقطةٌ صغيرة،
    فتُقرأ «٠٠» كأنها نقطتان لا كساعةٍ صفر. */
-var when = new Date(DATA.iso).getTime();   /* للتقويم وحده */
+/* العدّاد: قبل الموعد وحده، ويتلاشى من نفسه حين يحين */
+var box = $("#d-count"), tickTimer;
+var AR = "٠١٢٣٤٥٦٧٨٩";
+/* بلا تصفيرٍ بادئ: الصفر الهندي نقطة، فـ«٠٠» تبدو نقطتين بينما «٠» مفهومة */
+function two(n) { return String(n).replace(/\d/g, function (d) { return AR[+d]; }); }
+function tick() {
+  var left = when - Date.now();
+  if (left <= 0) { clearInterval(tickTimer); box.innerHTML = ""; return; }
+  var s = Math.floor(left / 1000), cells = [
+    [Math.floor(s / 86400), "يوم"], [Math.floor(s % 86400 / 3600), "ساعة"],
+    [Math.floor(s % 3600 / 60), "دقيقة"], [s % 60, "ثانية"]];
+  if (!box.firstChild)
+    box.innerHTML = cells.map(function (c) { return "<div><b></b><span>" + c[1] + "</span></div>"; }).join("");
+  var bs = box.querySelectorAll("b");
+  cells.forEach(function (c, i) { var t = two(c[0]);
+    if (bs[i].textContent !== t) bs[i].textContent = t; });
+}
+if (BEFORE) { tick(); tickTimer = setInterval(tick, 1000); }
 
 /* ─────────── التقويم والمشاركة ─────────── */
 function stamp(t) { return new Date(t).toISOString().replace(/[-:]|\.\d{3}/g, ""); }
