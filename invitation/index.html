@@ -374,24 +374,13 @@ body {
   margin: 0 auto var(--s3); }
 .date { font-family:'Tajawal', sans-serif; font-weight: 500;
   font-size: clamp(13px, 3.4vw, 15px); letter-spacing: .14em; color: var(--ink-2); }
-.count { display: flex; justify-content: center; gap: clamp(18px, 5.5vw, 34px);
-  margin-top: var(--s3); flex-wrap: wrap; }
-.count div { min-width: 42px; }
-.count b { display: block; font-family:'Tajawal', sans-serif; font-weight: 500;
-  font-variant-numeric: tabular-nums; font-size: clamp(25px, 6.6vw, 32px); line-height: 1;
-  color: var(--ink); }
-.count span { display: block; margin-top: var(--s1); font-size: 9.5px;
-  letter-spacing: .2em; color: var(--ink-2); --o: .75; }
-.count.done { display: block; font-family:'Tajawal', sans-serif; font-weight: 500;
-  font-size: clamp(21px, 5.6vw, 27px); color: var(--blue); }
-
 /* القلب — بلا إطار؛ الفراغ وحده يحملها */
 .verse { margin-top: var(--s5); }
 .verse p span { display: inline-block; opacity: 0; filter: blur(5px); transform: translateY(7px);
   transition: opacity .95s ease, filter .95s ease, transform .95s cubic-bezier(.2,.85,.3,1); }
 .revealed .verse p span { opacity: 1; filter: none; transform: none; }
 .verse p { font-family:'Amiri', serif; font-weight: 400; color: var(--ink);
-  font-size: clamp(19px, 5.1vw, 24px); line-height: 2.1; }
+  font-size: clamp(16px, 4.3vw, 20px); line-height: 2.05; }
 .verse cite { display: block; margin-top: var(--s3); font-style: normal;
   font-size: 11px; letter-spacing: .12em; color: var(--blue-dp); --o: .85; }
 
@@ -434,7 +423,7 @@ body {
 @media (min-width: 900px) and (max-height: 1000px) {
   :root { --s4: 26px; --s5: 40px; }
   .names { font-size: 80px; }
-  .verse p { font-size: 22px; line-height: 2.05; }
+  .verse p { font-size: 19px; line-height: 2; }
 }
 @media (max-width: 899px) and (max-height: 800px) {
   :root { --s3: clamp(12px, 3vw, 17px); --s4: clamp(15px, 2.9vh, 24px); --s5: clamp(19px, 4vh, 32px); }
@@ -444,8 +433,7 @@ body {
   .names { font-size: clamp(31px, 8.6vh, 58px); }
   .full  { font-size: clamp(12px, 3.1vw, 13.5px); line-height: 1.75; }
   .date  { font-size: 12.5px; }
-  .count b { font-size: 20px; } .count span { margin-top: 3px; font-size: 9px; }
-  .verse p { font-size: clamp(15.5px, 4.1vw, 18px); line-height: 1.95; }
+  .verse p { font-size: clamp(14px, 3.7vw, 16.5px); line-height: 1.95; }
   .verse cite { margin-top: var(--s2); }
   .dua { font-size: clamp(12.5px, 3.2vw, 14px); line-height: 1.8; }
   .acts { margin-top: var(--s3); }
@@ -491,8 +479,7 @@ body {
 
     <div class="when">
       <hr>
-      <p class="date" id="d-date">٥ سبتمبر ٢٠٢٦</p>
-      <div class="count" id="d-count"></div>
+      <p class="date" id="d-date">5 سبتمبر 2026</p>
     </div>
 
     <blockquote class="verse">
@@ -553,8 +540,7 @@ var DATA = {
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
   verse: "﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",
   verseSrc: "سورة الرّوم — الآية ٢١",
-  dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق",
-  after: "تمّ بحمد الله"
+  dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق"
 };
 /* ═══════════════════════════════════════════ */
 
@@ -741,23 +727,7 @@ addEventListener("resize", moreCue);
 var AR = "٠١٢٣٤٥٦٧٨٩";
 /* أرقام العدّاد تبقى لاتينية عمداً: الصفر في الأرقام الهندية نقطةٌ صغيرة،
    فتُقرأ «٠٠» كأنها نقطتان لا كساعةٍ صفر. */
-function ar(n, pad) { n = String(n); if (pad) while (n.length < 2) n = "0" + n; return n; }
-
-var when = new Date(DATA.iso).getTime(), box = $("#d-count"), tickTimer;
-function tick() {
-  if (isNaN(when)) { box.style.display = "none"; return; }
-  var left = when - Date.now();
-  if (left <= 0) { box.className = "count done"; box.textContent = DATA.after;
-    clearInterval(tickTimer); return; }
-  var s = Math.floor(left / 1000), cells = [
-    [Math.floor(s / 86400), "يوم"], [Math.floor(s % 86400 / 3600), "ساعة"],
-    [Math.floor(s % 3600 / 60), "دقيقة"], [s % 60, "ثانية"]];
-  if (!box.firstChild)
-    box.innerHTML = cells.map(function (c) { return "<div><b></b><span>" + c[1] + "</span></div>"; }).join("");
-  var bs = box.querySelectorAll("b");
-  cells.forEach(function (c, i) { var t = ar(c[0], i > 0); if (bs[i].textContent !== t) bs[i].textContent = t; });
-}
-tick(); tickTimer = setInterval(tick, 1000);
+var when = new Date(DATA.iso).getTime();   /* للتقويم وحده */
 
 /* ─────────── التقويم والمشاركة ─────────── */
 function stamp(t) { return new Date(t).toISOString().replace(/[-:]|\.\d{3}/g, ""); }
