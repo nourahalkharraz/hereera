@@ -126,52 +126,61 @@ body {
 }
 .half.t .cut { bottom: 0; transform: translateY(50%)  translateY(var(--cut-y)); }
 .half.b .cut { top: 0;    transform: translateY(-50%) translateY(var(--cut-y)); }
-.mono { display: block; width: min(30vw, 168px); height: auto; }
-@media (max-width: 899px) and (max-height: 800px) { .mono { width: min(26vw, 142px); } }
+.mono { display: block; height: min(40dvh, 340px); width: auto; }
+
+/* اسما العروسين وتاريخهما أسفل الشعار — يهبطان مع النصف السفلي */
+#c-meta {
+  position: absolute; left: 0; right: 0; top: 46%; z-index: 2;
+  text-align: center; pointer-events: none;
+  font-family: 'Tajawal', system-ui, sans-serif;
+  transition: opacity .45s ease;
+}
+#c-meta .n { font-weight: 500; color: var(--blue-dp);
+  font-size: clamp(15px, 4vw, 19px); letter-spacing: .34em; }
+#c-meta .d { font-weight: 300; color: var(--blue); margin-top: clamp(9px, 2.4vw, 13px);
+  font-size: clamp(11.5px, 3vw, 13.5px); letter-spacing: .3em; }
+#c-meta .r { width: 34px; height: 1px; margin: clamp(11px, 3vw, 15px) auto 0;
+  background: var(--sand); opacity: .85; }
+.opened #c-meta { opacity: 0; }
+@media (max-width: 899px) and (max-height: 800px) { .mono { height: min(37dvh, 260px); } }
 
 #well {
   position: fixed; inset: 0; z-index: 8; pointer-events: none;
   background:
-    radial-gradient(ellipse 130% 62% at 50% var(--fold),
-      #2E4351 0%, #1E303C 38%, #14222C 70%, #0E1922 100%);
+    linear-gradient(180deg, #9DBBCB 0%, #B4CDDA 26%, #C9DDE7 44%,
+                    #C9DDE7 56%, #B4CDDA 74%, #9DBBCB 100%);
   transition: opacity .85s ease;
 }
 .revealed #well { opacity: 0; }
 
-#bloom, #halo, #flare, #rays { position: fixed; top: var(--fold); z-index: 9;
+#bloom, #halo, #flare { position: fixed; top: var(--fold); z-index: 9;
   pointer-events: none; transition: opacity .55s ease, transform .55s ease; }
 
 /* ١ · هالة واسعة — دافئة لا بيضاء: للنور حرارةٌ وإلا قُرئ ورقاً */
 #halo {
   left: -55%; right: -55%; height: 150dvh; margin-top: -75dvh;
   background: radial-gradient(closest-side,
-    rgba(238,248,255,.95) 0%, rgba(216,238,252,.66) 24%,
-    rgba(184,220,242,.38) 46%, rgba(152,196,224,.14) 70%, transparent 88%);
-  opacity: calc(.18 + var(--p) * var(--p) * 1.0);
+    rgba(255,255,255,.80) 0%, rgba(240,250,255,.46) 26%,
+    rgba(214,235,247,.22) 50%, rgba(186,214,232,.06) 72%, transparent 88%);
+  opacity: calc(.20 + var(--p) * var(--p) * .85);
   transform: scaleY(calc(.10 + var(--p) * 1.25)) scaleX(calc(.30 + var(--p) * .84));
 }
 
-/* ٢ · القلب الساطع عند الشقّ */
+/* ٢ · شريطُ نورٍ يمتدّ على طول الشقّ من حافةٍ إلى حافة —
+      النور يخرج من الفتحة كلّها، لا من نقطةٍ في وسطها */
 #bloom {
-  left: -18%; right: -18%; height: 74dvh; margin-top: -37dvh;
-  background: radial-gradient(closest-side,
-    rgba(255,255,255,1) 0%, rgba(246,252,255,.98) 13%,
-    rgba(220,241,254,.88) 28%, rgba(186,222,246,.54) 50%,
-    rgba(154,198,228,.18) 74%, transparent 92%);
-  opacity: calc(.62 + var(--p) * .38);
-  transform: scaleY(calc(.16 + var(--p) * 1.05)) scaleX(calc(.46 + var(--p) * .72));
-}
-
-/* ٣ · أشعّة تتفتّح من الشقّ — تُعطي النور اتّجاهاً فيُقرأ منبعثاً */
-#rays {
-  left: -60%; right: -60%; height: 170dvh; margin-top: -85dvh;
-  background: repeating-conic-gradient(from 6deg at 50% 50%,
-    rgba(232,246,255,.55) 0deg 2.2deg, transparent 2.2deg 13deg);
-  -webkit-mask-image: radial-gradient(closest-side, #000 6%, rgba(0,0,0,.6) 34%, transparent 78%);
-  mask-image: radial-gradient(closest-side, #000 6%, rgba(0,0,0,.6) 34%, transparent 78%);
-  filter: blur(7px);
-  opacity: calc(.22 + var(--p) * var(--p) * .9);
-  transform: scale(calc(.30 + var(--p) * .95)) rotate(calc(var(--p) * 9deg));
+  left: 0; right: 0; height: 88dvh; margin-top: -44dvh;
+  background:
+    linear-gradient(to bottom,
+      rgba(255,255,255,0) 0%,     rgba(255,255,255,.05) 28%,
+      rgba(255,255,255,.34) 42%,  rgba(255,255,255,.86) 48%,
+      rgba(255,255,255,1) 50%,    rgba(255,255,255,.86) 52%,
+      rgba(255,255,255,.34) 58%,  rgba(255,255,255,.05) 72%,
+      rgba(255,255,255,0) 100%),
+    radial-gradient(ellipse 70% 22% at 50% 50%,
+      rgba(255,255,255,.72) 0%, rgba(238,249,255,.24) 48%, transparent 78%);
+  opacity: calc(.72 + var(--p) * .28);
+  transform: scaleY(calc(.20 + var(--p) * .95));
 }
 
 /* ٤ · وهجٌ فوق الغلاف نفسه: يفيض على حافّتَي الورق فيبان أن النور يخرج من بينهما */
@@ -187,29 +196,28 @@ body {
 
 /* الضوء الطبيعي لا يثبت: يتنفّس القلبُ وتدور الأشعّة ببطء.
    الحركة على طبقةٍ داخلية حتى لا تصطدم بتحويل السحب على العنصر نفسه. */
-#bloom::after, #halo::after, #rays::after {
+#bloom::after, #halo::after {
   content: ""; position: absolute; inset: 0; background: inherit;
 }
 #bloom::after { animation: breathe 6.5s ease-in-out infinite; }
 #halo::after  { animation: breathe 9s   ease-in-out infinite reverse; }
-#rays::after  { animation: turn 70s linear infinite; }
 @keyframes breathe {
   0%,100% { transform: scale(.93); opacity: .82 }
   50%     { transform: scale(1.07); opacity: 1 }
 }
 @keyframes turn { to { transform: rotate(360deg) } }
 @media (prefers-reduced-motion: reduce) {
-  #bloom::after, #halo::after, #rays::after { animation: none !important; }
+  #bloom::after, #halo::after { animation: none !important; }
 }
 
-.dragging #bloom, .dragging #halo, .dragging #flare, .dragging #rays { transition: none; }
-.revealed #bloom, .revealed #halo, .revealed #flare, .revealed #rays {
+.dragging #bloom, .dragging #halo, .dragging #flare { transition: none; }
+.revealed #bloom, .revealed #halo, .revealed #flare {
   opacity: 0; transition: opacity 1.2s ease; }
 
 /* حافّتا الورق تُضاءان من الداخل — هذا ما يجعل النور نوراً */
 .half::after {
   content: ""; position: absolute; left: -12%; right: -12%; height: 46dvh;
-  pointer-events: none; opacity: calc(.45 + var(--p) * .55);
+  pointer-events: none; opacity: calc(.38 + var(--p) * .52);
   mix-blend-mode: screen;
 }
 .half.t::after { bottom: 0; background: linear-gradient(to top,
@@ -438,13 +446,13 @@ body {
 }
 
 @media print {
-  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #rays, #motes, #more, #grain, .acts { display: none !important; }
+  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #motes, #more, #grain, .acts { display: none !important; }
   #sheet { position: static; overflow: visible; padding: 14mm; }
   .content > * { opacity: 1 !important; filter: none !important; transform: none !important; }
   body { overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .half, .content > *, #well, #bloom, #halo, #flare, #rays, .names b, .names i, .sprig,
+  .half, .content > *, #well, #bloom, #halo, #flare, .names b, .names i, .sprig,
   .verse p span { transition-duration: .01ms !important; transition-delay: 0s !important; }
   .names.pulse::after { animation: none !important; }
   .revealed .names b { animation: none !important; }
@@ -452,7 +460,7 @@ body {
 </style>
 
 <noscript><style>
-  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #rays, #more, .acts { display: none !important; }
+  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #more, .acts { display: none !important; }
   .content > * { opacity: 1 !important; filter: none !important; transform: none !important; }
 </style></noscript>
 
@@ -765,10 +773,10 @@ body {
 <!-- الغلاف -->
 <div id="cover" role="button" tabindex="0" aria-label="اسحب أو انقر لفتح الإعلان">
   <div class="half t"><div class="flora-in" data-flora="b"></div><div class="cut" data-cut></div></div>
-  <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut></div></div>
+  <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut></div>
+    <div id="c-meta"><p class="n" id="c-names"></p><div class="r"></div><p class="d" id="c-date"></p></div></div>
 </div>
 <div id="well" aria-hidden="true"></div>
-<div id="rays" aria-hidden="true"></div>
 <div id="halo" aria-hidden="true"></div>
 <div id="bloom" aria-hidden="true"></div>
 <div id="flare" aria-hidden="true"></div>
@@ -828,6 +836,8 @@ document.title = DATA.event + " " + DATA.one + " " + DATA.join + " " + DATA.two;
 /* الغلاف لا يحمل إلا شعار الحرفين المندمجين، والشقّ يمرّ في وسطه */
 var monoSrc = $("#mono-src").innerHTML;
 [].forEach.call(document.querySelectorAll("[data-cut]"), function (el) { el.innerHTML = monoSrc; });
+$("#c-names").textContent = DATA.one + "  و  " + DATA.two;
+$("#c-date").textContent  = DATA.date;
 
 /* الأغصان نفسها تُستنسخ داخل نصفَي الغلاف، فتفترق معهما */
 [].forEach.call(document.querySelectorAll("[data-flora]"), function (slot) {
