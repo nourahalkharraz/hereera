@@ -143,8 +143,8 @@ body {
   font-weight: 400; color: var(--blue-dp);
   font-size: clamp(29px, 8.1vw, 40px); letter-spacing: .02em; line-height: 1.4; }
 #c-meta .n i { font-style: normal; font-family: 'Tajawal', system-ui, sans-serif;
-  font-weight: 200; font-size: .40em; color: var(--blue-lt);
-  vertical-align: .22em; margin: 0 .62em; }
+  font-weight: 200; font-size: .54em; color: var(--blue-lt);
+  vertical-align: .10em; margin: 0 .50em; }
 #c-meta .d { font-weight: 300; color: var(--blue); margin-top: clamp(15px, 4vw, 21px);
   font-size: clamp(12.5px, 3.3vw, 14.5px); letter-spacing: .26em; word-spacing: .32em; }
 #c-meta .r { display: none; }
@@ -310,6 +310,9 @@ body {
   filter: none !important; position: relative;
 }
 .names b, .names i { position: relative; z-index: 1; }
+.names .one, .names .two { flex: 1 1 0; min-width: 0; }
+.names .one { text-align: left; }   /* «سند» يمين الفاصل، فيلتصق نصّه بيساره */
+.names .two { text-align: right; }  /* «نورة» يساره، فيلتصق نصّه بيمينه */
 .names::after {
   content: ""; position: absolute; left: 50%; top: 50%; z-index: 0; pointer-events: none;
   width: min(84vw, 460px); height: min(84vw, 460px); border-radius: 50%;
@@ -355,9 +358,9 @@ body {
 .revealed .names .two { transition-delay: .38s; }
 
 .names i {
-  font-style: normal; color: var(--blue-lt); font-size: .30em; font-weight: 200;
+  font-style: normal; color: var(--blue-lt); font-size: .52em; font-weight: 200;
   font-family: 'Tajawal', system-ui, sans-serif;
-  vertical-align: .42em; margin: 0 .42em; opacity: 0; transform: scale(.55);
+  vertical-align: .10em; margin: 0 .30em; flex: none; opacity: 0; transform: scale(.55);
   transition: opacity .8s ease 1.35s, transform .9s cubic-bezier(.2,1.5,.4,1) 1.35s;
 }
 .revealed .names i { opacity: .9; transform: none; }
