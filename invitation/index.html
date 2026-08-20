@@ -146,7 +146,7 @@ body {
   font-weight: 200; font-size: .40em; color: var(--blue-lt);
   vertical-align: .22em; margin: 0 .62em; }
 #c-meta .d { font-weight: 300; color: var(--blue); margin-top: clamp(15px, 4vw, 21px);
-  font-size: clamp(12.5px, 3.3vw, 14.5px); letter-spacing: .14em; }
+  font-size: clamp(12.5px, 3.3vw, 14.5px); letter-spacing: .26em; word-spacing: .32em; }
 #c-meta .r { display: none; }
 .opened #c-meta { opacity: 0; }
 @media (max-width: 899px) and (max-height: 800px) { .mono { height: min(37dvh, 260px); } }
@@ -410,9 +410,9 @@ body {
 .btn svg { width: 14px; height: 14px; flex: none; }
 .btn.ok { color: var(--ink); border-color: var(--blue); }
 #replay { width: 44px; min-width: 44px; padding: 0; justify-content: center;
-  border-color: transparent; opacity: .6; }
+  opacity: .78; }
 #replay svg { width: 16px; height: 16px; }
-#replay:hover, #replay:focus-visible { opacity: 1; border-color: rgba(143,170,180,.6); }
+#replay:hover, #replay:focus-visible { opacity: 1; }
 
 #more {
   position: fixed; left: 50%; margin-left: -9px; z-index: 6; pointer-events: none;
@@ -546,7 +546,7 @@ var DATA = {
   join:  "|",            /* الرابط بين الاسمين */
   kashida: 7,            /* مقدار المدّ الكلّي لكل اسم على الغلاف */
   full:  "سند عبدالله الفايز &nbsp;·&nbsp; نورة عبدالوهاب الخرّاز",
-  date:  "٥ سبتمبر ٢٠٢٦",
+  date:  "5 سبتمبر 2026",   /* الشهر بالعربي والأرقام لاتينية — كما في الدعوة المرجعية */
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
   verse: "﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",
   verseSrc: "سورة الرّوم — الآية ٢١",
@@ -571,7 +571,7 @@ $("#d-event").textContent = DATA.event;
 $("#d-names").innerHTML = '<b class="one">' + DATA.two + '</b><i>' + DATA.join
   + '</i><b class="two">' + DATA.one + '</b>';
 $("#d-full").innerHTML  = DATA.full;
-$("#d-date").textContent = DATA.date.split(" ").join("\u2002·\u2002");
+$("#d-date").textContent = DATA.date;
 /* الآية تظهر كلمةً كلمة، كأنها تُتلى */
 $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
   return '<span style="transition-delay:' + (1.55 + i * .085).toFixed(2) + 's">'
@@ -626,7 +626,7 @@ function stretchLine(line, n) {
 $("#c-names").innerHTML = stretchTo(DATA.two, DATA.kashida)
   + '<i>' + DATA.join + '</i>' + stretchTo(DATA.one, DATA.kashida);
 /* التاريخ لا يُمدّ: عند هذا الحجم الصغير يُتعب المدُّ القراءة، والتباعد أوقع */
-$("#c-date").textContent = DATA.date.split(" ").join("\u2002·\u2002");
+$("#c-date").textContent = DATA.date;
 
 /* الأغصان نفسها تُستنسخ داخل نصفَي الغلاف، فتفترق معهما */
 [].forEach.call(document.querySelectorAll("[data-flora]"), function (slot) {
@@ -736,8 +736,9 @@ addEventListener("resize", moreCue);
 
 /* ─────────── العدّاد الحيّ ─────────── */
 var AR = "٠١٢٣٤٥٦٧٨٩";
-function ar(n, pad) { n = String(n); if (pad) while (n.length < 2) n = "0" + n;
-  return n.replace(/\d/g, function (d) { return AR[+d]; }); }
+/* أرقام العدّاد تبقى لاتينية عمداً: الصفر في الأرقام الهندية نقطةٌ صغيرة،
+   فتُقرأ «٠٠» كأنها نقطتان لا كساعةٍ صفر. */
+function ar(n, pad) { n = String(n); if (pad) while (n.length < 2) n = "0" + n; return n; }
 
 var when = new Date(DATA.iso).getTime(), box = $("#d-count"), tickTimer;
 function tick() {
