@@ -142,8 +142,11 @@ body {
 #c-meta .n { font-family: 'Gulzar', 'Tajawal', system-ui, sans-serif;
   font-weight: 400; color: var(--blue-dp);
   font-size: clamp(19px, 5.3vw, 26px); letter-spacing: .02em; line-height: 1.9; }
+#c-meta .n i { font-style: normal; font-family: 'Tajawal', system-ui, sans-serif;
+  font-weight: 200; font-size: .40em; color: var(--blue-lt);
+  vertical-align: .22em; margin: 0 .62em; }
 #c-meta .d { font-weight: 200; color: var(--blue); margin-top: clamp(10px, 2.6vw, 14px);
-  font-size: clamp(13px, 3.5vw, 15px); letter-spacing: .1em; }
+  font-size: clamp(12.5px, 3.3vw, 14.5px); letter-spacing: .16em; }
 #c-meta .r { width: 34px; height: 1px; margin: clamp(11px, 3vw, 15px) auto 0;
   background: var(--sand); opacity: .85; }
 .opened #c-meta { opacity: 0; }
@@ -541,7 +544,7 @@ var DATA = {
   one:   "نورة",
   two:   "سند",
   join:  "|",            /* الرابط بين الاسمين */
-  kashida: 4,            /* مقدار مدّ الحروف على الغلاف */
+  kashida: 7,            /* مقدار المدّ الكلّي لكل اسم على الغلاف */
   full:  "سند عبدالله الفايز &nbsp;·&nbsp; نورة عبدالوهاب الخرّاز",
   date:  "٥ سبتمبر ٢٠٢٦",
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
@@ -594,15 +597,36 @@ function stretch(word, n) {
   }
   return out;
 }
+/* المدّ الموزّع: «سند» فيها موضعا وصل و«نورة» موضع واحد، فلو مُدّ كلٌّ منهما
+   بنفس المقدار لكل موضع لاختلّ عرضهما. هنا يُوزَّع مقدارٌ كليٌّ واحد على مواضع
+   كل اسم، فيخرج الاسمان متقاربَي العرض حول الفاصل. */
+function stretchTo(word, total) {
+  var slots = [], i;
+  for (i = 0; i < word.length - 1; i++) {
+    if (NO_JOIN.indexOf(word.charAt(i)) === -1) slots.push(i);
+  }
+  if (!slots.length) return word;
+  var per = Math.floor(total / slots.length), extra = total % slots.length;
+  var out = "", k = 0;
+  for (i = 0; i < word.length; i++) {
+    out += word.charAt(i);
+    if (slots.indexOf(i) !== -1) {
+      out += new Array(per + (k < extra ? 1 : 0) + 1).join("ـ");
+      k++;
+    }
+  }
+  return out;
+}
 function stretchLine(line, n) {
   return line.split(" ").map(function (w) {
     return /[\u0621-\u064A]/.test(w) && w.length > 1 ? stretch(w, n) : w;
   }).join(" ");
 }
 
-$("#c-names").textContent = stretch(DATA.two, DATA.kashida) + "   " + DATA.join
-                          + "   " + stretch(DATA.one, DATA.kashida);
-$("#c-date").textContent  = stretchLine(DATA.date, Math.max(2, DATA.kashida - 1));
+$("#c-names").innerHTML = stretchTo(DATA.two, DATA.kashida)
+  + '<i>' + DATA.join + '</i>' + stretchTo(DATA.one, DATA.kashida);
+/* التاريخ لا يُمدّ: عند هذا الحجم الصغير يُتعب المدُّ القراءة، والتباعد أوقع */
+$("#c-date").textContent = DATA.date.split(" ").join("  ·  ");
 
 /* الأغصان نفسها تُستنسخ داخل نصفَي الغلاف، فتفترق معهما */
 [].forEach.call(document.querySelectorAll("[data-flora]"), function (slot) {
