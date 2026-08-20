@@ -129,6 +129,15 @@ body {
 .mono { display: block; width: min(30vw, 168px); height: auto; }
 @media (max-width: 899px) and (max-height: 800px) { .mono { width: min(26vw, 142px); } }
 
+#well {
+  position: fixed; inset: 0; z-index: 8; pointer-events: none;
+  background:
+    radial-gradient(ellipse 130% 62% at 50% var(--fold),
+      #33424F 0%, #22303B 38%, #17212A 70%, #121A22 100%);
+  transition: opacity .85s ease;
+}
+.revealed #well { opacity: 0; }
+
 #bloom, #halo, #flare, #rays { position: fixed; top: var(--fold); z-index: 9;
   pointer-events: none; transition: opacity .55s ease, transform .55s ease; }
 
@@ -136,21 +145,21 @@ body {
 #halo {
   left: -55%; right: -55%; height: 150dvh; margin-top: -75dvh;
   background: radial-gradient(closest-side,
-    rgba(255,248,232,.90) 0%, rgba(255,244,222,.58) 26%,
-    rgba(252,238,214,.30) 48%, rgba(244,230,208,.10) 70%, transparent 88%);
-  opacity: calc(var(--p) * var(--p) * 1.15);
-  transform: scaleY(calc(.06 + var(--p) * 1.25)) scaleX(calc(.34 + var(--p) * .8));
+    rgba(255,247,226,.95) 0%, rgba(255,238,201,.66) 24%,
+    rgba(250,222,170,.38) 46%, rgba(238,201,146,.14) 70%, transparent 88%);
+  opacity: calc(.18 + var(--p) * var(--p) * 1.0);
+  transform: scaleY(calc(.10 + var(--p) * 1.25)) scaleX(calc(.30 + var(--p) * .84));
 }
 
 /* ٢ · القلب الساطع عند الشقّ */
 #bloom {
   left: -18%; right: -18%; height: 74dvh; margin-top: -37dvh;
   background: radial-gradient(closest-side,
-    rgba(255,253,246,1) 0%, rgba(255,250,236,.95) 15%,
-    rgba(255,244,220,.62) 34%, rgba(253,236,209,.26) 58%,
-    rgba(246,229,203,.05) 78%, transparent 92%);
-  opacity: calc(var(--p) * 1.4);
-  transform: scaleY(calc(.10 + var(--p) * 1.1)) scaleX(calc(.52 + var(--p) * .66));
+    rgba(255,255,252,1) 0%, rgba(255,251,238,.98) 13%,
+    rgba(255,235,186,.86) 28%, rgba(253,214,150,.52) 50%,
+    rgba(244,208,152,.16) 74%, transparent 92%);
+  opacity: calc(.62 + var(--p) * .38);
+  transform: scaleY(calc(.16 + var(--p) * 1.05)) scaleX(calc(.46 + var(--p) * .72));
 }
 
 /* ٣ · أشعّة تتفتّح من الشقّ — تُعطي النور اتّجاهاً فيُقرأ منبعثاً */
@@ -161,8 +170,8 @@ body {
   -webkit-mask-image: radial-gradient(closest-side, #000 6%, rgba(0,0,0,.6) 34%, transparent 78%);
   mask-image: radial-gradient(closest-side, #000 6%, rgba(0,0,0,.6) 34%, transparent 78%);
   filter: blur(7px);
-  opacity: calc(var(--p) * var(--p) * 1.1);
-  transform: scale(calc(.25 + var(--p) * .95)) rotate(calc(var(--p) * 9deg));
+  opacity: calc(.22 + var(--p) * var(--p) * .9);
+  transform: scale(calc(.30 + var(--p) * .95)) rotate(calc(var(--p) * 9deg));
 }
 
 /* ٤ · وهجٌ فوق الغلاف نفسه: يفيض على حافّتَي الورق فيبان أن النور يخرج من بينهما */
@@ -171,8 +180,8 @@ body {
   background: radial-gradient(closest-side,
     rgba(255,252,243,.95) 0%, rgba(255,247,228,.55) 26%,
     rgba(255,241,214,.18) 52%, transparent 76%);
-  opacity: calc(var(--p) * var(--p) * 1.25);
-  transform: scaleY(calc(.3 + var(--p) * .9)) scaleX(calc(.6 + var(--p) * .55));
+  opacity: calc(.34 + var(--p) * var(--p) * .9);
+  transform: scaleY(calc(.34 + var(--p) * .86)) scaleX(calc(.5 + var(--p) * .62));
   filter: blur(6px);
 }
 
@@ -182,15 +191,16 @@ body {
 
 /* حافّتا الورق تُضاءان من الداخل — هذا ما يجعل النور نوراً */
 .half::after {
-  content: ""; position: absolute; left: -12%; right: -12%; height: 42dvh;
-  pointer-events: none; opacity: calc(var(--p) * 1.15);
+  content: ""; position: absolute; left: -12%; right: -12%; height: 46dvh;
+  pointer-events: none; opacity: calc(.45 + var(--p) * .55);
+  mix-blend-mode: screen;
 }
 .half.t::after { bottom: 0; background: linear-gradient(to top,
-  rgba(255,249,235,.96) 0%, rgba(255,244,222,.52) 16%,
-  rgba(255,238,206,.20) 40%, transparent 74%); }
+  rgba(255,236,186,1) 0%, rgba(255,226,160,.72) 9%,
+  rgba(252,209,132,.34) 26%, rgba(240,190,120,.10) 50%, transparent 78%); }
 .half.b::after { top: 0; background: linear-gradient(to bottom,
-  rgba(255,249,235,.96) 0%, rgba(255,244,222,.52) 16%,
-  rgba(255,238,206,.20) 40%, transparent 74%); }
+  rgba(255,236,186,1) 0%, rgba(255,226,160,.72) 9%,
+  rgba(252,209,132,.34) 26%, rgba(240,190,120,.10) 50%, transparent 78%); }
 
 #spark {
   position: fixed; top: var(--fold); left: 0; width: 330px; height: 130px; z-index: 11;
@@ -411,13 +421,13 @@ body {
 }
 
 @media print {
-  #cover, #spark, #grip, #hint, #bloom, #halo, #flare, #rays, #motes, #more, #grain, .acts { display: none !important; }
+  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #rays, #motes, #more, #grain, .acts { display: none !important; }
   #sheet { position: static; overflow: visible; padding: 14mm; }
   .content > * { opacity: 1 !important; filter: none !important; transform: none !important; }
   body { overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .half, .content > *, #bloom, #halo, #flare, #rays, .names b, .names i, .sprig,
+  .half, .content > *, #well, #bloom, #halo, #flare, #rays, .names b, .names i, .sprig,
   .verse p span { transition-duration: .01ms !important; transition-delay: 0s !important; }
   .names.pulse::after { animation: none !important; }
   .revealed .names b { animation: none !important; }
@@ -425,7 +435,7 @@ body {
 </style>
 
 <noscript><style>
-  #cover, #spark, #grip, #hint, #bloom, #halo, #flare, #rays, #more, .acts { display: none !important; }
+  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #rays, #more, .acts { display: none !important; }
   .content > * { opacity: 1 !important; filter: none !important; transform: none !important; }
 </style></noscript>
 
@@ -724,6 +734,7 @@ body {
   <div class="half t"><div class="flora-in" data-flora="b"></div><div class="cut" data-cut></div></div>
   <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut></div></div>
 </div>
+<div id="well" aria-hidden="true"></div>
 <div id="rays" aria-hidden="true"></div>
 <div id="halo" aria-hidden="true"></div>
 <div id="bloom" aria-hidden="true"></div>
