@@ -15,13 +15,21 @@ STEP_PX  = 9.0      # مسافة إعادة التوزيع بالبكسل الم
 SM_SIG   = 3.0      # تنعيم الكنتور بعدد النقاط
 DP_TOL   = 1.1      # سماحية التبسيط (بكسل مكبَّر) قبل رسم المنحنيات
 MIN_AREA = 400      # أصغر مساحة (بالبكسل المكبَّر) تُعدّ عنصراً حقيقياً
+FADE_FROM= 496.0    # الصف الذي يبدأ عنده خفوت الحبر (بإحداثيات الصورة)
+FADE_TO  = 560.0    # الصف الذي ينتهي عنده
+FADE_LO  = 140.0    # أدنى عتبة عند الطرف الباهت
+TIP_FADE = 0.085    # نسبة الطرف الذي يتلاشى شفافيةً
 CUT_Y    = 0     # قصّ ذيل الشعار عند أضيق نقطة في الساق
 CUT_FADE = 170      # طول التلاشي فوق نقطة القصّ، ليختم الحرف بطرفٍ رفيع
 
 def alpha_field():
     a = np.asarray(Image.open(SRC).convert('RGB')).astype(np.float32)
     mn = a.min(axis=2)
-    al = np.clip((mn - 180.0) / (248.0 - 180.0), 0, 1)
+    # الحبر يخفت في نهاية السين حتى يكاد يذوب في الوردي، فتُخفَّض العتبة
+    # تدريجياً في تلك المنطقة وحدها كي يُلتقط الطرف الباهت دون التقاط الخلفية.
+    y = np.arange(mn.shape[0]).astype(np.float32)
+    lo = np.interp(y, [0, FADE_FROM, FADE_TO], [180.0, 180.0, FADE_LO])[:, None]
+    al = np.clip((mn - lo) / 68.0, 0, 1)
     al = ndi.gaussian_filter(al, PRE_SIG)
     al = ndi.zoom(al, U, order=3, mode='nearest')
     al = ndi.gaussian_filter(al, POST_SIG)
@@ -196,11 +204,23 @@ def main():
     by0 = min(n[1] for n in nums) - pad; by1 = max(n[1] for n in nums) + pad
     W, H = bx1 - bx0, by1 - by0
     body = ''.join('<path d="%s"/>' % p for _, p, _ in comps)
+    # الطرف الأخير من السين يخفت في الأصل حتى يكاد يذوب، فيُعاد ذلك بقناع شفافية
+    tip = by1 - H * TIP_FADE
     svg = ('<svg class="mono" viewBox="%.1f %.1f %.1f %.1f" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
            '<defs><linearGradient id="omb" gradientUnits="userSpaceOnUse" x1="0" y1="%.1f" x2="0" y2="%.1f">'
            '<stop offset="0%%" stop-color="#1B2933"/><stop offset="50%%" stop-color="#3B5A6B"/>'
-           '<stop offset="100%%" stop-color="#7BA0B2"/></linearGradient></defs>'
-           '<g fill="url(#omb)" stroke="none" fill-rule="evenodd">%s</g></svg>') % (bx0, by0, W, H, by0, by1, body)
+           '<stop offset="100%%" stop-color="#7BA0B2"/></linearGradient>'
+           '<linearGradient id="tip" gradientUnits="userSpaceOnUse" x1="0" y1="%.1f" x2="0" y2="%.1f">'
+           '<stop offset="0%%" stop-color="#fff"/><stop offset="100%%" stop-color="#fff" stop-opacity="0"/>'
+           '</linearGradient>'
+           '<mask id="mfade" maskUnits="userSpaceOnUse" x="%.1f" y="%.1f" width="%.1f" height="%.1f">'
+           '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="#fff"/>'
+           '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="url(#tip)"/></mask></defs>'
+           '<g fill="url(#omb)" stroke="none" fill-rule="evenodd" mask="url(#mfade)">%s</g></svg>') % (
+           bx0, by0, W, H, by0, by1, tip, by1,
+           bx0, by0, W, H,
+           bx0, by0, W, tip - by0,
+           bx0, tip, W, by1 - tip, body)
     open('mono10.svg', 'w').write(svg)
     print('components', len(comps), 'size', W, H, 'bytes', len(svg))
     for cy, p, area in comps:
