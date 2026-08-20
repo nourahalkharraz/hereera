@@ -15,6 +15,8 @@ STEP_PX  = 9.0      # مسافة إعادة التوزيع بالبكسل الم
 SM_SIG   = 3.0      # تنعيم الكنتور بعدد النقاط
 DP_TOL   = 1.1      # سماحية التبسيط (بكسل مكبَّر) قبل رسم المنحنيات
 MIN_AREA = 400      # أصغر مساحة (بالبكسل المكبَّر) تُعدّ عنصراً حقيقياً
+CUT_Y    = 2340     # قصّ ذيل الشعار عند أضيق نقطة في الساق
+CUT_FADE = 170      # طول التلاشي فوق نقطة القصّ، ليختم الحرف بطرفٍ رفيع
 
 def alpha_field():
     a = np.asarray(Image.open(SRC).convert('RGB')).astype(np.float32)
@@ -23,6 +25,9 @@ def alpha_field():
     al = ndi.gaussian_filter(al, PRE_SIG)
     al = ndi.zoom(al, U, order=3, mode='nearest')
     al = ndi.gaussian_filter(al, POST_SIG)
+    if CUT_Y:
+        y = np.arange(al.shape[0])[:, None].astype(np.float32)
+        al = al * np.clip((CUT_Y - y) / float(CUT_FADE) + 1.0, 0, 1)
     return np.clip(al, 0, 1)
 
 def resample(pts, step):
@@ -182,13 +187,20 @@ def main():
         if segs:
             comps.append((float(np.where(m)[0].mean()), ' '.join(segs), int(m.sum())))
     comps.sort(key=lambda t: t[0])
-    W, H = x1 - x0 + 1, y1 - y0 + 1
+    # الإطار يُقصّ عبر viewBox وحده — الإحداثيات تبقى كما هي
+    import re as _re
+    nums = [(float(a), float(b)) for c in comps
+            for a, b in _re.findall(r'(-?[\d.]+) (-?[\d.]+)', c[1])]
+    pad = 8.0 * U
+    bx0 = min(n[0] for n in nums) - pad; bx1 = max(n[0] for n in nums) + pad
+    by0 = min(n[1] for n in nums) - pad; by1 = max(n[1] for n in nums) + pad
+    W, H = bx1 - bx0, by1 - by0
     body = ''.join('<path d="%s"/>' % p for _, p, _ in comps)
-    svg = ('<svg class="mono" viewBox="0 0 %d %d" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-           '<defs><linearGradient id="omb" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="%d">'
+    svg = ('<svg class="mono" viewBox="%.1f %.1f %.1f %.1f" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+           '<defs><linearGradient id="omb" gradientUnits="userSpaceOnUse" x1="0" y1="%.1f" x2="0" y2="%.1f">'
            '<stop offset="0%%" stop-color="#1B2933"/><stop offset="50%%" stop-color="#3B5A6B"/>'
            '<stop offset="100%%" stop-color="#7BA0B2"/></linearGradient></defs>'
-           '<g fill="url(#omb)" stroke="none" fill-rule="evenodd">%s</g></svg>') % (W, H, H, body)
+           '<g fill="url(#omb)" stroke="none" fill-rule="evenodd">%s</g></svg>') % (bx0, by0, W, H, by0, by1, body)
     open('mono10.svg', 'w').write(svg)
     print('components', len(comps), 'size', W, H, 'bytes', len(svg))
     for cy, p, area in comps:
