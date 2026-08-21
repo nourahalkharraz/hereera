@@ -685,6 +685,10 @@ var when = new Date(DATA.iso).getTime();
 var ends = DATA.endsIso ? new Date(DATA.endsIso).getTime()
                         : when + (DATA.hours || 5) * 3600 * 1000;
 var BEFORE = !isNaN(ends) && Date.now() < ends;
+/* للمعاينة قبل الموعد: أضيفي ‎?after‎ إلى الرابط لترَي شكل الإعلان،
+   أو ‎?before‎ لترَي الدعوة بعد أن يمضي الحفل. لا أثر لهما على الضيوف. */
+if (/[?&]after\b/.test(location.search)) BEFORE = false;
+else if (/[?&]before\b/.test(location.search)) BEFORE = true;
 
 $("#d-news").innerHTML  = BEFORE ? DATA.news  : (DATA.newsAfter  || DATA.news);
 $("#d-event").textContent = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
