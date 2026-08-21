@@ -778,7 +778,7 @@ var tune = $("#tune"), muteBtn = $("#mute"), tuneOn = false, fadeTimer;
 if (DATA.tune) { tune.src = DATA.tune; tune.volume = 0; }
 if (DATA.sound !== false) muteBtn.hidden = false;
 function playFile() {
-  var target = 0.85;
+  var target = 0.42;   /* خافتة عمداً: خلفيةٌ للفرح لا صوتٌ يعلو عليه */
   try {
     var pr = tune.play();
     if (pr && pr.catch) pr.catch(function () { tuneOn = false; });
