@@ -595,7 +595,8 @@ var DATA = {
   venue: "",            /* مثال: "قاعة الماسة — حيّ الياسمين، الرياض" */
   maps:  "",            /* رابط الموقع على الخرائط — يُخفى الزر إن تُرك فارغاً */
   note:  "",            /* مثال: "الحفل نسائي" */
-  tune:  "",            /* رابط أو data: للنشيد — يُخفى زر الصوت إن تُرك فارغاً */
+  sound: true,          /* اجعليها false لإسكات الدعوة تماماً */
+  tune:  "",            /* ملف صوتي؛ إن تُرك فارغاً عُزفت النغمة المؤلَّفة بالكود */
   iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
   verse: "﴿ وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",   /* المقطع الذي يسع سطراً واحداً بحجمٍ مقروء */
   verseSrc: "سورة الرّوم — الآية ٢١",
@@ -765,14 +766,9 @@ function finish() {
    يبدأ مع انفتاح الظرف لأن الجوّالات لا تسمح بالتشغيل التلقائي بلا لمسة،
    ويعلو تدريجياً حتى لا يفاجئ من يفتحها ورفعُ الصوت عالٍ. */
 var tune = $("#tune"), muteBtn = $("#mute"), tuneOn = false, fadeTimer;
-if (DATA.tune) {
-  tune.src = DATA.tune;
-  tune.volume = 0;
-  muteBtn.hidden = false;
-}
-function playTune() {
-  if (!DATA.tune || tuneOn) return;
-  tuneOn = true;
+if (DATA.tune) { tune.src = DATA.tune; tune.volume = 0; }
+if (DATA.sound !== false) muteBtn.hidden = false;
+function playFile() {
   var target = 0.55;
   try {
     var pr = tune.play();
@@ -784,8 +780,64 @@ function playTune() {
     if (tune.volume >= target - 1e-3) clearInterval(fadeTimer);
   }, 60);
 }
+
+/* ─── النغمة المؤلَّفة ───
+   حين لا يوجد ملف، تُعزف عبارةٌ قصيرة من مقام الحجاز بأصوات تُحاكي نقر العود:
+   ضربةٌ سريعة ثم تلاشٍ طويل، وصدى خفيف يمنحها اتّساع القاعة. لا ملف ولا حقوق،
+   وتُبنى لحظة الفتح لأن الجوّالات لا تُنشئ سياق الصوت إلا بلمسة. */
+var AC = null, motifGain = null;
+var HIJAZ = [146.83, 293.66, 311.13, 369.99, 392.00, 440.00, 466.16, 523.25, 587.33];
+/*            د٣     د٤     مي♭    فا#    صول    لا     سي♭    دو٥    ر٥   */
+var PHRASE = [
+  [0.00, 1, .55], [0.55, 4, .42], [1.05, 5, .46], [1.75, 6, .38],
+  [2.30, 5, .34], [2.85, 3, .40], [3.55, 4, .46], [4.45, 1, .30],
+  [5.40, 5, .34], [6.10, 7, .40], [6.95, 8, .44], [8.10, 4, .26], [9.00, 1, .22]
+];
+function pluck(t, freq, amp) {
+  var g = AC.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(amp, t + 0.012);      /* نقرةٌ حادّة كالريشة */
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2); /* ثمّ رنينٌ يخبو */
+  var lp = AC.createBiquadFilter();
+  lp.type = "lowpass"; lp.frequency.setValueAtTime(2600, t);
+  lp.frequency.exponentialRampToValueAtTime(700, t + 2.2);
+  g.connect(lp); lp.connect(motifGain);
+  [[1, 1, "sine"], [2, .30, "sine"], [3, .13, "triangle"]].forEach(function (h) {
+    var o = AC.createOscillator();
+    o.type = h[2];
+    o.frequency.setValueAtTime(freq * h[0], t);
+    o.detune.setValueAtTime((Math.random() - .5) * 6, t);
+    var hg = AC.createGain(); hg.gain.value = h[1];
+    o.connect(hg); hg.connect(g);
+    o.start(t); o.stop(t + 3.4);
+  });
+}
+function playMotif() {
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); }
+  catch (e) { tuneOn = false; return; }
+  motifGain = AC.createGain();
+  motifGain.gain.setValueAtTime(0, AC.currentTime);
+  motifGain.gain.linearRampToValueAtTime(0.5, AC.currentTime + 1.6);
+  /* صدى خافت يفتح المكان دون أن يعكّر النغمة */
+  var dl = AC.createDelay(1.0), fb = AC.createGain(), wet = AC.createGain();
+  dl.delayTime.value = 0.34; fb.gain.value = 0.26; wet.gain.value = 0.30;
+  motifGain.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet);
+  motifGain.connect(AC.destination); wet.connect(AC.destination);
+  var t0 = AC.currentTime + 0.25;
+  PHRASE.forEach(function (n) { pluck(t0 + n[0], HIJAZ[n[1]], n[2]); });
+  /* إعادةٌ واحدة أهدأ، ثمّ تُترك الدعوة لصمتها */
+  PHRASE.forEach(function (n) { pluck(t0 + 13.5 + n[0], HIJAZ[n[1]], n[2] * .62); });
+  motifGain.gain.setValueAtTime(0.5, t0 + 21);
+  motifGain.gain.linearRampToValueAtTime(0.0001, t0 + 26);
+}
+function playTune() {
+  if (tuneOn) return;
+  tuneOn = true;
+  if (DATA.tune) playFile(); else playMotif();
+}
 if (muteBtn) muteBtn.addEventListener("click", function () {
   tune.muted = !tune.muted;
+  if (motifGain) motifGain.gain.value = tune.muted ? 0 : 0.5;
   muteBtn.setAttribute("aria-label", tune.muted ? "تشغيل الصوت" : "كتم الصوت");
   muteBtn.setAttribute("title", muteBtn.getAttribute("aria-label"));
   muteBtn.querySelector(".on").style.display  = tune.muted ? "none" : "";
