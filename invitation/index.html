@@ -396,6 +396,34 @@ body {
   letter-spacing: .2em; color: var(--ink-2); --o: .75; }
 .count:empty { display: none; }
 
+/* الموعد والمكان — كتلةٌ مستقلّة أسفل الدعوة، أوضح من سطرين عابرين */
+.place { margin-top: var(--s5); }
+.place[hidden] { display: none; }
+.pdet { display: flex; justify-content: center; gap: clamp(30px, 11vw, 64px);
+  flex-wrap: wrap; text-align: center; }
+.pdet span { display: block; font-family:'Tajawal', sans-serif; font-weight: 300;
+  font-size: 10px; letter-spacing: .24em; color: var(--blue); --o: .85;
+  margin-bottom: 7px; }
+.pdet b { display: block; font-family:'Tajawal', sans-serif; font-weight: 500;
+  font-size: clamp(14.5px, 3.9vw, 17px); line-height: 1.5; color: var(--ink); }
+.pdet div:has(b:empty) { display: none; }
+
+/* خريطة مصغّرة مرسومة — لا تُحمَّل من الشبكة، وتفتح الموقع الحقيقي باللمس */
+.minimap { display: block; margin: var(--s3) auto 0; width: min(100%, 340px);
+  border-radius: 16px; overflow: hidden; text-decoration: none;
+  border: 1px solid rgba(143,170,180,.42);
+  box-shadow: 0 6px 20px rgba(62,88,102,.10);
+  transition: box-shadow .3s ease, transform .3s ease; }
+.minimap:hover, .minimap:focus-visible { box-shadow: 0 10px 26px rgba(62,88,102,.16);
+  transform: translateY(-1px); }
+.minimap svg { display: block; width: 100%; height: clamp(112px, 30vw, 150px); }
+.pnote { margin-top: var(--s3); text-align: center; font-family:'Tajawal', sans-serif;
+  font-weight: 300; font-size: clamp(12px, 3.1vw, 13.5px); letter-spacing: .06em;
+  color: var(--ink-2); --o: .9; }
+.mm-label { display: block; padding: 10px 12px; text-align: center;
+  font-family:'Tajawal', sans-serif; font-weight: 500; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--blue-dp); background: rgba(243,247,248,.9); }
+
 /* زرّ الصوت — زاويةٌ هادئة لا تزاحم النصّ */
 #mute { position: fixed; z-index: 12; top: calc(10px + env(safe-area-inset-top));
   left: 10px; width: 38px; height: 38px; display: inline-flex;
@@ -524,8 +552,6 @@ body {
       <hr>
       <p class="date" id="d-date">السبت ٥ سبتمبر ٢٠٢٦</p>
       <p class="hijri" id="d-hijri">٢٣ ربيع الأول ١٤٤٨</p>
-      <p class="at" id="d-at"></p>
-      <p class="venue" id="d-venue"></p>
       <div class="count" id="d-count"></div>
     </div>
 
@@ -536,11 +562,42 @@ body {
 
     <p class="dua" id="d-dua">سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق</p>
 
+    <section class="place" id="d-place" hidden>
+      <div class="pdet">
+        <div><span>الموعد</span><b id="d-at"></b></div>
+        <div><span>المكان</span><b id="d-venue"></b></div>
+      </div>
+      <a class="minimap" id="d-map" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="340" height="150" fill="#E7EFF2"/>
+          <path d="M-10 96 H350" stroke="#D3E1E7" stroke-width="15"/>
+          <path d="M118 -10 V160" stroke="#D3E1E7" stroke-width="13"/>
+          <path d="M-10 40 H350" stroke="#DCE7EB" stroke-width="7"/>
+          <path d="M242 -10 V160" stroke="#DCE7EB" stroke-width="7"/>
+          <path d="M-10 130 H350" stroke="#DCE7EB" stroke-width="5"/>
+          <path d="M62 -10 V160" stroke="#E1EBEE" stroke-width="4"/>
+          <path d="M300 -10 V160" stroke="#E1EBEE" stroke-width="4"/>
+          <g fill="#DFE9ED">
+            <rect x="12" y="50" width="38" height="34" rx="3"/>
+            <rect x="74" y="50" width="32" height="34" rx="3"/>
+            <rect x="132" y="52" width="44" height="30" rx="3"/>
+            <rect x="196" y="50" width="34" height="34" rx="3"/>
+            <rect x="256" y="106" width="34" height="30" rx="3"/>
+            <rect x="14" y="106" width="42" height="30" rx="3"/>
+          </g>
+          <path d="M252 6 q28 14 46 40 q-24 22 -52 16 q-14 -30 6 -56z" fill="#D8E6E0"/>
+          <circle cx="170" cy="88" r="34" fill="#8FAAB4" opacity=".16"/>
+          <circle cx="170" cy="88" r="20" fill="#8FAAB4" opacity=".22"/>
+          <path d="M170 66 a11.5 11.5 0 0 1 11.5 11.5 c0 8.4 -11.5 20.5 -11.5 20.5
+                   s-11.5 -12.1 -11.5 -20.5 A11.5 11.5 0 0 1 170 66z"
+                fill="#3E5866" stroke="#fff" stroke-width="2.4"/>
+          <circle cx="170" cy="77.5" r="4" fill="#fff"/>
+        </svg>
+        <span class="mm-label">افتح الموقع على الخرائط</span>
+      </a>
+    </section>
+
     <div class="acts">
-      <a class="btn" id="map" href="#" target="_blank" rel="noopener" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        الموقع</a>
     </div>
   </div>
 </main>
@@ -638,12 +695,15 @@ $("#d-date").textContent = (BEFORE && DATA.day ? DATA.day + " " : "") + DATA.dat
 $("#d-hijri").textContent = DATA.hijri || "";
 $("#d-at").textContent    = BEFORE ? (DATA.time  || "") : "";
 $("#d-venue").textContent = BEFORE ? (DATA.venue || "") : "";
+if (BEFORE && DATA.maps) $("#d-map").href = DATA.maps;
+else $("#d-map").remove();
 if (DATA.note && BEFORE) {
   var noteEl = document.createElement("p");
-  noteEl.className = "venue"; noteEl.textContent = DATA.note;
-  $("#d-venue").after(noteEl);
+  noteEl.className = "pnote"; noteEl.textContent = DATA.note;
+  $("#d-place").appendChild(noteEl);
 }
-if (BEFORE && DATA.maps) { $("#map").href = DATA.maps; $("#map").hidden = false; }
+/* الكتلة كلّها تختفي بعد الحفل، إذ لا موعد يُقصَد ولا مكان يُقصَد إليه */
+if (BEFORE && (DATA.time || DATA.venue || DATA.maps)) $("#d-place").hidden = false;
 /* الآية تظهر كلمةً كلمة، كأنها تُتلى */
 $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
   return '<span style="transition-delay:' + (1.55 + i * .085).toFixed(2) + 's">'
