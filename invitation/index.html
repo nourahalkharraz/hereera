@@ -619,7 +619,9 @@ body {
     <path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7"/>
     <path class="off" d="M17 9.5l4 5M21 9.5l-4 5" style="display:none"/></svg>
 </button>
-<audio id="tune" loop preload="auto" playsinline></audio>
+<video id="tune" loop preload="auto" playsinline webkit-playsinline
+       disablepictureinpicture aria-hidden="true"
+       style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9px;top:-9px"></video>
 <div id="well" aria-hidden="true"></div>
 <div id="halo" aria-hidden="true"></div>
 <div id="bloom" aria-hidden="true"></div>
