@@ -310,11 +310,10 @@ body {
   filter: none !important; position: relative;
 }
 .names b, .names i { position: relative; z-index: 1; }
-/* السطر نصفان متساويان والفاصل بينهما في مركز الشاشة تماماً، ثم يتوسّط
-   كلُّ اسمٍ نصفَه. فيقع مركز «سند» ومركز «نورة» على بُعدٍ واحد من المنتصف،
-   ويبقى السطر كلّه متوسّطاً. لو التصق كلُّ اسمٍ بالفاصل — أو أخذ عرضه
-   الطبيعي — لاختلّ أحد التوازنين، لأنّ «سند» أعرض من «نورة». */
-.names .one, .names .two { flex: 1 1 0; min-width: 0; text-align: center; }
+/* الاسمان في صندوقين متساويين بعرض أوسعهما — لا بنصف السطر — فيتقاربان
+   حول الفاصل وهما محتفظان بتناظرهما: الفاصل في المنتصف، ومركز كلِّ اسمٍ
+   على بُعدٍ واحد منه. العرض يُقاس في المتصفّح لأنه يتبع الخطّ وحجم الشاشة. */
+.names .one, .names .two { flex: 0 0 auto; text-align: center; }
 .names::after {
   content: ""; position: absolute; left: 50%; top: 50%; z-index: 0; pointer-events: none;
   width: min(84vw, 460px); height: min(84vw, 460px); border-radius: 50%;
@@ -362,7 +361,7 @@ body {
 .names i {
   font-style: normal; color: var(--blue-lt); font-size: .70em; font-weight: 200;
   font-family: 'Tajawal', system-ui, sans-serif;
-  vertical-align: .04em; margin: 0 .26em; flex: none; opacity: 0; transform: scale(.55);
+  vertical-align: .04em; margin: 0 .1em; flex: none; opacity: 0; transform: scale(.55);
   transition: opacity .8s ease 1.35s, transform .9s cubic-bezier(.2,1.5,.4,1) 1.35s;
 }
 .revealed .names i { opacity: .9; transform: scaleY(1.5); }
@@ -399,7 +398,7 @@ body {
 
 /* زرّ الصوت — زاويةٌ هادئة لا تزاحم النصّ */
 #mute { position: fixed; z-index: 12; top: calc(10px + env(safe-area-inset-top));
-  inset-inline-start: 10px; width: 38px; height: 38px; display: inline-flex;
+  left: 10px; width: 38px; height: 38px; display: inline-flex;
   align-items: center; justify-content: center; padding: 0; cursor: pointer;
   background: rgba(243,247,248,.55); backdrop-filter: blur(6px);
   border: 1px solid rgba(143,170,180,.45); border-radius: 999px;
@@ -869,6 +868,19 @@ $("#replay").addEventListener("click", function (e) { e.stopPropagation(); reset
 addEventListener("keydown", function (e) { if (e.key === "Escape" && opened) reset(); });
 
 /* السماء داخل الحروف تتبع الإصبع أو المؤشّر — الصفحة تردّ على اللمس أينما كان */
+/* يُقاس الاسمان بعد جاهزية الخطّ، ثم يُمنحان عرضاً واحداً هو عرض أوسعهما */
+function balanceNames() {
+  var a = document.querySelector("#d-names .one"), b = document.querySelector("#d-names .two");
+  if (!a || !b) return;
+  a.style.width = b.style.width = "auto";
+  var w = Math.max(a.getBoundingClientRect().width, b.getBoundingClientRect().width);
+  a.style.width = b.style.width = Math.ceil(w) + "px";
+}
+balanceNames();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(balanceNames);
+addEventListener("resize", balanceNames);
+addEventListener("orientationchange", function () { setTimeout(balanceNames, 160); });
+
 var namesEl = $("#d-names");
 sheet.addEventListener("pointermove", function (e) {
   var x = (e.clientX / innerWidth - .5), y = (e.clientY / innerHeight - .5);
