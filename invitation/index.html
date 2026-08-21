@@ -389,14 +389,21 @@ body {
   margin: 0 auto var(--s3); }
 .date { font-family:'Tajawal', sans-serif; font-weight: 500;
   font-size: clamp(16px, 4.4vw, 19.5px); letter-spacing: .1em; color: var(--ink);
-  display: inline-block; padding: 0 .62em .06em;
-  /* مسحةُ ريشةٍ تمرّ تحت التاريخ فتُبرزه، تخفت عند طرفيها كأثر فرشاة */
-  background-image: linear-gradient(90deg,
-    rgba(143,170,180,0) 0%, rgba(143,170,180,.55) 13%,
-    rgba(120,152,166,.78) 50%, rgba(143,170,180,.55) 87%, rgba(143,170,180,0) 100%);
-  background-repeat: no-repeat;
-  background-size: 100% .40em;
-  background-position: center calc(100% - .04em); }
+  display: inline-block; padding: .58em 1.45em;
+  position: relative; isolation: isolate; }
+/* قطرةُ ماءٍ تستقرّ خلف التاريخ فتُبرزه: حوافُّها غير منتظمة كأثر الريشة على
+   الورق، وتدرّجها هو تدرّج الشعار نفسه — أفتحُ أعلاها وأغمقُ أسفلها — فيُقرأ
+   الغلافُ وما بداخله من عائلةٍ واحدة. */
+.date::before {
+  content: ""; position: absolute; inset: -7px -5px; z-index: -1;
+  border-radius: 52% 48% 46% 54% / 58% 44% 56% 42%;
+  background: linear-gradient(0deg,
+    rgba(27,41,51,.28), rgba(59,90,107,.20) 46%, rgba(123,160,178,.07));
+  -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 50%,
+    #000 18%, rgba(0,0,0,.6) 52%, transparent 82%);
+  mask-image: radial-gradient(ellipse 60% 62% at 50% 50%,
+    #000 18%, rgba(0,0,0,.6) 52%, transparent 82%);
+}
 .hijri { margin-top: var(--s1); font-family:'Tajawal', sans-serif; font-weight: 300;
   font-size: clamp(10.5px, 2.7vw, 12px); letter-spacing: .1em; color: var(--blue); --o: .72; }
 .at { margin-top: var(--s2); font-family:'Tajawal', sans-serif; font-weight: 500;
