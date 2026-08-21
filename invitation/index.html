@@ -777,18 +777,25 @@ $("#c-date").textContent = DATA.date;
 var body = document.body, cover = $("#cover"), sheet = $("#sheet");
 var drag = null, opened = false, timer = null;
 
-/* سفاري يأذن بالصوت داخل اللمسة وحدها. السحب قد يطول، فتُفكّ القيود عند
-   أوّل ملامسة — تشغيلٌ خاطف ثمّ إيقاف — ليعمل play() لاحقاً بلا اعتراض. */
+/* سفاري يأذن بالتشغيل داخل اللمسة وحدها، ولا يأذن به بعدها. والسحب يطول،
+   فلو أوقفنا ما بدأناه عند النزول لم نستطع استئنافه عند الرفع — وهذا ما كان
+   يُسكت الزفّة مع السحب دون النقر. الحلّ: تبدأ مكتومةً مع أوّل ملامسة وتظلّ
+   تعمل، فإذا انفتح الظرف رُفع الكتم وعادت إلى أوّلها. الكتم — بخلاف التشغيل
+   ومستوى الصوت — يستجيب له آيفون في أي وقت. */
 var primed = false;
 function primeAudio() {
-  if (primed || !DATA.tune || DATA.sound === false) return;
+  if (primed || tuneOn || !DATA.tune || DATA.sound === false) return;
   primed = true;
   try {
+    tune.muted = true;
     var pr = tune.play();
-    if (pr && pr.then) pr.then(function () {
-      if (!tuneOn) { tune.pause(); try { tune.currentTime = 0; } catch (e) {} }
-    }).catch(function () {});
-  } catch (e) {}
+    if (pr && pr.catch) pr.catch(function () { primed = false; });
+  } catch (e) { primed = false; }
+}
+function unprimeAudio() {
+  if (tuneOn || !primed) return;
+  primed = false;
+  try { tune.pause(); tune.currentTime = 0; tune.muted = false; } catch (e) {}
 }
 cover.addEventListener("pointerdown", function (e) {
   primeAudio();
@@ -824,7 +831,7 @@ function release() {
   body.classList.remove("dragging"); cover.classList.remove("grabbing");
   body.style.removeProperty("--p"); pTarget = pNow = 0;
   drag = null;
-  if (go || wasTap) open();
+  if (go || wasTap) open(); else unprimeAudio();
 }
 cover.addEventListener("pointerup", release);
 cover.addEventListener("pointercancel", release);
@@ -919,7 +926,10 @@ function playMotif() {
 function playTune() {
   if (tuneOn || DATA.sound === false) return;
   tuneOn = true;
-  if (DATA.tune) playFile(); else playMotif();
+  if (!DATA.tune) { playMotif(); return; }
+  tune.muted = false;                       /* كانت تعمل مكتومةً منذ اللمسة */
+  try { tune.currentTime = 0; } catch (e) {}
+  playFile();
 }
 if (muteBtn) muteBtn.addEventListener("click", function () {
   tune.muted = !tune.muted;
