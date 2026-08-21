@@ -1,6 +1,5 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#CFDCE0">
 <title>حفل عقد قران</title>
 <meta name="description" content="يسرّنا دعوتكم لحضور حفل عقد قران سند | نورة — السبت ٥ سبتمبر ٢٠٢٦">
 <meta property="og:type" content="website">
@@ -64,8 +63,13 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-/* خلفية الجذر تُدهَن على لوح المتصفّح كلّه، فتملأ ما خلف شريطَي سفاري
-   أيضاً — وإلّا ظهر لون الورق شريطين فاتحين أعلى الشاشة وأسفلها. */
+/* اللوحة تمتدّ خلف حدود النافذة صعوداً ونزولاً، فلا يبقى للورق الشاحب موضعٌ
+   يظهر منه، ويأخذ سفاري لونَ شريطيه من لوحةٍ لا من فراغ. */
+#backdrop {
+  position: fixed; left: 0; right: 0; top: -120px; bottom: -120px; z-index: -2;
+  pointer-events: none;
+  background: var(--paper) var(--wash) center / cover no-repeat;
+}
 body {
   direction: rtl; min-height: 100dvh; overflow: hidden;
   background: var(--paper) var(--wash) center / cover no-repeat; color: var(--ink);
@@ -649,6 +653,7 @@ body {
 <video id="tune" loop preload="auto" playsinline webkit-playsinline
        disablepictureinpicture aria-hidden="true"
        style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9px;top:-9px"></video>
+<div id="backdrop" aria-hidden="true"></div>
 <div id="well" aria-hidden="true"></div>
 <div id="halo" aria-hidden="true"></div>
 <div id="bloom" aria-hidden="true"></div>
