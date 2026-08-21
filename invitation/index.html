@@ -368,6 +368,8 @@ body {
 
 .full { margin-top: var(--s3); font-size: clamp(13px, 3.4vw, 15.5px);
   line-height: 2; color: var(--ink-2); --o: .88; }
+/* الفاصل يأخذ هامشاً متساوياً على جانبيه فينقسم السطر نصفين متّزنين */
+.full i { font-style: normal; margin: 0 .95em; color: var(--blue-lt); }
 
 /* الوقائع — بعد صمت طويل، وبصوت خافت */
 .when { margin-top: var(--s5); }
@@ -433,10 +435,19 @@ body {
 .btn svg { width: 14px; height: 14px; flex: none; }
 .btn.ok { color: var(--ink); border-color: var(--blue); }
 .btn[hidden] { display: none; }
-#replay { width: 44px; min-width: 44px; padding: 0; justify-content: center;
-  opacity: .78; }
-#replay svg { width: 16px; height: 16px; }
-#replay:hover, #replay:focus-visible { opacity: 1; }
+/* الإعادة في زاوية الشاشة لا في صفّ المحتوى: أوضح موضعاً، وأخفّ حضوراً */
+#replay {
+  position: fixed; z-index: 12; top: calc(10px + env(safe-area-inset-top));
+  inset-inline-end: 10px; width: 38px; height: 38px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  background: rgba(243,247,248,.55); backdrop-filter: blur(6px);
+  border: 1px solid rgba(143,170,180,.45); border-radius: 999px;
+  color: var(--blue-dp); opacity: 0; pointer-events: none;
+  transition: opacity .5s ease .4s;
+}
+.revealed #replay { opacity: .55; pointer-events: auto; }
+.revealed #replay:hover, .revealed #replay:focus-visible { opacity: 1; }
+#replay svg { width: 17px; height: 17px; }
 
 #more {
   position: fixed; left: 50%; margin-left: -9px; z-index: 6; pointer-events: none;
@@ -471,7 +482,6 @@ body {
   .dua { font-size: clamp(12.5px, 3.2vw, 14px); line-height: 1.8; }
   .acts { margin-top: var(--s3); }
   .btn { min-height: 40px; font-size: 12px; padding: 0 15px; }
-  #replay { width: 40px; min-width: 40px; }
   .sprig.a { width: min(26vw, 150px); } .sprig.b { width: min(18vw, 108px); }
   #hint { bottom: calc(20px + env(safe-area-inset-bottom)); }
   #grip { bottom: calc(48px + env(safe-area-inset-bottom)); }
@@ -508,7 +518,7 @@ body {
     <p class="news" id="d-news">بحمد الله وتوفيقه</p>
     <p class="event" id="d-event">تمّ عقد قران</p>
     <h1 class="names" id="d-names"><b class="one">سند</b><i>|</i><b class="two">نورة</b></h1>
-    <p class="full" id="d-full">سند عبدالله الفايز &nbsp;·&nbsp; نورة عبدالوهاب الخرّاز</p>
+    <p class="full" id="d-full">سند عبدالله الفايز<i>·</i>نورة عبدالوهاب الخرّاز</p>
 
     <div class="when">
       <hr>
@@ -531,19 +541,6 @@ body {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
         الموقع</a>
-      <a class="btn" id="cal" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-        أضِفه لتقويمك</a>
-      <button class="btn" id="share" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path d="M12 16V4M12 4 8 8M12 4l4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
-        <span id="share-t">مشاركة</span></button>
-      <button class="btn" id="replay" type="button" aria-label="إعادة" title="إعادة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20 11a8 8 0 1 0-2.1 6.1"/><path d="M20 5v6h-6"/></svg>
-      </button>
     </div>
   </div>
 </main>
@@ -554,6 +551,11 @@ body {
   <div class="half b"><div class="flora-in" data-flora="a"></div><div class="cut" data-cut></div>
     <div id="c-meta"><p class="n" id="c-names"></p><div class="r"></div><p class="d" id="c-date"></p></div></div>
 </div>
+<button id="replay" type="button" aria-label="إعادة الفتح" title="إعادة الفتح">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8.5 12 14l9-5.5"/></svg>
+</button>
 <button id="mute" type="button" hidden aria-label="كتم الصوت" title="كتم الصوت">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -587,7 +589,7 @@ var DATA = {
   two:   "سند",
   join:  "|",            /* الرابط بين الاسمين */
   kashida: 7,            /* مقدار المدّ الكلّي لكل اسم على الغلاف */
-  full:  "سند عبدالله الفايز &nbsp;·&nbsp; نورة عبدالوهاب الخرّاز",
+  full:  "سند عبدالله الفايز<i>·</i>نورة عبدالوهاب الخرّاز",
   day:   "السبت",
   date:  "٥ سبتمبر ٢٠٢٦",
   hijri: "٢٣ ربيع الأول ١٤٤٨",
@@ -909,29 +911,6 @@ function tick() {
     if (bs[i].textContent !== t) bs[i].textContent = t; });
 }
 if (BEFORE) { tick(); tickTimer = setInterval(tick, 1000); }
-
-/* ─────────── التقويم والمشاركة ─────────── */
-function stamp(t) { return new Date(t).toISOString().replace(/[-:]|\.\d{3}/g, ""); }
-if (!isNaN(when)) {
-  $("#cal").href = "https://calendar.google.com/calendar/render?action=TEMPLATE"
-    + "&text=" + encodeURIComponent(EVENT_TXT + " · " + DATA.two + " " + DATA.join + " " + DATA.one)
-    + "&dates=" + stamp(when) + "/" + stamp(ends)
-    + "&details=" + encodeURIComponent(location.href);
-} else { $("#cal").remove(); }
-
-$("#share").addEventListener("click", async function () {
-  var payload = { title: DATA.two + " " + DATA.join + " " + DATA.one, text: EVENT_TXT, url: location.href };
-  try {
-    if (navigator.share) { await navigator.share(payload); return; }
-    await navigator.clipboard.writeText(location.href);
-    said("نُسخ الرابط");
-  } catch (err) { if (err && err.name !== "AbortError") said("انسخي الرابط من المتصفح"); }
-});
-function said(msg) {
-  var b = $("#share"), t = $("#share-t"), was = t.textContent;
-  t.textContent = msg; b.classList.add("ok"); $("#live").textContent = msg;
-  setTimeout(function () { t.textContent = was; b.classList.remove("ok"); }, 2200);
-}
 
 /* ─────────── ذرّات نور من اللون نفسه ─────────── */
 (function () {
