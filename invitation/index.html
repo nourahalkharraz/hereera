@@ -1,11 +1,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#CFDCE0">
-<title>عقد قران</title>
-<meta name="description" content="بحمد الله وتوفيقه، تمّ عقد قران سند | نورة">
+<title>حفل عقد قران</title>
+<meta name="description" content="يسرّنا دعوتكم لحضور حفل عقد قران سند | نورة — السبت ٥ سبتمبر ٢٠٢٦">
 <meta property="og:type" content="website">
-<meta property="og:title" content="تمّ عقد قران سند | نورة">
-<meta property="og:description" content="بحمد الله وتوفيقه">
+<meta property="og:title" content="حفل عقد قران سند | نورة">
+<meta property="og:description" content="السبت ٥ سبتمبر ٢٠٢٦ — يسرّنا دعوتكم">
 <meta property="og:locale" content="ar_SA">
 
 <style>
@@ -595,9 +595,10 @@ var DATA = {
   venue: "",            /* مثال: "قاعة الماسة — حيّ الياسمين، الرياض" */
   maps:  "",            /* رابط الموقع على الخرائط — يُخفى الزر إن تُرك فارغاً */
   note:  "",            /* مثال: "الحفل نسائي" */
-  sound: true,          /* اجعليها false لإسكات الدعوة تماماً */
+  sound: false,         /* الدعوة صامتة؛ اجعليها true لإعادة النغمة */
   tune:  "",            /* ملف صوتي؛ إن تُرك فارغاً عُزفت النغمة المؤلَّفة بالكود */
-  iso:   "2026-09-05T19:00:00+03:00",   /* للعدّاد وزرّ التقويم — عدّلي الساعة إن لزم */
+  iso:   "2026-09-05T20:30:00+03:00",   /* بداية الحفل — للعدّاد وزرّ التقويم */
+  hours: 5,             /* مدّته بالساعات؛ بعدها تتحوّل الدعوة إلى إعلان */
   verse: "﴿ وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",   /* المقطع الذي يسع سطراً واحداً بحجمٍ مقروء */
   verseSrc: "سورة الرّوم — الآية ٢١",
   dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق"
@@ -618,7 +619,11 @@ document.documentElement.dir  = "rtl";
 /* لحظة الحفل تفصل الحالتين. قبلها: دعوة وعدّاد وموعد ومكان.
    بعدها: إعلانٌ بأنّ الأمر تمّ — وتختفي تفاصيل الحضور من تلقاء نفسها. */
 var when = new Date(DATA.iso).getTime();
-var BEFORE = !isNaN(when) && Date.now() < when;
+/* التحوّل يقع عند انتهاء الحفل لا عند بدايته: لو قيس على البداية لانقلبت
+   الدعوة إعلاناً والضيوف في الطريق. */
+var ends = DATA.endsIso ? new Date(DATA.endsIso).getTime()
+                        : when + (DATA.hours || 5) * 3600 * 1000;
+var BEFORE = !isNaN(ends) && Date.now() < ends;
 
 $("#d-news").innerHTML  = BEFORE ? DATA.news  : (DATA.newsAfter  || DATA.news);
 $("#d-event").textContent = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
@@ -643,7 +648,8 @@ $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
 }).join(" ");
 $("#d-verse-src").textContent = DATA.verseSrc;
 $("#d-dua").innerHTML = DATA.dua;
-document.title = DATA.event + " " + DATA.two + " " + DATA.join + " " + DATA.one;
+var EVENT_TXT = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
+document.title = EVENT_TXT + " " + DATA.two + " " + DATA.join + " " + DATA.one;
 /* الغلاف لا يحمل إلا شعار الحرفين المندمجين، والشقّ يمرّ في وسطه */
 var monoSrc = $("#mono-src").innerHTML;
 [].forEach.call(document.querySelectorAll("[data-cut]"), function (el) { el.innerHTML = monoSrc; });
@@ -831,7 +837,7 @@ function playMotif() {
   motifGain.gain.linearRampToValueAtTime(0.0001, t0 + 26);
 }
 function playTune() {
-  if (tuneOn) return;
+  if (tuneOn || DATA.sound === false) return;
   tuneOn = true;
   if (DATA.tune) playFile(); else playMotif();
 }
@@ -908,13 +914,13 @@ if (BEFORE) { tick(); tickTimer = setInterval(tick, 1000); }
 function stamp(t) { return new Date(t).toISOString().replace(/[-:]|\.\d{3}/g, ""); }
 if (!isNaN(when)) {
   $("#cal").href = "https://calendar.google.com/calendar/render?action=TEMPLATE"
-    + "&text=" + encodeURIComponent(DATA.event + " · " + DATA.two + " " + DATA.join + " " + DATA.one)
-    + "&dates=" + stamp(when) + "/" + stamp(when + 3 * 3600 * 1000)
+    + "&text=" + encodeURIComponent(EVENT_TXT + " · " + DATA.two + " " + DATA.join + " " + DATA.one)
+    + "&dates=" + stamp(when) + "/" + stamp(ends)
     + "&details=" + encodeURIComponent(location.href);
 } else { $("#cal").remove(); }
 
 $("#share").addEventListener("click", async function () {
-  var payload = { title: DATA.two + " " + DATA.join + " " + DATA.one, text: DATA.event, url: location.href };
+  var payload = { title: DATA.two + " " + DATA.join + " " + DATA.one, text: EVENT_TXT, url: location.href };
   try {
     if (navigator.share) { await navigator.share(payload); return; }
     await navigator.clipboard.writeText(location.href);
