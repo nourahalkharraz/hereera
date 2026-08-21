@@ -975,6 +975,20 @@ function playTune() {
   try { tune.currentTime = 0; } catch (e) {}
   playFile();
 }
+/* الخروج من الصفحة يُسكت الزفّة: الجوّال يُبقي صوت الويب يعمل خلف التطبيقات
+   إن لم تُوقفه الصفحة بنفسها. وإن عاد الزائر تُستأنف من موضعها. */
+var pausedByHide = false;
+document.addEventListener("visibilitychange", function () {
+  if (!DATA.tune || DATA.sound === false) return;
+  if (document.hidden) {
+    if (!tune.paused) { pausedByHide = true; try { tune.pause(); } catch (e) {} }
+  } else if (pausedByHide) {
+    pausedByHide = false;
+    try { var pr = tune.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
+  }
+});
+addEventListener("pagehide", function () { try { tune.pause(); } catch (e) {} });
+
 if (muteBtn) muteBtn.addEventListener("click", function () {
   tune.muted = !tune.muted;
   if (motifGain) motifGain.gain.value = tune.muted ? 0 : 0.5;
