@@ -616,6 +616,14 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
 .minimap:hover, .minimap:focus-visible { box-shadow: 0 10px 26px rgba(102,104,72,.18);
   transform: translateY(-1px); }
 .minimap svg { display: block; width: 100%; height: clamp(112px, 30vw, 150px); }
+/* عدّادُ من فتحها: أخفتُ سطرٍ في الصفحة عمداً — خبرٌ لا دعوة، ولا يظهر
+   أصلاً إن لم يصل الرقم، فلا فراغَ ولا رسالةَ خطأ. */
+.seen { margin-top: var(--s2); text-align: center; font-family:'Tajawal', sans-serif;
+  font-weight: 300; font-size: clamp(12px, 3.1vw, 13px); color: var(--ink-2);
+  opacity: 0; transition: opacity 1.1s ease; }
+.seen[hidden] { display: none; }
+.seen.in { opacity: .82; }
+
 /* قاعدةٌ يجب ألّا تُفوَّت، فوزنُها البصريّ من وزنها في الأمر: أغمقُ درجةٍ
    في العائلة، ووزنٌ متوسّط، وخطٌّ رفيعٌ فوقها يفصلها عمّا قبلها */
 .pnote { margin-top: var(--s3); padding-top: var(--s3); text-align: center;
@@ -847,6 +855,7 @@ body.drawing.drawn .mono .trace { opacity: 0; transition: opacity .55s ease; }
         <span class="mm-label">افتح الموقع على الخرائط</span>
       </a>
       <p class="pnote">ممنوع الأطفال</p>
+      <p class="seen" id="d-seen" hidden></p>
     </section>
 
   </div>
@@ -909,6 +918,10 @@ var DATA = {
   venue: "فيلا عبدالوهاب الخرّاز",
   maps:  "https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7",
   note:  "ممنوع الأطفال",
+  /* عدّادُ من فتح الدعوة. اجعليه "" لإخفائه. المفتاحُ اسمٌ فريدٌ يُحفظ عنده
+     الرقمُ في خدمةٍ مجّانيّة — لا تُغيّريه بعد التوزيع وإلّا بدأ العدُّ من صفر. */
+  counter: "sanad-noura-2026-opens",
+  counterText: "فتحها %n من أحبّتنا",
   sound: true,          /* اجعليها false لإسكات الدعوة تماماً */
   /* زفّة نورة — تسجيلها الخاصّ، مدموجٌ في الصفحة فيعمل بلا إنترنت.
    التسجيل مقطوعٌ لا منتهٍ، فخُتم بتلاشٍ يلتقي بمطلعه: يدور بلا فجوةٍ صامتة. */
@@ -1129,6 +1142,7 @@ function finish() {
   cover.setAttribute("aria-hidden", "true"); cover.setAttribute("tabindex", "-1");
   sheet.removeAttribute("aria-hidden"); sheet.inert = false;
   sheet.focus({ preventScroll: true });
+  countSeen();
   cueTimer   = setTimeout(moreCue, 60);
   /* نبضةُ اللقاء بعد أن يلتقيا لا قبله: الاسمان يستقرّان عند ١٩٣٠ م.ث
      من الكشف (قياساً)، فكانت النبضةُ تنفجر وهما ما زالا في الطريق. */
@@ -1334,6 +1348,31 @@ function pulse() {
   namesEl.classList.add("pulse");
 }
 namesEl.addEventListener("click", pulse);
+
+/* ─────────── من فتح الدعوة ───────────
+   الرقمُ محفوظٌ في خدمةٍ مجّانيّةٍ خارجيّة، وهي الطلبُ الخارجيُّ الوحيد في
+   الصفحة كلّها. وله ثلاثةُ ضوابط:
+   · يُحسب عند انكشاف الدعوة لا عند تحميل الصفحة — فلا يعدّ زاحفَ واتساب
+     حين يبني بطاقةَ المعاينة، ولا من فتح الرابط ولم يفتح الظرف.
+   · مرّةً واحدةً لكلّ جهاز: من عاد إليها يقرأ الرقم ولا يزيده، فالعدُّ
+     عددُ من رآها لا عددُ الفتحات.
+   · إن تعثّر الطلبُ لأيّ سببٍ لم يظهر السطرُ أصلاً — لا فراغَ ولا خطأ،
+     وبقيت الدعوةُ تعمل بلا شبكةٍ كما كانت. */
+function countSeen() {
+  if (!DATA.counter) return;
+  var el = $("#d-seen"), K = "seen:" + DATA.counter, been = false;
+  try { been = localStorage.getItem(K) === "1"; } catch (e) {}
+  var api = "https://countapi.mileshilliard.com/api/v1/"
+          + (been ? "get/" : "hit/") + encodeURIComponent(DATA.counter);
+  fetch(api).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    var n = d ? Number(d.value) : NaN;
+    if (!isFinite(n) || n <= 0) return;
+    try { localStorage.setItem(K, "1"); } catch (e) {}
+    el.textContent = (DATA.counterText || "%n").replace("%n", arabic(n));
+    el.hidden = false;
+    requestAnimationFrame(function () { el.classList.add("in"); });
+  }).catch(function () {});
+}
 
 function moreCue() {
   var over = sheet.scrollHeight - sheet.clientHeight > 24;
