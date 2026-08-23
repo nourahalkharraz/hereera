@@ -669,9 +669,13 @@ body.drawing.drawn .mono .ink   { opacity: 1; transition: opacity 1.05s ease; }
 body.drawing.drawn .mono .trace { opacity: 0; transition: opacity 1.05s ease; }
 /* أوّل لمسةٍ تُنهي الرسم فوراً: من انتظر رآه يُكتب، ومن استعجل رأى شعاراً
    محبَّراً لا هيكلاً — ولا يُقفَل السحب على أحد. */
-body.drawing.rush .mono .trace path { animation: none; stroke-dashoffset: 0; }
-body.drawing.rush .mono .ink   { opacity: 1; transition: opacity .26s ease; }
-body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
+/* الاستعجال لا يقفز بالخطّ إلى آخره: جافاسكربت يثبّت موضعه الحاليّ ثمّ
+   ينقله إلى النهاية بتحوّلٍ سريع، فيبقى الخطّ متّصلاً لا يَثِب. وهنا يُقصَّر
+   ظهورُ الحبر وحده ليلحق بالاقتفاء المتسارع. */
+body.drawing.rush.drawn .mono .ink   { transition-duration: .3s; }
+body.drawing.rush.drawn .mono .trace { transition-duration: .3s; }
+/* ولا يومض التلميحُ في أثناء الوقفة التي يُطالَع فيها الشعار */
+body.waiting #hint { opacity: 0; transition: none; }
 @keyframes trace { to { stroke-dashoffset: 0; } }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -974,7 +978,7 @@ $("#c-date").textContent = DATA.date;
 
 /* ─────────── الفتح بالسحب ─────────── */
 var body = document.body, cover = $("#cover"), sheet = $("#sheet");
-var drag = null, opened = false, timer = null, cueTimer = null, pulseTimer = null;
+var drag = null, opened = false, timer = null, cueTimer = null, pulseTimer = null, openTimer = null;
 
 /* سفاري يأذن بالتشغيل داخل اللمسة وحدها، ولا يأذن به بعدها. والسحب يطول،
    فلو أوقفنا ما بدأناه عند النزول لم نستطع استئنافه عند الرفع — وهذا ما كان
@@ -1030,17 +1034,31 @@ function release() {
   body.classList.remove("dragging"); cover.classList.remove("grabbing");
   body.style.removeProperty("--p"); pTarget = pNow = 0;
   drag = null;
-  if (go || wasTap) open(); else unprimeAudio();
+  if (go || wasTap) open(wasTap); else unprimeAudio();
 }
 cover.addEventListener("pointerup", release);
 cover.addEventListener("pointercancel", release);
 cover.addEventListener("keydown", function (e) {
-  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); open(); }
+  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); open(true); }
 });
-cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(); } }, { passive: false });
+cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(false); } }, { passive: false });
 
-function open() {
-  rushMono();          /* الفتح بلوحة المفاتيح لا يمرّ بلمسةٍ، فيُنهى الرسم هنا */
+/* canWait: هل يُؤجَّل الشقّ حتى يكتمل الشعار؟ نعم مع النقر ولوحة المفاتيح،
+   ولا مع السحب — فالنصفان يتبعان الإصبع، ولا يُحبَسان عنه. ولمسةٌ ثانيةٌ في
+   أثناء الانتظار تُلغيه وتفتح: من استعجل أُجيب، ولم يُفرَض عليه شيء. */
+function open(canWait) {
+  if (openTimer) { clearTimeout(openTimer); openTimer = null;
+    body.classList.remove("waiting"); canWait = false; }
+  if (!opened && canWait) {
+    var left = rushMono();
+    if (left > 0) {
+      body.classList.add("waiting");
+      openTimer = setTimeout(function () {
+        openTimer = null; body.classList.remove("waiting"); open(false);
+      }, left);
+      return;
+    }
+  } else { rushMono(); }
   if (!opened) {
     opened = true;
     body.classList.add("opened");
@@ -1171,6 +1189,7 @@ if (muteBtn) muteBtn.addEventListener("click", function () {
 function reset() {
   /* المؤقّتان يُنظَّفان وإلّا انطلقت نبضةُ اللقاء والغلافُ مقفولٌ فضاعت */
   clearTimeout(timer); clearTimeout(cueTimer); clearTimeout(pulseTimer);
+  clearTimeout(openTimer); openTimer = null; body.classList.remove("waiting");
   opened = false;
   body.classList.remove("opened", "revealed", "more");
   namesEl.classList.remove("pulse");
@@ -1194,7 +1213,8 @@ var drawTimer = null;
 function drawMono() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   clearTimeout(drawTimer);
-  body.classList.remove("drawing", "drawn", "rush");
+  body.classList.remove("drawing", "drawn", "rush", "waiting");
+  rushAt = 0;
   [].forEach.call(document.querySelectorAll(".cut svg"), function (svg) {
     var ink = svg.querySelector(".ink"), old = svg.querySelector(".trace");
     if (!ink) return;
@@ -1217,13 +1237,34 @@ function drawMono() {
    حين يبدأ الرسم — ووميضٌ كهذا أسوأ من ألّا يظهر. التأخيرُ صار في الحركة
    نفسها (٠٫٢٦ث) لا في موعد استدعائها. */
 drawMono();
-/* لو لمس الغلافَ قبل أن يكتمل الاقتفاء، نزل الحبرُ في ربع ثانية. الشعار
-   الذي ينشقّ مع النصفين كاملٌ دائماً، والسحب لا يُمنع لحظةً واحدة. */
+/* ─────────── اللمسةُ المبكّرة: تُسرِّع ولا تُلغي ───────────
+   من لمس قبل أن يكتمل الاقتفاء لا يُردّ ولا يُطلَب منه لمسةٌ ثانية: يتسارع
+   الخطُّ من موضعه الذي بلغه — لا من أوّله ولا بقفزةٍ إلى آخره — ثمّ ينزل
+   الحبر، ثمّ يُترك الشعارُ لحظةً مكتملاً يُطالَع، ثمّ ينشقّ الظرف. لمسةٌ
+   واحدة، والرسمُ يُرى إلى آخره.
+      ٤٥٠ اقتفاءٌ متسارع + ٣٠٠ نزولُ الحبر + ٦٥٠ وقفةُ المطالعة */
+var TRACE_MS = 450, INK_MS = 300, GAZE_MS = 650;
+var RUSH_MS = TRACE_MS + INK_MS + GAZE_MS, rushAt = 0;
 function rushMono() {
-  if (!body.classList.contains("drawing") || body.classList.contains("drawn")) return;
+  if (!body.classList.contains("drawing") || body.classList.contains("drawn")) return 0;
+  if (body.classList.contains("rush"))
+    return Math.max(0, RUSH_MS - (Date.now() - rushAt));
   clearTimeout(drawTimer);
+  /* يُقرأ موضعُ الشرطة الآن ويُثبَّت، ثمّ تُلغى الحركةُ ويُنقَل بتحوّل —
+     فلو أُعيد تشغيلُ الحركة مسرَّعةً لعادت إلى أوّلها ووثب الخطّ. */
+  [].forEach.call(document.querySelectorAll(".cut .trace path"), function (path) {
+    var now = getComputedStyle(path).strokeDashoffset;
+    path.style.animation = "none";
+    path.style.strokeDashoffset = now;
+    void path.getBoundingClientRect().width;
+    path.style.transition = "stroke-dashoffset " + (TRACE_MS / 1000)
+      + "s cubic-bezier(.25,.72,.35,1)";
+    path.style.strokeDashoffset = "0";
+  });
+  rushAt = Date.now();
   body.classList.add("rush");
-  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, 270);
+  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, TRACE_MS);
+  return RUSH_MS;
 }
 
 /* ─────────── العمق عند التمرير ───────────
