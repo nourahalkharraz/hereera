@@ -204,14 +204,21 @@ body {
 #cover { position: fixed; inset: 0; z-index: 10; cursor: grab; touch-action: none; }
 #cover.grabbing { cursor: grabbing; }
 .half {
-  position: absolute; top: 0; bottom: 0; overflow: hidden;
+  /* النصفان صندوقان متطابقان تماماً: كلاهما بعرض الشاشة وفي موضعها نفسه،
+     وكلٌّ منهما يرسم الغلافَ كاملاً ثمّ يُقَصُّ عند الشقّ بـ clip-path.
+     ولمّا كان الصندوقان متطابقين، تُنقَّط طبقتاهما على الطور نفسه من شبكة
+     البكسل — فيخرج العمودُ عند الشقّ من الطبقتين متطابقاً. وكان كلٌّ
+     منهما قبلُ صندوقاً بعرضٍ مختلفٍ وموضعٍ مختلف، فإذا رُسمت الصفحة داخل
+     إطارٍ مُكبَّرٍ بكسرٍ (كعارض الـArtifact) نُقِّطت كلُّ طبقةٍ على طورٍ
+     مغاير، فاختلف العمودان المتجاوران عند الشقّ وبان خيطٌ عند التقريب. */
+  position: absolute; top: 0; bottom: 0; left: 0; width: 100%; overflow: hidden;
   transition: transform 1.9s cubic-bezier(.28,.02,.12,1);
 }
 /* كلُّ نصفٍ يرسم الغلافَ بعرض الشاشة كاملاً ثمّ يقصّه عند الشقّ، فيخرج
    المشهدُ عند السكون مطابقاً للغلاف الحاليّ حرفاً بحرف — لا يتغيّر منه شيء
    إلا اتّجاهُ الانفتاح. */
 .half::before {
-  content: ""; position: absolute; top: 0; height: 100%; width: 100vw;
+  content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 100vw;
   background-image:
     radial-gradient(ellipse 62% 21.2% at 50% var(--fold), rgba(250,246,237,.66), rgba(250,246,237,0) 76%),
     radial-gradient(ellipse 62% 21.6% at 50% var(--fold), rgba(250,246,237,.66), rgba(250,246,237,0) 76%),
@@ -224,20 +231,15 @@ body {
 .opened { --p: 1; }
 .revealed { --edge-b: var(--rose-1); }
 .half.t {
-  /* النصفُ الأيسر يتجاوز الشقَّ بثلاثة أرباع البكسل، والأيمنُ يُرسم فوقه
-     فيغطّي الزيادة: لا فجوةَ ولا خيطَ ورقٍ بينهما مهما كسر القياسُ البكسل.
-     وعند الفتح يتباعدان فتذهب الزيادةُ في اللحظة الأولى. */
-  left: 0; width: calc(var(--seam) + 0.75px);
-  transform: translateX(calc(var(--p) * -100%));
+  /* الشقُّ حدُّ قصٍّ لا حدُّ صندوق — انظر التعليق أعلاه */
+  clip-path: inset(0 calc(100% - var(--seam) - 0.5px) 0 0);
+  transform: translateX(calc(var(--p) * -1 * var(--seam)));
 }
-.half.t::before { left: 0; }
 .half.b {
-  right: 0; width: calc(100% - var(--seam)); transform: translateX(calc(var(--p) * 100%));
+  clip-path: inset(0 0 0 var(--seam));
+  transform: translateX(calc(var(--p) * (100vw - var(--seam))));
 }
-.half.b::before { right: 0; }
-.half .flora-in { position: absolute; top: 0; bottom: 0; width: 100vw; opacity: 1; }
-.half.t .flora-in { left: 0; }
-.half.b .flora-in { right: 0; }
+.half .flora-in { position: absolute; top: 0; bottom: 0; left: 0; width: 100vw; opacity: 1; }
 .revealed #cover, .revealed #spark,
 .revealed #grip, .revealed #hint { visibility: hidden; }
 
@@ -249,10 +251,8 @@ body {
 }
 /* الشعارُ مرسومٌ في النصفين معاً بعرض الشاشة، مركزُه على الطيّة كما كان،
    ويقصّه كلُّ نصفٍ عند الشقّ فيلتئمان. */
-.cut { top: var(--fold); height: 0; width: 100vw; left: auto; right: auto;
+.cut { top: var(--fold); height: 0; width: 100vw; left: 0; right: auto;
   margin-top: var(--cut-y); }
-.half.t .cut { left: 0; }
-.half.b .cut { right: 0; }
 .mono { display: block; height: min(40dvh, 340px); width: auto; }
 
 /* اسما العروسين وتاريخهما أسفل الشعار — يهبطان مع النصف السفلي */
@@ -260,7 +260,7 @@ body {
    الشاشة — الموضع نفسه بالضبط، محسوباً بإحداثيات الشاشة لا بإحداثيات نصفٍ
    لم يعد له وجود. */
 .c-meta {
-  position: absolute; width: 100vw; z-index: 2;
+  position: absolute; left: 0; width: 100vw; z-index: 2;
   top: calc(var(--fold) + (100% - var(--fold)) * 0.41);
   text-align: center; pointer-events: none;
   font-family: 'Tajawal', system-ui, sans-serif;
@@ -275,8 +275,6 @@ body {
 .c-meta .d { font-weight: 300; color: var(--sage-5); margin-top: clamp(15px, 4vw, 21px);
   font-size: clamp(12.5px, 3.3vw, 14.5px); word-spacing: .6em; }
 .c-meta .r { display: none; }
-.half.t .c-meta { left: 0; }
-.half.b .c-meta { right: 0; }
 .opened .c-meta { opacity: 0; }
 @media (max-width: 899px) and (max-height: 800px) { .mono { height: min(37dvh, 260px); } }
 
@@ -363,8 +361,7 @@ body {
     rgba(237,232,220,.78) 54.5%, rgba(248,229,223,.42) 63%,
     rgba(229,205,197,.14) 75%, transparent 89%);
 }
-.half.t::after { left: 0;  margin-left: -12vw;  }
-.half.b::after { right: 0; margin-right: -12vw; }
+.half::after { left: 0; margin-left: -12vw; }
 
 
 #spark {
