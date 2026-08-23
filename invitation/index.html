@@ -470,7 +470,6 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
    وطبقةُ حبرٍ فوقها تضمن أن تبقى مقروءة */
 .names b {
   font-weight: inherit; color: var(--sage-6);
-  transition: transform 1.5s cubic-bezier(.16,.9,.28,1);
 }
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .names b {
@@ -490,18 +489,16 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
   to   { background-position: calc(62% + var(--px, 0px)) calc(60% + var(--py, 0px)) }
 }
 
-/* المشهد: الاسمان يقبلان من طرفَي الشاشة فيلتقيان في المنتصف */
-.names .one { transform: translateX(62vw); }
-.names .two { transform: translateX(-62vw); }
-.revealed .names .one, .revealed .names .two { transform: none; }
-.revealed .names .one { transition-delay: .30s; }
-.revealed .names .two { transition-delay: .38s; }
+/* كان الاسمان يقبلان من طرفَي الشاشة فيلتقيان في المنتصف: ٢٤٢px يقطعها
+   كلٌّ منهما في ١٫٥ث، فيصلان بعد الدعوة كلّها بثانيةٍ ونصف — وهي الحركة
+   التي كانت تُقرأ كأنّ الاسم يتزحزح. صارا يصلان مع الصفحة كما تصل: تنفّسٌ
+   من الأسفل وانجلاءٌ من الضباب، لا رحلةٌ عرضَ الشاشة. */
 
 .names i {
   font-style: normal; color: var(--sage-3); font-size: .70em; font-weight: 200;
   font-family: 'Tajawal', system-ui, sans-serif;
   vertical-align: .04em; margin: 0 .1em; flex: none; opacity: 0; transform: scale(.55);
-  transition: opacity .8s ease 1.35s, transform .9s cubic-bezier(.2,1.5,.4,1) 1.35s;
+  transition: opacity .8s ease .55s, transform .9s cubic-bezier(.2,1.5,.4,1) .55s;
 }
 .revealed .names i { opacity: .9; transform: scaleY(1.5); }
 
