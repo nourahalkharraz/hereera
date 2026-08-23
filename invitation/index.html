@@ -1,3 +1,8 @@
+<!doctype html>
+<!-- الوسمان هنا لا في جافاسكربت: بلا doctype يقع المتصفّح في وضع quirks،
+     وبلا lang/dir يقرأ قارئُ الشاشة العربيّة بملفٍّ صوتيٍّ أعجميّ. ولو غلّفت
+     منصّةٌ الصفحةَ بوسم <html> خاصٍّ بها، تولّى جافاسكربت الفرضَ في الأسفل. -->
+<html lang="ar" dir="rtl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>سند ونورة</title>
@@ -364,7 +369,7 @@ body {
 #hint {
   position: fixed; left: 0; right: 0; z-index: 12; pointer-events: none;
   bottom: calc(28px + env(safe-area-inset-bottom)); text-align: center;
-  color: var(--sage-6); font-size: 11px;
+  color: var(--sage-6); font-size: 12px;
   opacity: calc((1 - var(--p) * 2) * .8);
   transition: opacity .7s ease;
 }
@@ -380,8 +385,10 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
   overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   display: flex; flex-direction: column;
+  /* الحاشية السفلى تتجاوز شريط #edge-b (٧٨px): بدونها يستقرّ آخرُ سطرٍ
+     تحت تدرّج الحافّة فيبهت — وكانت «ممنوع الأطفال» أوّلَ ضحاياه. */
   padding: calc(var(--s4) + env(safe-area-inset-top)) clamp(24px, 7vw, 64px)
-           calc(var(--s4) + env(safe-area-inset-bottom));
+           calc(var(--s4) + 58px + env(safe-area-inset-bottom));
 }
 .content {
   position: relative; z-index: 2; width: 100%; max-width: 500px;
@@ -525,12 +532,8 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
     #000 18%, rgba(0,0,0,.6) 52%, transparent 82%);
 }
 .hijri { margin-top: var(--s2); font-family:'Tajawal', sans-serif; font-weight: 300;
-  font-size: clamp(10.5px, 2.7vw, 12px); color: var(--sage-5); --o: .92; }
-.at { margin-top: var(--s2); font-family:'Tajawal', sans-serif; font-weight: 500;
-  font-size: clamp(12.5px, 3.3vw, 14.5px); color: var(--ink-2); }
-.venue { margin-top: var(--s1); font-family:'Tajawal', sans-serif; font-weight: 300;
-  font-size: clamp(12px, 3.1vw, 13.5px); line-height: 1.7; color: var(--ink-2); --o: .9; }
-.at:empty, .venue:empty, .hijri:empty { display: none; }
+  font-size: clamp(12px, 3.1vw, 13.5px); color: var(--sage-6); }
+.hijri:empty { display: none; }
 
 /* العدّاد — يظهر قبل الموعد وحده */
 .count { display: flex; justify-content: center; gap: clamp(16px, 5vw, 30px);
@@ -539,8 +542,8 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
 .count b { display: block; font-family:'Tajawal', sans-serif; font-weight: 500;
   font-variant-numeric: tabular-nums; font-size: clamp(21px, 5.6vw, 27px); line-height: 1;
   color: var(--ink); }
-.count span { display: block; margin-top: var(--s1); font-size: 11px;
- color: var(--sage-5); --o: .95; }
+.count span { display: block; margin-top: var(--s1); font-size: 12.5px;
+ color: var(--sage-5); }
 .count:empty { display: none; }
 
 /* الموعد والمكان — كتلةٌ مستقلّة أسفل الدعوة، أوضح من سطرين عابرين */
@@ -549,7 +552,7 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
 .pdet { display: flex; justify-content: center; gap: clamp(30px, 11vw, 64px);
   flex-wrap: wrap; text-align: center; }
 .pdet span { display: block; font-family:'Tajawal', sans-serif; font-weight: 300;
-  font-size: 10px; color: var(--sage-6); --o: .95;
+  font-size: 11.5px; color: var(--sage-6);
   margin-bottom: 7px; }
 .pdet b { display: block; font-family:'Tajawal', sans-serif; font-weight: 500;
   font-size: clamp(14.5px, 3.9vw, 17px); line-height: 1.5; color: var(--ink); }
@@ -564,11 +567,14 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
 .minimap:hover, .minimap:focus-visible { box-shadow: 0 10px 26px rgba(102,104,72,.18);
   transform: translateY(-1px); }
 .minimap svg { display: block; width: 100%; height: clamp(112px, 30vw, 150px); }
-.pnote { margin-top: var(--s3); text-align: center; font-family:'Tajawal', sans-serif;
-  font-weight: 300; font-size: clamp(12px, 3.1vw, 13.5px);
-  color: var(--ink-2); --o: .9; }
+/* قاعدةٌ يجب ألّا تُفوَّت، فوزنُها البصريّ من وزنها في الأمر: أغمقُ درجةٍ
+   في العائلة، ووزنٌ متوسّط، وخطٌّ رفيعٌ فوقها يفصلها عمّا قبلها */
+.pnote { margin-top: var(--s3); padding-top: var(--s3); text-align: center;
+  font-family:'Tajawal', sans-serif; font-weight: 500;
+  font-size: clamp(13.5px, 3.5vw, 15px); color: var(--sage-6);
+  border-top: 1px solid rgba(177,179,136,.38); }
 .mm-label { display: block; padding: 10px 12px; text-align: center;
-  font-family:'Tajawal', sans-serif; font-weight: 500; font-size: 11.5px;
+  font-family:'Tajawal', sans-serif; font-weight: 500; font-size: 13px;
  color: var(--sage-6); background: rgba(237,232,220,.94); }
 
 /* زرّ الصوت — زاويةٌ هادئة لا تزاحم النصّ */
@@ -591,26 +597,11 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
   font-size: clamp(16.5px, 5vw, 21px); line-height: 1.95;
   text-wrap: balance; }
 .verse cite { display: block; margin-top: var(--s3); font-style: normal;
-  font-size: 11px; color: var(--ink-2); --o: .9; }
+  font-size: 12.5px; color: var(--ink-2); }
 
 .dua { margin-top: var(--s5); font-size: clamp(14px, 3.7vw, 16.5px);
   line-height: 2.05; color: var(--ink-3); font-weight: 500; --o: 1; }
 
-.acts { display: flex; justify-content: center; align-items: center; gap: var(--s2);
-  flex-wrap: wrap; margin-top: var(--s4); }
-.btn {
-  min-height: 44px; padding: 0 18px; display: inline-flex; align-items: center; gap: 9px;
-  background: transparent; color: var(--sage-6);
-  border: 1px solid rgba(177,179,136,.6); border-radius: 999px;
-  font-family: 'Tajawal', sans-serif; font-size: 12.5px; font-weight: 500;
-  cursor: pointer; text-decoration: none;
-  transition: color .25s ease, border-color .25s ease, background-color .25s ease;
-}
-.btn:hover, .btn:focus-visible { color: var(--ink); border-color: var(--rose-4); background: var(--paper-2); }
-.btn:active { transform: translateY(1px); }
-.btn svg { width: 14px; height: 14px; flex: none; }
-.btn.ok { color: var(--ink); border-color: var(--rose-4); }
-.btn[hidden] { display: none; }
 /* الإعادة في زاوية الشاشة لا في صفّ المحتوى: أوضح موضعاً، وأخفّ حضوراً */
 #replay {
   position: fixed; z-index: 12; top: calc(10px + env(safe-area-inset-top));
@@ -618,10 +609,11 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
   display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
   background: rgba(237,232,220,.72); backdrop-filter: blur(6px);
   border: 1px solid rgba(177,179,136,.45); border-radius: 999px;
-  color: var(--sage-6); opacity: 0; pointer-events: none;
-  transition: opacity .5s ease .4s;
+  color: var(--sage-6); opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity .5s ease .4s, visibility 0s linear .9s;
 }
-.revealed #replay { opacity: .55; pointer-events: auto; }
+.revealed #replay { opacity: .55; pointer-events: auto; visibility: visible;
+  transition: opacity .5s ease .4s, visibility 0s; }
 .revealed #replay:hover, .revealed #replay:focus-visible { opacity: 1; }
 #replay svg { width: 17px; height: 17px; }
 
@@ -654,10 +646,9 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
   .date  { font-size: clamp(15px, 4.1vw, 17px); }
   .verse p { font-size: clamp(15.5px, 4.8vw, 19px); line-height: 1.9; }
   .verse cite { margin-top: var(--s2); }
-  .count b { font-size: 19px; } .count span { margin-top: 3px; font-size: 10.5px; }
+  .count b { font-size: 19px; } .count span { margin-top: 3px; font-size: 12px; }
   .dua { font-size: clamp(13.5px, 3.5vw, 15.5px); line-height: 1.9; }
   .acts { margin-top: var(--s3); }
-  .btn { min-height: 40px; font-size: 12px; padding: 0 15px; }
   .sprig.a { width: min(26vw, 150px); } .sprig.b { width: min(18vw, 108px); }
   #hint { bottom: calc(20px + env(safe-area-inset-bottom)); }
   #grip { bottom: calc(48px + env(safe-area-inset-bottom)); }
@@ -717,7 +708,7 @@ body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
 }
 
 @media print {
-  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #motes, #more, #grain, .acts { display: none !important; }
+  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #motes, #more, #grain { display: none !important; }
   #sheet { position: static; overflow: visible; padding: 14mm; }
   .content > * { opacity: 1 !important; filter: none !important; transform: none !important; }
   body { overflow: visible; }
@@ -736,7 +727,7 @@ body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
 </style>
 
 <noscript><style>
-  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #more, .acts { display: none !important; }
+  #cover, #spark, #grip, #hint, #well, #bloom, #halo, #flare, #more { display: none !important; }
   .content > * { opacity: 1 !important; filter: none !important; transform: none !important; }
 </style></noscript>
 
@@ -750,8 +741,11 @@ body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
 <main id="sheet" tabindex="-1" role="region" aria-label="إعلان عقد القران">
   <div class="content">
     <p class="bism">بسم الله الرحمن الرحيم</p>
-    <p class="news" id="d-news">بحمد الله وتوفيقه</p>
-    <p class="event" id="d-event">تمّ عقد قران</p>
+    <!-- ما بين الوسوم أدناه هو ما يُقرأ إن تعطّل جافاسكربت: صيغةُ الدعوة
+         لا صيغةُ ما بعد الحفل، لأنّ الدعوة هي التي تُوزَّع. يكتبها جافاسكربت
+         من DATA في كلّ الأحوال، فإن عُدّل DATA فليُعدَّل هذا معه. -->
+    <p class="news" id="d-news">بمشيئة الله وتوفيقه · يسرّنا دعوتكم لحضور</p>
+    <p class="event" id="d-event">حفل عقد قران</p>
     <h1 class="names" id="d-names"><b class="one">سند</b><i>|</i><b class="two">نورة</b></h1>
     <p class="full" id="d-full">سند عبدالله الفايز<i>·</i>نورة عبدالوهاب الخرّاز</p>
 
@@ -769,12 +763,13 @@ body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
 
     <p class="dua" id="d-dua">سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبة والوفاق</p>
 
-    <section class="place" id="d-place" hidden>
+    <section class="place" id="d-place">
       <div class="pdet">
-        <div><span>الموعد</span><b id="d-at"></b></div>
-        <div><span>المكان</span><b id="d-venue"></b></div>
+        <div><span>الموعد</span><b id="d-at">الساعة ٧ مساءً</b></div>
+        <div><span>المكان</span><b id="d-venue">فيلا عبدالوهاب الخرّاز</b></div>
       </div>
-      <a class="minimap" id="d-map" href="#" target="_blank" rel="noopener">
+      <a class="minimap" id="d-map" href="https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7"
+         target="_blank" rel="noopener">
         <svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="340" height="150" fill="#EDE8DC"/>
           <path d="M-10 96 H350" stroke="#E4DDCE" stroke-width="15"/>
@@ -804,10 +799,9 @@ body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
         </svg>
         <span class="mm-label">افتح الموقع على الخرائط</span>
       </a>
+      <p class="pnote">ممنوع الأطفال</p>
     </section>
 
-    <div class="acts">
-    </div>
   </div>
 </main>
 
@@ -915,17 +909,20 @@ $("#d-names").innerHTML = '<b class="one">' + DATA.two + '</b><i>' + DATA.join
 $("#d-full").innerHTML  = DATA.full;
 $("#d-date").textContent = (BEFORE && DATA.day ? DATA.day + " " : "") + DATA.date;
 $("#d-hijri").textContent = DATA.hijri || "";
-$("#d-at").textContent    = BEFORE ? (DATA.time  || "") : "";
-$("#d-venue").textContent = BEFORE ? (DATA.venue || "") : "";
-if (BEFORE && DATA.maps) $("#d-map").href = DATA.maps;
-else $("#d-map").remove();
-if (DATA.note && BEFORE) {
-  var noteEl = document.createElement("p");
-  noteEl.className = "pnote"; noteEl.textContent = DATA.note;
-  $("#d-place").appendChild(noteEl);
+/* الكتلة مكتوبةٌ في الصفحة أصلاً ليقرأها من تعطّل عنده جافاسكربت، وهنا
+   تُكتب من DATA فتبقى المصدرَ الأوحد — ثمّ تختفي كلّها بعد الحفل، إذ لا
+   موعدَ يُقصَد ولا مكانَ يُقصَد إليه. */
+var placeEl = $("#d-place"), noteEl = placeEl.querySelector(".pnote");
+if (BEFORE) {
+  $("#d-at").textContent    = DATA.time  || "";
+  $("#d-venue").textContent = DATA.venue || "";
+  if (DATA.maps) $("#d-map").href = DATA.maps; else $("#d-map").remove();
+  if (DATA.note) noteEl.textContent = DATA.note;
+  else noteEl.parentNode.removeChild(noteEl);
+  placeEl.hidden = !(DATA.time || DATA.venue || DATA.maps);
+} else {
+  placeEl.hidden = true;
 }
-/* الكتلة كلّها تختفي بعد الحفل، إذ لا موعد يُقصَد ولا مكان يُقصَد إليه */
-if (BEFORE && (DATA.time || DATA.venue || DATA.maps)) $("#d-place").hidden = false;
 /* الآية تظهر كلمةً كلمة، كأنها تُتلى */
 $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
   return '<span style="transition-delay:' + (1.55 + i * .085).toFixed(2) + 's">'
@@ -934,8 +931,7 @@ $("#d-verse").innerHTML = DATA.verse.split(/\s+/).map(function (w, i) {
 }).join(" ");
 $("#d-verse-src").textContent = DATA.verseSrc;
 $("#d-dua").innerHTML = DATA.dua;
-var EVENT_TXT = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
-document.title = EVENT_TXT + " " + DATA.two + " " + DATA.join + " " + DATA.one;
+document.title = EV_TXT + " " + DATA.two + " " + DATA.join + " " + DATA.one;
 /* الغلاف لا يحمل إلا شعار الحرفين المندمجين، والشقّ يمرّ في وسطه */
 var monoSrc = $("#mono-src").innerHTML;
 /* لكلّ نسخةٍ معرّفاتُها: معرّفٌ مكرّرٌ في المستند يُحيل كلَّ الإحالات إلى الأولى */
@@ -945,16 +941,6 @@ var monoSrc = $("#mono-src").innerHTML;
 /* التطويل (الكشيدة): تُمدّ الوصلات بين الحروف كما يفعل الخطّاط.
    الحروف التي لا تتّصل بما بعدها لا تقبل مدّاً، فتُترك كما هي. */
 var NO_JOIN = "اأإآدذرزوؤةىءٱ";
-function stretch(word, n) {
-  var out = "";
-  for (var i = 0; i < word.length; i++) {
-    out += word.charAt(i);
-    if (i < word.length - 1 && NO_JOIN.indexOf(word.charAt(i)) === -1) {
-      out += new Array(n + 1).join("ـ");
-    }
-  }
-  return out;
-}
 /* المدّ الموزّع: «سند» فيها موضعا وصل و«نورة» موضع واحد، فلو مُدّ كلٌّ منهما
    بنفس المقدار لكل موضع لاختلّ عرضهما. هنا يُوزَّع مقدارٌ كليٌّ واحد على مواضع
    كل اسم، فيخرج الاسمان متقاربَي العرض حول الفاصل. */
@@ -975,12 +961,6 @@ function stretchTo(word, total) {
   }
   return out;
 }
-function stretchLine(line, n) {
-  return line.split(" ").map(function (w) {
-    return /[\u0621-\u064A]/.test(w) && w.length > 1 ? stretch(w, n) : w;
-  }).join(" ");
-}
-
 $("#c-names").innerHTML = stretchTo(DATA.two, DATA.kashida)
   + '<i>' + DATA.join + '</i>' + stretchTo(DATA.one, DATA.kashida);
 /* التاريخ لا يُمدّ: عند هذا الحجم الصغير يُتعب المدُّ القراءة، والتباعد أوقع */
@@ -994,7 +974,7 @@ $("#c-date").textContent = DATA.date;
 
 /* ─────────── الفتح بالسحب ─────────── */
 var body = document.body, cover = $("#cover"), sheet = $("#sheet");
-var drag = null, opened = false, timer = null;
+var drag = null, opened = false, timer = null, cueTimer = null, pulseTimer = null;
 
 /* سفاري يأذن بالتشغيل داخل اللمسة وحدها، ولا يأذن به بعدها. والسحب يطول،
    فلو أوقفنا ما بدأناه عند النزول لم نستطع استئنافه عند الرفع — وهذا ما كان
@@ -1014,7 +994,7 @@ function primeAudio() {
 function unprimeAudio() {
   if (tuneOn || !primed) return;
   primed = false;
-  try { tune.pause(); tune.currentTime = 0; tune.muted = false; } catch (e) {}
+  try { tune.pause(); tune.currentTime = 0; tune.muted = userMuted; } catch (e) {}
 }
 cover.addEventListener("pointerdown", function (e) {
   primeAudio(); rushMono();
@@ -1084,15 +1064,17 @@ function finish() {
   balanceNames();       /* القياس الأخير قبل انطلاق الحركة، فلا يقفز الاسمان بعدها */
   body.classList.add("revealed");
   cover.setAttribute("aria-hidden", "true"); cover.setAttribute("tabindex", "-1");
-  sheet.removeAttribute("aria-hidden");
+  sheet.removeAttribute("aria-hidden"); sheet.inert = false;
   sheet.focus({ preventScroll: true });
-  setTimeout(moreCue, 60);
-  setTimeout(pulse, 1420);
+  cueTimer   = setTimeout(moreCue, 60);
+  pulseTimer = setTimeout(pulse, 1420);
 }
 /* ─────────── النشيد ───────────
    يبدأ مع انفتاح الظرف لأن الجوّالات لا تسمح بالتشغيل التلقائي بلا لمسة،
    ويعلو تدريجياً حتى لا يفاجئ من يفتحها ورفعُ الصوت عالٍ. */
-var tune = $("#tune"), muteBtn = $("#mute"), tuneOn = false, fadeTimer;
+/* userMuted: كتمٌ طلبه المستمع صراحةً — يختلف عن الكتم التقنيّ الذي نبدأ
+   به التشغيل قبل الفتح، فذاك يُرفع وهذا لا يُرفع. */
+var tune = $("#tune"), muteBtn = $("#mute"), tuneOn = false, userMuted = false, fadeTimer;
 if (DATA.tune) { tune.src = DATA.tune; try { tune.load(); } catch (e) {} }
 if (DATA.sound !== false) muteBtn.hidden = false;
 /* المستوى والتلاشي مخبوزان في الملف نفسه: آيفون يتجاهل volume على عناصر
@@ -1157,7 +1139,7 @@ function playTune() {
   if (tuneOn || DATA.sound === false) return;
   tuneOn = true;
   if (!DATA.tune) { playMotif(); return; }
-  tune.muted = false;                       /* كانت تعمل مكتومةً منذ اللمسة */
+  tune.muted = userMuted;                   /* كانت تعمل مكتومةً منذ اللمسة */
   try { tune.currentTime = 0; } catch (e) {}
   playFile();
 }
@@ -1176,7 +1158,7 @@ document.addEventListener("visibilitychange", function () {
 addEventListener("pagehide", function () { try { tune.pause(); } catch (e) {} });
 
 if (muteBtn) muteBtn.addEventListener("click", function () {
-  tune.muted = !tune.muted;
+  tune.muted = userMuted = !tune.muted;
   if (motifGain) motifGain.gain.value = tune.muted ? 0 : 0.5;
   muteBtn.setAttribute("aria-pressed", tune.muted ? "true" : "false");
   muteBtn.setAttribute("aria-label", tune.muted ? "تشغيل الصوت" : "كتم الصوت");
@@ -1187,17 +1169,21 @@ if (muteBtn) muteBtn.addEventListener("click", function () {
 });
 
 function reset() {
-  clearTimeout(timer); opened = false;
+  /* المؤقّتان يُنظَّفان وإلّا انطلقت نبضةُ اللقاء والغلافُ مقفولٌ فضاعت */
+  clearTimeout(timer); clearTimeout(cueTimer); clearTimeout(pulseTimer);
+  opened = false;
   body.classList.remove("opened", "revealed", "more");
   namesEl.classList.remove("pulse");
   body.style.removeProperty("--p");
   cover.removeAttribute("aria-hidden"); cover.setAttribute("tabindex", "0");
-  sheet.setAttribute("aria-hidden", "true"); sheet.scrollTop = 0;
+  sheet.setAttribute("aria-hidden", "true"); sheet.inert = true; sheet.scrollTop = 0;
   cover.focus({ preventScroll: true });
   body.style.removeProperty("--sc"); scLast = -1;
   drawMono();
 }
-sheet.setAttribute("aria-hidden", "true");
+/* aria-hidden وحده لا يمنع الوصولَ بلوحة المفاتيح: بدونه كانت أوّلُ محطّةٍ
+   في الصفحة هي «افتح الموقع على الخرائط» داخل إعلانٍ لم يُكشف بعد. */
+sheet.setAttribute("aria-hidden", "true"); sheet.inert = true;
 $("#replay").addEventListener("click", function (e) { e.stopPropagation(); reset(); });
 
 /* ─────────── الشعار يُرسم بخطّه ───────────
@@ -1299,9 +1285,7 @@ var AR = "٠١٢٣٤٥٦٧٨٩";
    فتُقرأ «٠٠» كأنها نقطتان لا كساعةٍ صفر. */
 /* العدّاد: قبل الموعد وحده، ويتلاشى من نفسه حين يحين */
 var box = $("#d-count"), tickTimer;
-var AR = "٠١٢٣٤٥٦٧٨٩";
-/* بلا تصفيرٍ بادئ: الصفر الهندي نقطة، فـ«٠٠» تبدو نقطتين بينما «٠» مفهومة */
-function two(n) { return String(n).replace(/\d/g, function (d) { return AR[+d]; }); }
+function arabic(n) { return String(n).replace(/\d/g, function (d) { return AR[+d]; }); }
 function tick() {
   var left = when - Date.now();
   if (left <= 0) { clearInterval(tickTimer); box.innerHTML = ""; return; }
@@ -1311,7 +1295,7 @@ function tick() {
   if (!box.firstChild)
     box.innerHTML = cells.map(function (c) { return "<div><b></b><span>" + c[1] + "</span></div>"; }).join("");
   var bs = box.querySelectorAll("b");
-  cells.forEach(function (c, i) { var t = two(c[0]);
+  cells.forEach(function (c, i) { var t = arabic(c[0]);
     if (bs[i].textContent !== t) bs[i].textContent = t; });
 }
 if (BEFORE) { tick(); tickTimer = setInterval(tick, 1000); }
