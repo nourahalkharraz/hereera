@@ -225,8 +225,10 @@ body {
   /* المنحنى القديم ‎(.28,.02,.12,1)‎ ذروتُه ٢٫٩٧ ضعفَ السرعة المنتظمة —
      أي أنّ منتصف الحركة يمرّ بثلاثة أضعاف طرفيها، وهو «النصف السريع».
      الجديد ذروتُه ١٫٢٣: إيقاعٌ واحدٌ من أوّله إلى آخره وحطٌّ ليّن.
-     والمدّةُ تُحسب من المسافة الباقية لا ثابتةً — انظر setOpenPace. */
-  transition: transform var(--opendur, 2.4s) cubic-bezier(.35,.35,.75,1);
+     والمدّةُ رقمٌ صريحٌ هنا، وتُكتب عند الفتح على العنصر نفسه — لا
+     ‎var()‎ داخل transition: متغيّرٌ لا يُفهم يُبطل التصريحَ كلَّه فتصير
+     المدّةُ صفراً، فينشقّ الظرفُ في إطارٍ واحد. */
+  transition: transform 2.4s cubic-bezier(.35,.35,.75,1);
 }
 /* كلُّ نصفٍ يرسم الغلافَ بعرض الشاشة كاملاً ثمّ يقصّه عند الشقّ، فيخرج
    المشهدُ عند السكون مطابقاً للغلاف الحاليّ حرفاً بحرف — لا يتغيّر منه شيء
@@ -254,8 +256,15 @@ body {
   transform: translateX(calc(var(--p) * (100vw - var(--seam))));
 }
 .half .flora-in { position: absolute; top: 0; bottom: 0; left: 0; width: 100vw; opacity: 1; }
-.revealed #cover, .revealed #spark,
-.revealed #grip, .revealed #hint { visibility: hidden; }
+/* الغلافُ لا يُخفى مع الكشف: الكشفُ يقع بعد الفتح بأربعين ملّي ثانية
+   (ليدخل الاسمان مع انفراج النصفين)، والنصفان في تلك اللحظة في أوّل
+   طريقهما — قِيس أنّهما لم يقطعا إلّا ١٧٪ منه. فإخفاؤه هناك يبتر
+   الانزلاقَ قبل أن يُرى؛ وهي «السرعة» التي لم تكن سرعةً بل بتراً.
+   يُخفى بعد أن يتمّ النصفان طريقهما (cover-gone). ولا يمرّ به التصفّحُ
+   في تلك الأثناء فلا يحجب الإعلانَ عن اللمس. */
+.revealed #cover { pointer-events: none; }
+.cover-gone #cover { visibility: hidden; }
+.revealed #spark, .revealed #grip, .revealed #hint { visibility: hidden; }
 
 /* الاسمان مرسومان مرّتين ومحاذيان لنفس الموضع، فيبدوان نصّاً واحداً يمرّ فيه الشقّ */
 .cut {
@@ -1073,6 +1082,7 @@ function unprimeAudio() {
 cover.addEventListener("pointerdown", function (e) {
   primeAudio();
   if (opened || locked()) return;
+  paceHalves("");        /* السحبُ بلا تحوّل: المكتوبُ على العنصر يغلب الأنماط */
   drag = { x: e.clientX, t: Date.now(), p: 0, moved: false };
   body.classList.add("dragging"); cover.classList.add("grabbing");
   try { cover.setPointerCapture(e.pointerId); } catch (err) {}
@@ -1137,9 +1147,17 @@ cover.addEventListener("wheel", function (e) {
    إصبعه مبكّراً رأى الباقيَ يمرّ سريعاً. فتُحسب المدّةُ من المسافة:
    المسافةُ كاملةً ‎FULL_MS‎، وما بقي منها بنسبته. */
 var FULL_MS = 2400;
+function paceHalves(ms) {
+  [].forEach.call(document.querySelectorAll(".half"), function (h) {
+    h.style.transitionDuration = ms;
+  });
+}
+var goneTimer = null;
 function setOpenPace() {
-  var rem = Math.max(0.06, 1 - pNow);
-  body.style.setProperty("--opendur", Math.round(FULL_MS * rem) + "ms");
+  var rem = Math.max(0.06, 1 - pNow), ms = Math.round(FULL_MS * rem);
+  paceHalves(ms + "ms");
+  clearTimeout(goneTimer);
+  goneTimer = setTimeout(function () { body.classList.add("cover-gone"); }, ms + 80);
 }
 function open() {
   if (!opened) {
@@ -1276,15 +1294,16 @@ if (muteBtn) muteBtn.addEventListener("click", function () {
 function reset() {
   /* المؤقّتان يُنظَّفان وإلّا انطلقت نبضةُ اللقاء والغلافُ مقفولٌ فضاعت */
   clearTimeout(timer); clearTimeout(cueTimer); clearTimeout(pulseTimer);
+  clearTimeout(goneTimer);
   opened = false;
-  body.classList.remove("opened", "revealed", "more");
+  body.classList.remove("opened", "revealed", "more", "cover-gone");
   namesEl.classList.remove("pulse");
   body.style.removeProperty("--p");
   cover.removeAttribute("aria-hidden"); cover.setAttribute("tabindex", "0");
   sheet.setAttribute("aria-hidden", "true"); sheet.inert = true; sheet.scrollTop = 0;
   cover.focus({ preventScroll: true });
   body.style.removeProperty("--sc"); scLast = -1;
-  body.style.removeProperty("--opendur");
+  paceHalves("");
   drawMono();
 }
 /* aria-hidden وحده لا يمنع الوصولَ بلوحة المفاتيح: بدونه كانت أوّلُ محطّةٍ
