@@ -444,7 +444,12 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
 .names {
   margin-top: var(--s3); font-family: 'Reem Kufi', system-ui, sans-serif; font-weight: 700;
   font-size: clamp(42px, 15vw, 84px); line-height: 1.08;
-  display: flex; align-items: baseline; justify-content: center; gap: .04em;
+  /* شبكةٌ من ثلاثة أعمدة: اسمٌ، فاصلٌ، اسم. العمودان ‎1fr‎ متساويان
+     بحكم التعريف، والشبكةُ بعرض محتواها ‎max-content‎ فيصير العمودان
+     بعرض أوسع الاسمين — لا بنصف السطر. لا قياسَ في جافاسكربت ولا كتابةَ
+     عرضٍ بعد الفتح، فلا موضعَ لقفزةٍ أصلاً. */
+  display: inline-grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: baseline; column-gap: .04em; width: max-content; max-width: 100%;
   filter: none !important; position: relative;
 }
 .names b, .names i { position: relative; z-index: 1; }
@@ -470,6 +475,11 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
    وطبقةُ حبرٍ فوقها تضمن أن تبقى مقروءة */
 .names b {
   font-weight: inherit; color: var(--sage-6);
+  /* المنحنى القديم ‎(.16,.9,.28,1)‎ يبلغ ٩٠٪ من الطريق في ٠٫٣٧ من مدّته
+     ثمّ يزحف: آخرُ ٢٤px تستغرق نصف ثانية، وآخرُ ٢px نصفاً آخر — والصفحة
+     كلّها ساكنةٌ حوله. ذلك الزحفُ هو ما يُقرأ «اسم سند يتحرّك». المنحنى
+     الجديد يبلغ ٩٠٪ في ٠٫٤٩ و٩٩٪ في ٠٫٧٩، والمدّةُ أقصر — فيصل ويستقرّ. */
+  transition: transform .9s cubic-bezier(.33,.75,.3,1);
 }
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .names b {
@@ -489,16 +499,18 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
   to   { background-position: calc(62% + var(--px, 0px)) calc(60% + var(--py, 0px)) }
 }
 
-/* كان الاسمان يقبلان من طرفَي الشاشة فيلتقيان في المنتصف: ٢٤٢px يقطعها
-   كلٌّ منهما في ١٫٥ث، فيصلان بعد الدعوة كلّها بثانيةٍ ونصف — وهي الحركة
-   التي كانت تُقرأ كأنّ الاسم يتزحزح. صارا يصلان مع الصفحة كما تصل: تنفّسٌ
-   من الأسفل وانجلاءٌ من الضباب، لا رحلةٌ عرضَ الشاشة. */
+/* المشهد: الاسمان يقبلان من طرفَي الشاشة فيلتقيان في المنتصف */
+.names .one { transform: translateX(62vw); }
+.names .two { transform: translateX(-62vw); }
+.revealed .names .one, .revealed .names .two { transform: none; }
+.revealed .names .one { transition-delay: .18s; }
+.revealed .names .two { transition-delay: .24s; }
 
 .names i {
   font-style: normal; color: var(--sage-3); font-size: .70em; font-weight: 200;
   font-family: 'Tajawal', system-ui, sans-serif;
   vertical-align: .04em; margin: 0 .1em; flex: none; opacity: 0; transform: scale(.55);
-  transition: opacity .8s ease .55s, transform .9s cubic-bezier(.2,1.5,.4,1) .55s;
+  transition: opacity .8s ease .78s, transform .9s cubic-bezier(.2,1.5,.4,1) .78s;
 }
 .revealed .names i { opacity: .9; transform: scaleY(1.5); }
 
@@ -1086,7 +1098,6 @@ function awaitFonts() {
   timer = setTimeout(awaitFonts, 60);
 }
 function finish() {
-  balanceNames();       /* القياس الأخير قبل انطلاق الحركة، فلا يقفز الاسمان بعدها */
   body.classList.add("revealed");
   cover.setAttribute("aria-hidden", "true"); cover.setAttribute("tabindex", "-1");
   sheet.removeAttribute("aria-hidden"); sheet.inert = false;
@@ -1291,19 +1302,13 @@ sheet.addEventListener("scroll", function () {
 addEventListener("keydown", function (e) { if (e.key === "Escape" && opened) reset(); });
 
 /* السماء داخل الحروف تتبع الإصبع أو المؤشّر — الصفحة تردّ على اللمس أينما كان */
-/* يُقاس الاسمان بعد جاهزية الخطّ، ثم يُمنحان عرضاً واحداً هو عرض أوسعهما */
-function balanceNames() {
-  var a = document.querySelector("#d-names .one"), b = document.querySelector("#d-names .two");
-  if (!a || !b) return;
-  a.style.width = b.style.width = "auto";
-  var w = Math.max(a.getBoundingClientRect().width, b.getBoundingClientRect().width);
-  a.style.width = b.style.width = Math.ceil(w) + "px";
-}
-balanceNames();
+/* كان الاسمان يُقاسان هنا ثمّ يُكتب لكلٍّ منهما عرضٌ بالبكسل. وكلُّ كتابةٍ
+   بعد الفتح — عند جاهزية خطٍّ، أو عند تغيّر ارتفاع النافذة حين ينطوي شريطُ
+   سفاري — تُعيد تخطيط الصندوقين فيتزحزح الاسمان وهما في منتصف حركتهما،
+   وذلك هو «يتحرّك سند ويرجع». صار التساوي في التخطيط نفسه (شبكةُ ‎1fr‎
+   بعرض ‎max-content‎)، فلا قياسَ ولا كتابةَ عرضٍ ولا سببَ للقفزة. */
 if (document.fonts && document.fonts.ready)
-  document.fonts.ready.then(function () { fontsOK = true; balanceNames(); });
-addEventListener("resize", balanceNames);
-addEventListener("orientationchange", function () { setTimeout(balanceNames, 160); });
+  document.fonts.ready.then(function () { fontsOK = true; });
 
 var namesEl = $("#d-names");
 sheet.addEventListener("pointermove", function (e) {
