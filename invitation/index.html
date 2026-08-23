@@ -1076,16 +1076,28 @@ cover.addEventListener("pointerdown", function (e) {
 /* الشقّ يتبع الإصبع بثِقَل: لو سُحب بعنف لا ينفتح دفعةً واحدة،
    بل يلاحق السحب ملاحقةً متمهّلة فيبقى للفتح وقارُه */
 var pTarget = 0, pNow = 0, raf = null;
+/* للشقّ سرعةٌ قصوى لا يتجاوزها مهما عنُف السحب: MAX_STEP هو أكبرُ ما
+   ينفرج به في إطارٍ واحد، و‎0.0115‎ تعني أنّ الانفتاح الكامل لا يقلّ عن
+   ١٫٤٥ ثانية عند ٦٠ إطاراً — فمن خطف الغلافَ خطفاً لم ينفتح له أسرعَ
+   ممّن تمهّل. والتخميدُ ‎0.038‎ فوق ذلك يجعل النهايةَ تحطّ ولا ترتطم. */
+var EASE_K = 0.038, MAX_STEP = 0.0115;
 function ease() {
   var d = pTarget - pNow;
-  pNow += d * 0.055;
+  var step = d * EASE_K;
+  if (step >  MAX_STEP) step =  MAX_STEP;
+  if (step < -MAX_STEP) step = -MAX_STEP;
+  pNow += step;
   if (Math.abs(d) < .0012) pNow = pTarget;
   body.style.setProperty("--p", pNow.toFixed(4));
   raf = (pNow === pTarget) ? null : requestAnimationFrame(ease);
 }
 cover.addEventListener("pointermove", function (e) {
   if (!drag) { body.style.setProperty("--sy", e.clientY + "px"); return; }
-  var reach = Math.max(150, innerWidth * 0.42);
+  /* المسافةُ التي يقطعها الإصبعُ ليكتمل الفتح. كانت ٠٫٤٢ من الارتفاع حين
+     كان السحبُ رأسيّاً (~٣٥٤px على الجوّال)، فلمّا صار أفقيّاً وبقيت
+     النسبةُ صارت ٠٫٤٢ من العرض (~١٦٤px) — أي أقلّ من نصف ما كانت، ومن
+     هنا صار الفتحُ يُخطف بلمسةٍ عابرة. */
+  var reach = Math.max(180, innerWidth * 0.70);
   pTarget = Math.min(1, Math.abs(e.clientX - drag.x) / reach);
   drag.p = pNow;
   if (pTarget > 0.02) drag.moved = true;
