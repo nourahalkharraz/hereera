@@ -222,7 +222,11 @@ body {
      إطارٍ مُكبَّرٍ بكسرٍ (كعارض الـArtifact) نُقِّطت كلُّ طبقةٍ على طورٍ
      مغاير، فاختلف العمودان المتجاوران عند الشقّ وبان خيطٌ عند التقريب. */
   position: absolute; top: 0; bottom: 0; left: 0; width: 100%; overflow: hidden;
-  transition: transform 1.9s cubic-bezier(.28,.02,.12,1);
+  /* المنحنى القديم ‎(.28,.02,.12,1)‎ ذروتُه ٢٫٩٧ ضعفَ السرعة المنتظمة —
+     أي أنّ منتصف الحركة يمرّ بثلاثة أضعاف طرفيها، وهو «النصف السريع».
+     الجديد ذروتُه ١٫٢٣: إيقاعٌ واحدٌ من أوّله إلى آخره وحطٌّ ليّن.
+     والمدّةُ تُحسب من المسافة الباقية لا ثابتةً — انظر setOpenPace. */
+  transition: transform var(--opendur, 2.4s) cubic-bezier(.35,.35,.75,1);
 }
 /* كلُّ نصفٍ يرسم الغلافَ بعرض الشاشة كاملاً ثمّ يقصّه عند الشقّ، فيخرج
    المشهدُ عند السكون مطابقاً للغلاف الحاليّ حرفاً بحرف — لا يتغيّر منه شيء
@@ -1128,9 +1132,19 @@ cover.addEventListener("wheel", function (e) {
 
 /* لا تأجيلَ هنا ولا وقفة: الغلافُ لا يقبل لمسةً أصلاً قبل أن يكتمل
    الشعار، فكلُّ لمسةٍ تصل إلى هنا هي لمسةٌ في وقتها. */
+/* سرعةُ الانفتاح واحدةٌ مهما كان موضعُ اليد عند الرفع: لو ثبتت المدّةُ
+   عند رقمٍ واحد، قطع الظرفُ ما بقي من الطريق في ذلك الزمن — فمن رفع
+   إصبعه مبكّراً رأى الباقيَ يمرّ سريعاً. فتُحسب المدّةُ من المسافة:
+   المسافةُ كاملةً ‎FULL_MS‎، وما بقي منها بنسبته. */
+var FULL_MS = 2400;
+function setOpenPace() {
+  var rem = Math.max(0.06, 1 - pNow);
+  body.style.setProperty("--opendur", Math.round(FULL_MS * rem) + "ms");
+}
 function open() {
   if (!opened) {
     opened = true;
+    setOpenPace();
     body.classList.add("opened");
     playTune();          /* سفاري لا يأذن بالصوت إلا بلمسة — وفتح الظرف هو اللمسة */
     if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
@@ -1270,6 +1284,7 @@ function reset() {
   sheet.setAttribute("aria-hidden", "true"); sheet.inert = true; sheet.scrollTop = 0;
   cover.focus({ preventScroll: true });
   body.style.removeProperty("--sc"); scLast = -1;
+  body.style.removeProperty("--opendur");
   drawMono();
 }
 /* aria-hidden وحده لا يمنع الوصولَ بلوحة المفاتيح: بدونه كانت أوّلُ محطّةٍ
