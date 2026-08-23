@@ -366,7 +366,13 @@ body {
   bottom: calc(28px + env(safe-area-inset-bottom)); text-align: center;
   color: var(--sage-6); font-size: 11px;
   opacity: calc((1 - var(--p) * 2) * .8);
+  transition: opacity .7s ease;
 }
+/* في أثناء السحب تتبع الإصبعَ بلا تأخير — التحوّل للوصول وحده */
+body.dragging #hint { transition: none; }
+/* transition: none هنا يحكم الاختفاءَ وحده — لأنّ المتصفّح يأخذ زمنَ
+   التحوّل من الحالة الآتية. فالتلميح يغيب في اللحظة، ثمّ يصل متمهّلاً. */
+body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
 
 /* ═══════════ الإعلان ═══════════ */
 #sheet {
@@ -667,9 +673,14 @@ body {
 .mono .trace path { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
 .drawing .mono .ink { opacity: 0; }
 .drawing .mono .trace path {
-  animation: trace 2.5s cubic-bezier(.5,.02,.28,1) var(--dl, 0s) forwards; }
+  animation: trace 1.7s cubic-bezier(.5,.02,.28,1) var(--dl, 0s) forwards; }
 body.drawing.drawn .mono .ink   { opacity: 1; transition: opacity 1.05s ease; }
 body.drawing.drawn .mono .trace { opacity: 0; transition: opacity 1.05s ease; }
+/* أوّل لمسةٍ تُنهي الرسم فوراً: من انتظر رآه يُكتب، ومن استعجل رأى شعاراً
+   محبَّراً لا هيكلاً — ولا يُقفَل السحب على أحد. */
+body.drawing.rush .mono .trace path { animation: none; stroke-dashoffset: 0; }
+body.drawing.rush .mono .ink   { opacity: 1; transition: opacity .26s ease; }
+body.drawing.rush .mono .trace { opacity: 0; transition: opacity .26s ease; }
 @keyframes trace { to { stroke-dashoffset: 0; } }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1006,7 +1017,7 @@ function unprimeAudio() {
   try { tune.pause(); tune.currentTime = 0; tune.muted = false; } catch (e) {}
 }
 cover.addEventListener("pointerdown", function (e) {
-  primeAudio();
+  primeAudio(); rushMono();
   if (opened) return;
   drag = { y: e.clientY, t: Date.now(), p: 0, moved: false };
   body.classList.add("dragging"); cover.classList.add("grabbing");
@@ -1049,6 +1060,7 @@ cover.addEventListener("keydown", function (e) {
 cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(); } }, { passive: false });
 
 function open() {
+  rushMono();          /* الفتح بلوحة المفاتيح لا يمرّ بلمسةٍ، فيُنهى الرسم هنا */
   if (!opened) {
     opened = true;
     body.classList.add("opened");
@@ -1196,7 +1208,7 @@ var drawTimer = null;
 function drawMono() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   clearTimeout(drawTimer);
-  body.classList.remove("drawing", "drawn");
+  body.classList.remove("drawing", "drawn", "rush");
   [].forEach.call(document.querySelectorAll(".cut svg"), function (svg) {
     var ink = svg.querySelector(".ink"), old = svg.querySelector(".trace");
     if (!ink) return;
@@ -1207,15 +1219,26 @@ function drawMono() {
       var len = 0;
       try { len = path.getTotalLength(); } catch (err) {}
       path.style.setProperty("--len", (len || 9000).toFixed(0));
-      path.style.setProperty("--dl", (i * 0.34).toFixed(2) + "s");
+      path.style.setProperty("--dl", (0.26 + i * 0.22).toFixed(2) + "s");
     });
     ink.parentNode.insertBefore(tr, ink.nextSibling);
   });
   void body.offsetWidth;                 /* إجبارُ المتصفّح على إعادة الحساب */
   body.classList.add("drawing");
-  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, 3320);
+  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, 2410);
 }
-setTimeout(drawMono, 420);
+/* يُستدعى فوراً لا بعد مهلة: لو تأخّر، ظهر «اسحب للفتح» لحظةً ثمّ اختفى
+   حين يبدأ الرسم — ووميضٌ كهذا أسوأ من ألّا يظهر. التأخيرُ صار في الحركة
+   نفسها (٠٫٢٦ث) لا في موعد استدعائها. */
+drawMono();
+/* لو لمس الغلافَ قبل أن يكتمل الاقتفاء، نزل الحبرُ في ربع ثانية. الشعار
+   الذي ينشقّ مع النصفين كاملٌ دائماً، والسحب لا يُمنع لحظةً واحدة. */
+function rushMono() {
+  if (!body.classList.contains("drawing") || body.classList.contains("drawn")) return;
+  clearTimeout(drawTimer);
+  body.classList.add("rush");
+  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, 270);
+}
 
 /* ─────────── العمق عند التمرير ───────────
    يُقرأ موضعُ التمرير مرّةً واحدة في كلّ إطار، ويُكتب رقماً واحداً تبني عليه
