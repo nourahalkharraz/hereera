@@ -90,6 +90,7 @@
   --zoom: 1;        /* تكبير اللوحة: يهدّئ تباين حافّتها العليا */
   --edge-b: var(--paper-2);
   --p: 0;
+  --hold: 1;        /* تخميدُ النصفين وحدهما ما دام الشعارُ يُكتب */
   --cut-y: 0px;      /* الشعار يتوسّط صندوقه، فالشقّ يمرّ في وسطه */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -208,7 +209,7 @@ body {
 .opened { --p: 1; }
 .revealed { --edge-b: var(--rose-1); }
 .half.t {
-  top: 0; height: var(--fold); transform: translateY(calc(var(--p) * -100%));
+  top: 0; height: var(--fold); transform: translateY(calc(var(--p) * var(--hold) * -100%));
   background-image:
     radial-gradient(ellipse 62% 46% at 50% 100%, rgba(250,246,237,.66), rgba(250,246,237,0) 76%),
     var(--wash);
@@ -216,7 +217,7 @@ body {
   background-position: center, center calc(var(--vh, 100dvh) * (1 - var(--zoom)) / 2);
 }
 .half.b {
-  bottom: 0; height: calc(100% - var(--fold)); transform: translateY(calc(var(--p) * 100%));
+  bottom: 0; height: calc(100% - var(--fold)); transform: translateY(calc(var(--p) * var(--hold) * 100%));
   background-image:
     radial-gradient(ellipse 62% 40% at 50% 0%, rgba(250,246,237,.66), rgba(250,246,237,0) 76%),
     var(--wash);
@@ -1019,22 +1020,25 @@ cover.addEventListener("pointerdown", function (e) {
 /* الشقّ يتبع الإصبع بثِقَل: لو سُحب بعنف لا ينفتح دفعةً واحدة،
    بل يلاحق السحب ملاحقةً متمهّلة فيبقى للفتح وقارُه */
 var pTarget = 0, pNow = 0, raf = null;
-/* وما دام الشعارُ يُكتب فللشقّ سقفٌ لا يعلوه: ينفرج قدرَ ما تُرى الحافّة
-   تتحرّك بالإصبع، ولا ينفرج قدرَ ما ينشقّ الشعارُ وهو ناقص. قِيس على
-   الشاشة: عند ٠٫٠٤ الخيطُ بين النصفين شعرةٌ والشعارُ يُقرأ واحداً، وعند
-   ٠٫١٠ يفترق. ولا تُبتلَع حركةُ الساحب: قرارُ الفتح يُقاس على pTarget
-   الحرّ لا على ما ظهر، فمن سحب سحبةً كاملةً انفتح له وإن أمسكناه. */
-var HOLD_P = 0.045;
-function coverCap() {
-  return (rushAt && Date.now() - rushAt < RUSH_MS) ? HOLD_P : 1;
+/* ‎--p‎ حرٌّ لا سقفَ عليه: الوهجُ والضوءُ والمقبضُ والتلميح كلُّها تتبع
+   الإصبعَ من أوّل ملّيمتر، فالسحبُ يردّ عليه في اللحظة. المخمَّدُ هو انزياحُ
+   النصفين وحده — ‎--hold‎ — وهو لا يقف وقفةً بل يزيد مع الخطّ وهو يُكتب:
+   يبدأ ٠٫١٢ وينتهي ١ مع آخر الاقتفاء (٤٥٠ م.ث). فالسحبُ يتحرّك دائماً،
+   ويثقُل في أوّله ثمّ يخفّ — لا جدارَ يصطدم به. */
+var HOLD_MIN = 0.12;
+function holdFactor() {
+  if (!rushAt) return 1;
+  var k = (Date.now() - rushAt) / TRACE_MS;
+  return k >= 1 ? 1 : HOLD_MIN + (1 - HOLD_MIN) * k;
 }
 function ease() {
-  var cap = coverCap(), goal = Math.min(pTarget, cap);
-  var d = goal - pNow;
+  var d = pTarget - pNow;
   pNow += d * 0.055;
-  if (Math.abs(d) < .0012) pNow = goal;
+  if (Math.abs(d) < .0012) pNow = pTarget;
+  var h = holdFactor();
   body.style.setProperty("--p", pNow.toFixed(4));
-  raf = (pNow !== pTarget || (cap < 1 && drag)) ? requestAnimationFrame(ease) : null;
+  body.style.setProperty("--hold", h.toFixed(3));
+  raf = (pNow !== pTarget || (h < 1 && drag)) ? requestAnimationFrame(ease) : null;
 }
 cover.addEventListener("pointermove", function (e) {
   if (!drag) { body.style.setProperty("--sx", e.clientX + "px"); return; }
@@ -1053,7 +1057,7 @@ function release() {
   body.classList.remove("dragging"); cover.classList.remove("grabbing");
   body.style.removeProperty("--p"); pTarget = pNow = 0;
   drag = null;
-  if (go || wasTap) open(false); else unprimeAudio();
+  if (go || wasTap) open(!wasTap); else unprimeAudio();
 }
 cover.addEventListener("pointerup", release);
 cover.addEventListener("pointercancel", release);
@@ -1062,24 +1066,26 @@ cover.addEventListener("keydown", function (e) {
 });
 cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(false); } }, { passive: false });
 
-/* الانتظارُ واحدٌ للنقر والسحب: ما دام الشعارُ ناقصاً لا ينشقّ الظرف —
-   والشقُّ محبوسٌ عند ٠٫٠٤٥ في تلك الأثناء، فلا يتقدّم السحبُ على الرسم.
-   ولمسةٌ ثانيةٌ في أثناء الانتظار تُلغيه وتفتح: من استعجل أُجيب. */
-function open(again) {
+/* ما دام الشعارُ ناقصاً لا ينشقّ الظرف. وللناقر وقفةٌ يُطالِعه فيها، أمّا
+   الساحبُ فيكفيه أن يكتمل الحبر: هو يفتح بيده، والتخميدُ أعطاه الرسمَ في
+   أثناء سحبه، فلا تُفرَض عليه وقفة. ولمسةٌ ثانيةٌ تُلغي الانتظار. */
+function open(fromDrag, again) {
   if (openTimer) { clearTimeout(openTimer); openTimer = null;
     body.classList.remove("waiting"); again = true; }
-  var left = rushMono();
+  rushMono();
+  var left = again ? 0 : rushLeft(!fromDrag);
   if (!opened && !again) {
     if (left > 0) {
       body.classList.add("waiting");
       openTimer = setTimeout(function () {
-        openTimer = null; body.classList.remove("waiting"); open(true);
+        openTimer = null; body.classList.remove("waiting"); open(fromDrag, true);
       }, left);
       return;
     }
   }
   if (!opened) {
     opened = true;
+    body.style.removeProperty("--hold");
     body.classList.add("opened");
     playTune();          /* سفاري لا يأذن بالصوت إلا بلمسة — وفتح الظرف هو اللمسة */
     if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
@@ -1208,6 +1214,7 @@ function reset() {
   /* المؤقّتان يُنظَّفان وإلّا انطلقت نبضةُ اللقاء والغلافُ مقفولٌ فضاعت */
   clearTimeout(timer); clearTimeout(cueTimer); clearTimeout(pulseTimer);
   clearTimeout(openTimer); openTimer = null; body.classList.remove("waiting");
+  body.style.removeProperty("--hold");
   opened = false;
   body.classList.remove("opened", "revealed", "more");
   namesEl.classList.remove("pulse");
@@ -1263,6 +1270,11 @@ drawMono();
       ٤٥٠ اقتفاءٌ متسارع + ٣٠٠ نزولُ الحبر + ٦٥٠ وقفةُ المطالعة */
 var TRACE_MS = 450, INK_MS = 300, GAZE_MS = 650;
 var RUSH_MS = TRACE_MS + INK_MS + GAZE_MS, rushAt = 0;
+/* ما بقي من الرسم: إلى آخر الحبر للساحب، وإليه ثمّ الوقفة للناقر */
+function rushLeft(withGaze) {
+  if (!rushAt) return 0;
+  return Math.max(0, (withGaze ? RUSH_MS : TRACE_MS + INK_MS) - (Date.now() - rushAt));
+}
 function rushMono() {
   if (!body.classList.contains("drawing") || body.classList.contains("drawn")) return 0;
   if (body.classList.contains("rush"))
