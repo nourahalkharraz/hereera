@@ -537,7 +537,10 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   font-style: normal; color: var(--sage-3); font-size: .70em; font-weight: 200;
   font-family: 'Tajawal', system-ui, sans-serif;
   vertical-align: .04em; margin: 0 .1em; flex: none; opacity: 0; transform: scale(.55);
-  transition: opacity .8s ease .78s, transform .9s cubic-bezier(.2,1.5,.4,1) .78s;
+  /* كان المنحنى ‎(.2,1.5,.4,1)‎ يتجاوز المقاس ثمّ يرجع — قِيس: ارتفاعُ
+     الفاصل يبلغ ٦٨ ثمّ يستقرّ عند ٦٤٫٧، أي وثبةٌ ثمّ رجوع. صار يصل ولا
+     يرجع، فلا حركةَ زائدةً في الكتلة. */
+  transition: opacity .8s ease .78s, transform .9s cubic-bezier(.28,.02,.12,1) .78s;
 }
 .revealed .names i { opacity: .9; transform: scaleY(1.5); }
 
@@ -1117,7 +1120,9 @@ function finish() {
   sheet.removeAttribute("aria-hidden"); sheet.inert = false;
   sheet.focus({ preventScroll: true });
   cueTimer   = setTimeout(moreCue, 60);
-  pulseTimer = setTimeout(pulse, 1420);
+  /* نبضةُ اللقاء بعد أن يلتقيا لا قبله: الاسمان يستقرّان عند ١٩٣٠ م.ث
+     من الكشف (قياساً)، فكانت النبضةُ تنفجر وهما ما زالا في الطريق. */
+  pulseTimer = setTimeout(pulse, 1980);
 }
 /* ─────────── النشيد ───────────
    يبدأ مع انفتاح الظرف لأن الجوّالات لا تسمح بالتشغيل التلقائي بلا لمسة،
