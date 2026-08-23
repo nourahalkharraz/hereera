@@ -148,7 +148,9 @@ body {
   transition: opacity 2.4s ease 1.2s;
   animation: gust 23s ease-in-out -6s infinite alternate;
 }
-.revealed #petals { opacity: 1; }
+.revealed #petals { opacity: .58; }   /* شدّة المطر كلّها من هنا:
+   لكلّ بتلةٍ شفافيّتها الخاصّة ٠٫٠٨–٠٫٢٢، وهذا الرقم يضربها جميعاً
+   فتُضبط الشدّة من موضعٍ واحدٍ لا من ستّ عشرة قيمة. */
 #petals i {                     /* الهبوط */
   position: absolute; top: 0; left: var(--x);
   animation: pfall var(--d) linear var(--dl) infinite;
