@@ -90,7 +90,6 @@
   --zoom: 1;        /* تكبير اللوحة: يهدّئ تباين حافّتها العليا */
   --edge-b: var(--paper-2);
   --p: 0;
-  --hold: 1;        /* تخميدُ النصفين وحدهما ما دام الشعارُ يُكتب */
   --cut-y: 0px;      /* الشعار يتوسّط صندوقه، فالشقّ يمرّ في وسطه */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -209,7 +208,7 @@ body {
 .opened { --p: 1; }
 .revealed { --edge-b: var(--rose-1); }
 .half.t {
-  top: 0; height: var(--fold); transform: translateY(calc(var(--p) * var(--hold) * -100%));
+  top: 0; height: var(--fold); transform: translateY(calc(var(--p) * -100%));
   background-image:
     radial-gradient(ellipse 62% 46% at 50% 100%, rgba(250,246,237,.66), rgba(250,246,237,0) 76%),
     var(--wash);
@@ -217,7 +216,7 @@ body {
   background-position: center, center calc(var(--vh, 100dvh) * (1 - var(--zoom)) / 2);
 }
 .half.b {
-  bottom: 0; height: calc(100% - var(--fold)); transform: translateY(calc(var(--p) * var(--hold) * 100%));
+  bottom: 0; height: calc(100% - var(--fold)); transform: translateY(calc(var(--p) * 100%));
   background-image:
     radial-gradient(ellipse 62% 40% at 50% 0%, rgba(250,246,237,.66), rgba(250,246,237,0) 76%),
     var(--wash);
@@ -377,8 +376,12 @@ body {
 /* في أثناء السحب تتبع الإصبعَ بلا تأخير — التحوّل للوصول وحده */
 body.dragging #hint { transition: none; }
 /* transition: none هنا يحكم الاختفاءَ وحده — لأنّ المتصفّح يأخذ زمنَ
-   التحوّل من الحالة الآتية. فالتلميح يغيب في اللحظة، ثمّ يصل متمهّلاً. */
-body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
+   التحوّل من الحالة الآتية. فالتلميح يغيب في اللحظة، ثمّ يصل متمهّلاً.
+   وما دام الشعارُ يُكتب فلا تلميحَ ولا مقبضَ ولا استجابةَ للمس: الغلافُ
+   مشغولٌ بكتابة الاسم، ولا يُدعى أحدٌ إلى سحبٍ لا يُستجاب له. */
+body.drawing:not(.drawn) #hint,
+body.drawing:not(.drawn) #grip { opacity: 0; transition: none; }
+body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
 
 /* ═══════════ الإعلان ═══════════ */
 #sheet {
@@ -674,18 +677,12 @@ body.drawing:not(.drawn) #hint { opacity: 0; transition: none; }
 .mono .trace path { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
 .drawing .mono .ink { opacity: 0; }
 .drawing .mono .trace path {
-  animation: trace 1.7s cubic-bezier(.5,.02,.28,1) var(--dl, 0s) forwards; }
-body.drawing.drawn .mono .ink   { opacity: 1; transition: opacity 1.05s ease; }
-body.drawing.drawn .mono .trace { opacity: 0; transition: opacity 1.05s ease; }
+  animation: trace 1.25s cubic-bezier(.5,.02,.28,1) var(--dl, 0s) forwards; }
+body.drawing.drawn .mono .ink   { opacity: 1; transition: opacity .55s ease; }
+body.drawing.drawn .mono .trace { opacity: 0; transition: opacity .55s ease; }
 /* أوّل لمسةٍ تُنهي الرسم فوراً: من انتظر رآه يُكتب، ومن استعجل رأى شعاراً
    محبَّراً لا هيكلاً — ولا يُقفَل السحب على أحد. */
-/* الاستعجال لا يقفز بالخطّ إلى آخره: جافاسكربت يثبّت موضعه الحاليّ ثمّ
-   ينقله إلى النهاية بتحوّلٍ سريع، فيبقى الخطّ متّصلاً لا يَثِب. وهنا يُقصَّر
-   ظهورُ الحبر وحده ليلحق بالاقتفاء المتسارع. */
-body.drawing.rush.drawn .mono .ink   { transition-duration: .3s; }
-body.drawing.rush.drawn .mono .trace { transition-duration: .3s; }
-/* ولا يومض التلميحُ في أثناء الوقفة التي يُطالَع فيها الشعار */
-body.waiting #hint { opacity: 0; transition: none; }
+
 @keyframes trace { to { stroke-dashoffset: 0; } }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -847,7 +844,7 @@ body.waiting #hint { opacity: 0; transition: none; }
 <div id="flare" aria-hidden="true"></div>
 <div id="spark" aria-hidden="true"></div>
 <div id="grip" aria-hidden="true"><b></b><b></b></div>
-<div id="hint">اسحب للفتح</div>
+<div id="hint">اسحب لفتح الدعوة</div>
 <div id="grain" aria-hidden="true"></div>
 
 <svg id="more" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -988,7 +985,7 @@ $("#c-date").textContent = DATA.date;
 
 /* ─────────── الفتح بالسحب ─────────── */
 var body = document.body, cover = $("#cover"), sheet = $("#sheet");
-var drag = null, opened = false, timer = null, cueTimer = null, pulseTimer = null, openTimer = null;
+var drag = null, opened = false, timer = null, cueTimer = null, pulseTimer = null;
 
 /* سفاري يأذن بالتشغيل داخل اللمسة وحدها، ولا يأذن به بعدها. والسحب يطول،
    فلو أوقفنا ما بدأناه عند النزول لم نستطع استئنافه عند الرفع — وهذا ما كان
@@ -1011,8 +1008,8 @@ function unprimeAudio() {
   try { tune.pause(); tune.currentTime = 0; tune.muted = userMuted; } catch (e) {}
 }
 cover.addEventListener("pointerdown", function (e) {
-  primeAudio(); rushMono();
-  if (opened) return;
+  primeAudio();
+  if (opened || locked()) return;
   drag = { y: e.clientY, t: Date.now(), p: 0, moved: false };
   body.classList.add("dragging"); cover.classList.add("grabbing");
   try { cover.setPointerCapture(e.pointerId); } catch (err) {}
@@ -1020,25 +1017,12 @@ cover.addEventListener("pointerdown", function (e) {
 /* الشقّ يتبع الإصبع بثِقَل: لو سُحب بعنف لا ينفتح دفعةً واحدة،
    بل يلاحق السحب ملاحقةً متمهّلة فيبقى للفتح وقارُه */
 var pTarget = 0, pNow = 0, raf = null;
-/* ‎--p‎ حرٌّ لا سقفَ عليه: الوهجُ والضوءُ والمقبضُ والتلميح كلُّها تتبع
-   الإصبعَ من أوّل ملّيمتر، فالسحبُ يردّ عليه في اللحظة. المخمَّدُ هو انزياحُ
-   النصفين وحده — ‎--hold‎ — وهو لا يقف وقفةً بل يزيد مع الخطّ وهو يُكتب:
-   يبدأ ٠٫١٢ وينتهي ١ مع آخر الاقتفاء (٤٥٠ م.ث). فالسحبُ يتحرّك دائماً،
-   ويثقُل في أوّله ثمّ يخفّ — لا جدارَ يصطدم به. */
-var HOLD_MIN = 0.12;
-function holdFactor() {
-  if (!rushAt) return 1;
-  var k = (Date.now() - rushAt) / TRACE_MS;
-  return k >= 1 ? 1 : HOLD_MIN + (1 - HOLD_MIN) * k;
-}
 function ease() {
   var d = pTarget - pNow;
   pNow += d * 0.055;
   if (Math.abs(d) < .0012) pNow = pTarget;
-  var h = holdFactor();
   body.style.setProperty("--p", pNow.toFixed(4));
-  body.style.setProperty("--hold", h.toFixed(3));
-  raf = (pNow !== pTarget || (h < 1 && drag)) ? requestAnimationFrame(ease) : null;
+  raf = (pNow === pTarget) ? null : requestAnimationFrame(ease);
 }
 cover.addEventListener("pointermove", function (e) {
   if (!drag) { body.style.setProperty("--sx", e.clientX + "px"); return; }
@@ -1057,35 +1041,25 @@ function release() {
   body.classList.remove("dragging"); cover.classList.remove("grabbing");
   body.style.removeProperty("--p"); pTarget = pNow = 0;
   drag = null;
-  if (go || wasTap) open(!wasTap); else unprimeAudio();
+  if (go || wasTap) open(); else unprimeAudio();
 }
 cover.addEventListener("pointerup", release);
 cover.addEventListener("pointercancel", release);
 cover.addEventListener("keydown", function (e) {
-  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); open(false); }
-});
-cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(false); } }, { passive: false });
-
-/* ما دام الشعارُ ناقصاً لا ينشقّ الظرف. وللناقر وقفةٌ يُطالِعه فيها، أمّا
-   الساحبُ فيكفيه أن يكتمل الحبر: هو يفتح بيده، والتخميدُ أعطاه الرسمَ في
-   أثناء سحبه، فلا تُفرَض عليه وقفة. ولمسةٌ ثانيةٌ تُلغي الانتظار. */
-function open(fromDrag, again) {
-  if (openTimer) { clearTimeout(openTimer); openTimer = null;
-    body.classList.remove("waiting"); again = true; }
-  rushMono();
-  var left = again ? 0 : rushLeft(!fromDrag);
-  if (!opened && !again) {
-    if (left > 0) {
-      body.classList.add("waiting");
-      openTimer = setTimeout(function () {
-        openTimer = null; body.classList.remove("waiting"); open(fromDrag, true);
-      }, left);
-      return;
-    }
+  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) {
+    if (locked()) return;
+    e.preventDefault(); open();
   }
+});
+cover.addEventListener("wheel", function (e) {
+  if (!opened && !locked()) { e.preventDefault(); open(); }
+}, { passive: false });
+
+/* لا تأجيلَ هنا ولا وقفة: الغلافُ لا يقبل لمسةً أصلاً قبل أن يكتمل
+   الشعار، فكلُّ لمسةٍ تصل إلى هنا هي لمسةٌ في وقتها. */
+function open() {
   if (!opened) {
     opened = true;
-    body.style.removeProperty("--hold");
     body.classList.add("opened");
     playTune();          /* سفاري لا يأذن بالصوت إلا بلمسة — وفتح الظرف هو اللمسة */
     if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
@@ -1213,8 +1187,6 @@ if (muteBtn) muteBtn.addEventListener("click", function () {
 function reset() {
   /* المؤقّتان يُنظَّفان وإلّا انطلقت نبضةُ اللقاء والغلافُ مقفولٌ فضاعت */
   clearTimeout(timer); clearTimeout(cueTimer); clearTimeout(pulseTimer);
-  clearTimeout(openTimer); openTimer = null; body.classList.remove("waiting");
-  body.style.removeProperty("--hold");
   opened = false;
   body.classList.remove("opened", "revealed", "more");
   namesEl.classList.remove("pulse");
@@ -1238,8 +1210,7 @@ var drawTimer = null;
 function drawMono() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   clearTimeout(drawTimer);
-  body.classList.remove("drawing", "drawn", "rush", "waiting");
-  rushAt = 0;
+  body.classList.remove("drawing", "drawn");
   [].forEach.call(document.querySelectorAll(".cut svg"), function (svg) {
     var ink = svg.querySelector(".ink"), old = svg.querySelector(".trace");
     if (!ink) return;
@@ -1250,51 +1221,29 @@ function drawMono() {
       var len = 0;
       try { len = path.getTotalLength(); } catch (err) {}
       path.style.setProperty("--len", (len || 9000).toFixed(0));
-      path.style.setProperty("--dl", (0.26 + i * 0.22).toFixed(2) + "s");
+      path.style.setProperty("--dl", (0.18 + i * 0.16).toFixed(2) + "s");
     });
     ink.parentNode.insertBefore(tr, ink.nextSibling);
   });
   void body.offsetWidth;                 /* إجبارُ المتصفّح على إعادة الحساب */
   body.classList.add("drawing");
-  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, 2410);
+  /* ١٨٠ مهلة + ٣٢٠ تعاقبُ المسارات + ١٢٥٠ مدّةُ الاقتفاء = ١٧٥٠ */
+  drawTimer = setTimeout(function () {
+    body.classList.add("drawn");
+    cover.removeAttribute("aria-disabled");
+  }, 1750);
+  cover.setAttribute("aria-disabled", "true");
 }
 /* يُستدعى فوراً لا بعد مهلة: لو تأخّر، ظهر «اسحب للفتح» لحظةً ثمّ اختفى
    حين يبدأ الرسم — ووميضٌ كهذا أسوأ من ألّا يظهر. التأخيرُ صار في الحركة
    نفسها (٠٫٢٦ث) لا في موعد استدعائها. */
 drawMono();
-/* ─────────── اللمسةُ المبكّرة: تُسرِّع ولا تُلغي ───────────
-   من لمس قبل أن يكتمل الاقتفاء لا يُردّ ولا يُطلَب منه لمسةٌ ثانية: يتسارع
-   الخطُّ من موضعه الذي بلغه — لا من أوّله ولا بقفزةٍ إلى آخره — ثمّ ينزل
-   الحبر، ثمّ يُترك الشعارُ لحظةً مكتملاً يُطالَع، ثمّ ينشقّ الظرف. لمسةٌ
-   واحدة، والرسمُ يُرى إلى آخره.
-      ٤٥٠ اقتفاءٌ متسارع + ٣٠٠ نزولُ الحبر + ٦٥٠ وقفةُ المطالعة */
-var TRACE_MS = 450, INK_MS = 300, GAZE_MS = 650;
-var RUSH_MS = TRACE_MS + INK_MS + GAZE_MS, rushAt = 0;
-/* ما بقي من الرسم: إلى آخر الحبر للساحب، وإليه ثمّ الوقفة للناقر */
-function rushLeft(withGaze) {
-  if (!rushAt) return 0;
-  return Math.max(0, (withGaze ? RUSH_MS : TRACE_MS + INK_MS) - (Date.now() - rushAt));
-}
-function rushMono() {
-  if (!body.classList.contains("drawing") || body.classList.contains("drawn")) return 0;
-  if (body.classList.contains("rush"))
-    return Math.max(0, RUSH_MS - (Date.now() - rushAt));
-  clearTimeout(drawTimer);
-  /* يُقرأ موضعُ الشرطة الآن ويُثبَّت، ثمّ تُلغى الحركةُ ويُنقَل بتحوّل —
-     فلو أُعيد تشغيلُ الحركة مسرَّعةً لعادت إلى أوّلها ووثب الخطّ. */
-  [].forEach.call(document.querySelectorAll(".cut .trace path"), function (path) {
-    var now = getComputedStyle(path).strokeDashoffset;
-    path.style.animation = "none";
-    path.style.strokeDashoffset = now;
-    void path.getBoundingClientRect().width;
-    path.style.transition = "stroke-dashoffset " + (TRACE_MS / 1000)
-      + "s cubic-bezier(.25,.72,.35,1)";
-    path.style.strokeDashoffset = "0";
-  });
-  rushAt = Date.now();
-  body.classList.add("rush");
-  drawTimer = setTimeout(function () { body.classList.add("drawn"); }, TRACE_MS);
-  return RUSH_MS;
+/* ─────────── القفل ───────────
+   الغلافُ لا يقبل لمسةً ولا سحباً ولا مفتاحاً ما دام الشعارُ يُكتب، ولا
+   يدعو إلى شيءٍ في تلك الأثناء: لا تلميحَ ولا مقبض. فإذا اكتمل الخطُّ
+   ظهرت الدعوةُ إلى السحب وفُتح الباب. */
+function locked() {
+  return body.classList.contains("drawing") && !body.classList.contains("drawn");
 }
 
 /* ─────────── العمق عند التمرير ───────────
