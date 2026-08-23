@@ -22,15 +22,16 @@ cp invitation/versions/2026-08-23-approved.html invitation/index.html
 
 ## الرجوعُ عبر git
 
-كلُّ نسخةٍ معتمدةٍ موسومةٌ بوسمٍ يحمل تاريخها:
+الوسومُ (tags) لا تُقبل في هذا المستودع من جلسات العمل هذه — تُرفض
+بـ403 لأن الصلاحيّة مربوطةٌ بالفرع وحده. فلا تعتمدي عليها: المعتمَدُ
+هو الملفُّ المحفوظُ هنا، وهو مدفوعٌ فعلًا لا محليّ.
+
+ولمن أراد التاريخ:
 
 ```
-git tag -l                                     # عرضُ الوسوم
-git show approved-2026-08-23:invitation/index.html > /tmp/old.html
-git checkout approved-2026-08-23 -- invitation/index.html
+git log --oneline -- invitation/versions/2026-08-23-approved.html
+git show <sha>:invitation/index.html > /tmp/old.html
 ```
-
-الوسمُ لا يتحرّك ولا يُحذف، فهو أوثقُ من الفرع.
 
 ## القاعدة
 
