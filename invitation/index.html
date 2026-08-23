@@ -1007,12 +1007,22 @@ cover.addEventListener("pointerdown", function (e) {
 /* الشقّ يتبع الإصبع بثِقَل: لو سُحب بعنف لا ينفتح دفعةً واحدة،
    بل يلاحق السحب ملاحقةً متمهّلة فيبقى للفتح وقارُه */
 var pTarget = 0, pNow = 0, raf = null;
+/* وما دام الشعارُ يُكتب فللشقّ سقفٌ لا يعلوه: ينفرج قدرَ ما تُرى الحافّة
+   تتحرّك بالإصبع، ولا ينفرج قدرَ ما ينشقّ الشعارُ وهو ناقص. قِيس على
+   الشاشة: عند ٠٫٠٤ الخيطُ بين النصفين شعرةٌ والشعارُ يُقرأ واحداً، وعند
+   ٠٫١٠ يفترق. ولا تُبتلَع حركةُ الساحب: قرارُ الفتح يُقاس على pTarget
+   الحرّ لا على ما ظهر، فمن سحب سحبةً كاملةً انفتح له وإن أمسكناه. */
+var HOLD_P = 0.045;
+function coverCap() {
+  return (rushAt && Date.now() - rushAt < RUSH_MS) ? HOLD_P : 1;
+}
 function ease() {
-  var d = pTarget - pNow;
+  var cap = coverCap(), goal = Math.min(pTarget, cap);
+  var d = goal - pNow;
   pNow += d * 0.055;
-  if (Math.abs(d) < .0012) pNow = pTarget;
+  if (Math.abs(d) < .0012) pNow = goal;
   body.style.setProperty("--p", pNow.toFixed(4));
-  raf = (pNow === pTarget) ? null : requestAnimationFrame(ease);
+  raf = (pNow !== pTarget || (cap < 1 && drag)) ? requestAnimationFrame(ease) : null;
 }
 cover.addEventListener("pointermove", function (e) {
   if (!drag) { body.style.setProperty("--sx", e.clientX + "px"); return; }
@@ -1031,31 +1041,31 @@ function release() {
   body.classList.remove("dragging"); cover.classList.remove("grabbing");
   body.style.removeProperty("--p"); pTarget = pNow = 0;
   drag = null;
-  if (go || wasTap) open(wasTap); else unprimeAudio();
+  if (go || wasTap) open(false); else unprimeAudio();
 }
 cover.addEventListener("pointerup", release);
 cover.addEventListener("pointercancel", release);
 cover.addEventListener("keydown", function (e) {
-  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); open(true); }
+  if (["Enter", " ", "ArrowUp", "ArrowDown"].indexOf(e.key) > -1) { e.preventDefault(); open(false); }
 });
 cover.addEventListener("wheel", function (e) { if (!opened) { e.preventDefault(); open(false); } }, { passive: false });
 
-/* canWait: هل يُؤجَّل الشقّ حتى يكتمل الشعار؟ نعم مع النقر ولوحة المفاتيح،
-   ولا مع السحب — فالنصفان يتبعان الإصبع، ولا يُحبَسان عنه. ولمسةٌ ثانيةٌ في
-   أثناء الانتظار تُلغيه وتفتح: من استعجل أُجيب، ولم يُفرَض عليه شيء. */
-function open(canWait) {
+/* الانتظارُ واحدٌ للنقر والسحب: ما دام الشعارُ ناقصاً لا ينشقّ الظرف —
+   والشقُّ محبوسٌ عند ٠٫٠٤٥ في تلك الأثناء، فلا يتقدّم السحبُ على الرسم.
+   ولمسةٌ ثانيةٌ في أثناء الانتظار تُلغيه وتفتح: من استعجل أُجيب. */
+function open(again) {
   if (openTimer) { clearTimeout(openTimer); openTimer = null;
-    body.classList.remove("waiting"); canWait = false; }
-  if (!opened && canWait) {
-    var left = rushMono();
+    body.classList.remove("waiting"); again = true; }
+  var left = rushMono();
+  if (!opened && !again) {
     if (left > 0) {
       body.classList.add("waiting");
       openTimer = setTimeout(function () {
-        openTimer = null; body.classList.remove("waiting"); open(false);
+        openTimer = null; body.classList.remove("waiting"); open(true);
       }, left);
       return;
     }
-  } else { rushMono(); }
+  }
   if (!opened) {
     opened = true;
     body.classList.add("opened");
