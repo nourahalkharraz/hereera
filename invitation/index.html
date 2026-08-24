@@ -77,9 +77,8 @@
   /* ٣ · الزيتون — كلّ ما يُقرأ: الشعار والاسمان والعنوان والخيوط.
      الصبغة ١١٠° في درجاته كلّها، فلا ينزلق التدرّج نحو الأخضر كلّما فتح. */
   --sage-0:  #35361E;   /* طرفا أومبري الشعار كلاهما — يرد في الـSVG صريحاً */
-  --sage-1:  #CACD9D;   /* أفتحُ درجة: نهايةُ تدرّج الاسمين */
   --sage-2:  #C2C395;
-  --sage-3:  #B1B388;
+  --sage-3:  #B1B388;   /* ترد في الـSVG كقيمةٍ صريحة، فلا تُحذف */
   --sage-4:  #818263;
   --sage-5:  #666848;   /* تباين ٥٫٦ */
   --sage-6:  #4D5033;   /* تباين ٧٫٩ */
@@ -383,7 +382,6 @@ body {
   0%,100% { transform: scale(.93); opacity: .82 }
   50%     { transform: scale(1.07); opacity: 1 }
 }
-@keyframes turn { to { transform: rotate(360deg) } }
 @media (prefers-reduced-motion: reduce) {
   #bloom::after, #halo::after { animation: none !important; }
 }
@@ -481,7 +479,6 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   font-size: clamp(16px, 4.3vw, 20px); --o: .92; }
 .news { margin-top: var(--s3); font-size: clamp(14px, 3.7vw, 16.5px);
   line-height: 2.05; color: var(--ink-3); font-weight: 500; }
-.news b { display: block; font-weight: 300; }
 
 /* إعلان */
 /* العنوان مصمتٌ دائماً، واللمعة تمرّ فوقه مقصوصةً على حروفه.
@@ -540,8 +537,10 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   20%  { opacity: .95 }
   100% { opacity: 0;  transform: translate(-50%,-50%) scale(1.55) }
 }
-/* الحروف نافذةٌ على السماء: اللوحة نفسها تملأها وتنساب داخلها ببطء،
-   وطبقةُ حبرٍ فوقها تضمن أن تبقى مقروءة */
+/* الحروف نافذةٌ على السماء: اللوحة نفسها تملأها وتنساب داخلها ببطء.
+   ولا طبقةَ حبرٍ فوقها — ‎color‎ تحت ‎@supports‎ شفّافة، والمصمتُ خارجَها
+   بديلٌ لمن لا يدعم ‎background-clip‎ لا ضمانةُ قراءة. الضمانةُ الوحيدة
+   أن يبقى أفتحُ طرفٍ في السلّم مقروءاً بذاته. */
 .names b {
   font-weight: inherit; color: var(--sage-6);
   /* المنحنى القديم ‎(.16,.9,.28,1)‎ يبلغ ٩٠٪ من الطريق في ٠٫٣٧ من مدّته
@@ -555,9 +554,11 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   .names b {
     color: transparent;
     background-image:
-      linear-gradient(200deg, var(--sage-6) 0%, var(--sage-5) 34%,
-                              var(--sage-4) 68%, var(--sage-3) 88%,
-                              var(--sage-1) 100%);
+      /* أرضيّةُ السلّم ‎--sage-5‎ لا ‎#CACD9D‎: القديمُ كان ينزل إلى
+         تباين ٢٫٥٣ في لبّ الحرف، فيُقرأ نصفُ الاسم مغسولاً. المدى
+         الآن ٧٫٧٥ ← ٥٫٣٥: عمقٌ يُرى وقاعٌ يُقرأ. */
+      linear-gradient(200deg, var(--sage-6) 0%, var(--sage-6) 26%,
+                              var(--sage-5) 72%, var(--sage-5) 100%);
     background-size: 118% 118%;
     background-position: 50% 50%;
     -webkit-background-clip: text; background-clip: text;
@@ -577,7 +578,8 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
 .revealed .names .two { transition-delay: .34s; }
 
 .names i {
-  font-style: normal; color: var(--sage-3); font-size: .70em; font-weight: 200;
+  /* كان ‎--sage-3‎ بتباين ٢٫٠١ فكان أشحبَ شيءٍ في كتلة الاسمين */
+  font-style: normal; color: var(--sage-4); font-size: .70em; font-weight: 200;
   font-family: 'Tajawal', system-ui, sans-serif;
   vertical-align: .04em; margin: 0 .1em; flex: none; opacity: 0; transform: scale(.55);
   /* كان المنحنى ‎(.2,1.5,.4,1)‎ يتجاوز المقاس ثمّ يرجع — قِيس: ارتفاعُ
@@ -738,7 +740,6 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   .verse cite { margin-top: var(--s2); }
   .count b { font-size: 19px; } .count span { margin-top: 3px; font-size: 12px; }
   .dua { font-size: clamp(13.5px, 3.5vw, 15.5px); line-height: 1.9; }
-  .acts { margin-top: var(--s3); }
   .sprig.a { width: min(26vw, 150px); } .sprig.b { width: min(18vw, 108px); }
   #hint { bottom: calc(20px + env(safe-area-inset-bottom)); }
   #grip { bottom: calc(48px + env(safe-area-inset-bottom)); }
