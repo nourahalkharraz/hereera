@@ -182,3 +182,38 @@ No text, no letters, no numbers.
 لا تُعِد صياغةَ البرومبت. عدّل رقمَ `REALISM` وأضف نفيًا صريحًا لما
 ظهر خطأً: `NO shading` · `flatter` · `thinner uniform lines` ·
 `simpler` · `fewer details` · `larger empty center`.
+
+---
+
+## ٧ · مودرن — حقول ضبابية وقوس واحد — واقعية ٣
+
+طُلبت «مودرن» صراحةً: لا نباتَ ولا نقشَ ولا زخرفة — تجريدٌ هادئ
+من عائلة ألوان الدعوة نفسها، والوسطُ محجوزٌ فارغًا للشعار.
+
+```
+Create ONE vertical 1080x1920 background image, fully bleeding to all
+edges, ground color #FAF6ED filling the entire canvas.
+
+STYLE: modern minimalist abstract. Large soft airbrushed color
+fields with very gradual edges, like diffused morning light on
+matte paper — not brushstrokes, not watercolor blooms, not marble,
+not smoke.
+
+Composition: one broad blush field in the top-right region fading
+from #EFD7CF at its heart to nothing, one smaller warm field of
+#DDBAAE rising from the bottom-left corner, and between them a
+single thin arch line in #818263 — one clean hairline curve, about
+2px, entering from the lower-left edge and fading out before it
+reaches the center. Asymmetric, calm, generous emptiness. The
+entire central third of the canvas must remain plain #FAF6ED —
+completely empty, no shape, no line, no tone shift crossing it.
+
+Colors: #FAF6ED, #EFD7CF, #DDBAAE, #818263 ONLY. No gold, no
+beige-brown, no gray, no white, no black.
+
+REALISM: 3 out of 10. Pure flat graphic tone fields with soft
+gradients — NO texture, NO grain, NO paper fibers, NO shadows, NO
+lighting, NO 3D depth, NO photographic rendering.
+
+No text, no letters, no numbers, no watermark, no border, no frame.
+```
