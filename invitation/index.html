@@ -485,7 +485,8 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
    كان التدرّج يحلّ محلّ اللون فيهبط التباين إلى ٢٫١ — وهو أهمّ سطر
    في الصفحة — فصار اللون لوناً والّلمعة زينةً فوقه. */
 .event { margin-top: var(--s3); font-family:'Reem Kufi', system-ui, sans-serif; font-weight: 700;
-  color: var(--sage-5); font-size: clamp(21px, 5.8vw, 29px); line-height: 1.35;
+  /* فُتّح درجتين بطلبٍ صريح (٥←٣): التباين هبط ٥٫٣٥ ← ٢٫٠١ */
+  color: var(--sage-3); font-size: clamp(21px, 5.8vw, 29px); line-height: 1.35;
   position: relative; }
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .event::after {
@@ -493,7 +494,7 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
     pointer-events: none; color: transparent;
     background-image:
       linear-gradient(100deg, transparent 0%,   transparent 32%,
-                              var(--sage-6) 50%,
+                              var(--sage-4) 50%,
                               transparent 68%,  transparent 100%);
     background-size: 265% 100%;
     background-position: 0% 50%;
@@ -542,7 +543,8 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
    بديلٌ لمن لا يدعم ‎background-clip‎ لا ضمانةُ قراءة. الضمانةُ الوحيدة
    أن يبقى أفتحُ طرفٍ في السلّم مقروءاً بذاته. */
 .names b {
-  font-weight: inherit; color: var(--sage-6);
+  /* فُتّح درجتين بطلبٍ صريح (٦←٤) */
+  font-weight: inherit; color: var(--sage-4);
   /* المنحنى القديم ‎(.16,.9,.28,1)‎ يبلغ ٩٠٪ من الطريق في ٠٫٣٧ من مدّته
      ثمّ يزحف: آخرُ ٢٤px تستغرق نصف ثانية، وآخرُ ٢px نصفاً آخر — والصفحة
      كلّها ساكنةٌ حوله. ذلك الزحفُ هو ما يُقرأ «اسم سند يتحرّك». المنحنى
@@ -554,11 +556,10 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   .names b {
     color: transparent;
     background-image:
-      /* أرضيّةُ السلّم ‎--sage-5‎ لا ‎#CACD9D‎: القديمُ كان ينزل إلى
-         تباين ٢٫٥٣ في لبّ الحرف، فيُقرأ نصفُ الاسم مغسولاً. المدى
-         الآن ٧٫٧٥ ← ٥٫٣٥: عمقٌ يُرى وقاعٌ يُقرأ. */
-      linear-gradient(200deg, var(--sage-6) 0%, var(--sage-6) 26%,
-                              var(--sage-5) 72%, var(--sage-5) 100%);
+      /* فُتّح السلّم كلُّه درجتين بطلبٍ صريح (٦←٥ صار ٤←٣).
+         المدى الآن ٣٫٦٧ ← ٢٫٠١. */
+      linear-gradient(200deg, var(--sage-4) 0%, var(--sage-4) 26%,
+                              var(--sage-3) 72%, var(--sage-3) 100%);
     background-size: 118% 118%;
     background-position: 50% 50%;
     -webkit-background-clip: text; background-clip: text;
