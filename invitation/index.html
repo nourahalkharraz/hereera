@@ -485,8 +485,8 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
    كان التدرّج يحلّ محلّ اللون فيهبط التباين إلى ٢٫١ — وهو أهمّ سطر
    في الصفحة — فصار اللون لوناً والّلمعة زينةً فوقه. */
 .event { margin-top: var(--s3); font-family:'Reem Kufi', system-ui, sans-serif; font-weight: 700;
-  /* فُتّح درجتين بطلبٍ صريح (٥←٣): التباين هبط ٥٫٣٥ ← ٢٫٠١ */
-  color: var(--sage-3); font-size: clamp(21px, 5.8vw, 29px); line-height: 1.35;
+  /* فُتّح درجتين ثمّ غُمّق درجةً بطلبٍ صريح — المحصّلة ٥←٤، تباين ٣٫٦٧ */
+  color: var(--sage-4); font-size: clamp(21px, 5.8vw, 29px); line-height: 1.35;
   position: relative; }
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .event::after {
@@ -494,7 +494,7 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
     pointer-events: none; color: transparent;
     background-image:
       linear-gradient(100deg, transparent 0%,   transparent 32%,
-                              var(--sage-4) 50%,
+                              var(--sage-5) 50%,
                               transparent 68%,  transparent 100%);
     background-size: 265% 100%;
     background-position: 0% 50%;
@@ -543,8 +543,8 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
    بديلٌ لمن لا يدعم ‎background-clip‎ لا ضمانةُ قراءة. الضمانةُ الوحيدة
    أن يبقى أفتحُ طرفٍ في السلّم مقروءاً بذاته. */
 .names b {
-  /* فُتّح درجتين بطلبٍ صريح (٦←٤) */
-  font-weight: inherit; color: var(--sage-4);
+  /* فُتّح درجتين ثمّ غُمّق درجةً بطلبٍ صريح — المحصّلة ٦←٥ */
+  font-weight: inherit; color: var(--sage-5);
   /* المنحنى القديم ‎(.16,.9,.28,1)‎ يبلغ ٩٠٪ من الطريق في ٠٫٣٧ من مدّته
      ثمّ يزحف: آخرُ ٢٤px تستغرق نصف ثانية، وآخرُ ٢px نصفاً آخر — والصفحة
      كلّها ساكنةٌ حوله. ذلك الزحفُ هو ما يُقرأ «اسم سند يتحرّك». المنحنى
@@ -556,10 +556,10 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
   .names b {
     color: transparent;
     background-image:
-      /* فُتّح السلّم كلُّه درجتين بطلبٍ صريح (٦←٥ صار ٤←٣).
-         المدى الآن ٣٫٦٧ ← ٢٫٠١. */
-      linear-gradient(200deg, var(--sage-4) 0%, var(--sage-4) 26%,
-                              var(--sage-3) 72%, var(--sage-3) 100%);
+      /* فُتّح السلّم درجتين ثمّ غُمّق درجةً بطلبٍ صريح — المحصّلة
+         (٦←٥) صار (٥←٤). المدى الآن ٥٫٣٥ ← ٣٫٦٧. */
+      linear-gradient(200deg, var(--sage-5) 0%, var(--sage-5) 26%,
+                              var(--sage-4) 72%, var(--sage-4) 100%);
     background-size: 118% 118%;
     background-position: 50% 50%;
     -webkit-background-clip: text; background-clip: text;
@@ -590,10 +590,12 @@ body.drawing:not(.drawn) #cover { pointer-events: none; cursor: default; }
 }
 .revealed .names i { opacity: .9; transform: scaleY(1.5); }
 
-.full { margin-top: var(--s3); font-size: clamp(13px, 3.4vw, 15.5px);
-  line-height: 2; color: var(--ink-2); --o: .88; }
-/* الفاصل يأخذ هامشاً متساوياً على جانبيه فينقسم السطر نصفين متّزنين */
-.full i { font-style: normal; margin: 0 .95em; color: var(--sage-2); }
+/* اسمُ العائلة تحت الاسم الأوّل مباشرةً — عمودان متناظران حول الفاصل.
+   لونُه مستقلٌّ عن تدرّج الحروف فوقَه: اللون يُعلن هنا صراحةً لأن الأب
+   شفّافُ الحبر تحت ‎background-clip‎، والابنُ لا يرث القصّ بل اللون. */
+.names .fam { display: block; font-family: 'Tajawal', system-ui, sans-serif;
+  font-weight: 400; font-size: clamp(13px, 3.4vw, 15.5px); line-height: 1.9;
+  color: var(--ink-2); margin-top: .5em; white-space: nowrap; }
 
 /* الوقائع — بعد صمت طويل، وبصوت خافت */
 .when { margin-top: var(--s5); }
@@ -738,7 +740,7 @@ body:not(.revealed) #mute { display: none; }
   .news { font-size: clamp(13.5px, 3.5vw, 15.5px); line-height: 1.85; }
   .event { font-size: clamp(19px, 5.2vw, 25px); }
   .names { font-size: clamp(31px, 8.6vh, 58px); }
-  .full  { font-size: clamp(12px, 3.1vw, 13.5px); line-height: 1.75; }
+  .names .fam { font-size: clamp(12px, 3.1vw, 13.5px); line-height: 1.75; }
   .date  { font-size: clamp(15px, 4.1vw, 17px); }
   .verse p { font-size: clamp(15.5px, 4.8vw, 19px); line-height: 1.9; }
   .verse cite { margin-top: var(--s2); }
@@ -839,8 +841,7 @@ body.drawing.drawn .mono .trace { opacity: 0; transition: opacity .55s ease; }
          من DATA في كلّ الأحوال، فإن عُدّل DATA فليُعدَّل هذا معه. -->
     <p class="news" id="d-news">بمشيئة الله وتوفيقه · يسرّنا دعوتكم لحضور</p>
     <p class="event" id="d-event">حفل عقد قران</p>
-    <h1 class="names" id="d-names"><b class="one">سند</b><i>|</i><b class="two">نورة</b></h1>
-    <p class="full" id="d-full">سند عبدالله الفايز<i>·</i>نورة عبدالوهاب الخرّاز</p>
+    <h1 class="names" id="d-names"><b class="one">سند<span class="fam">عبدالله الفايز</span></b><i>|</i><b class="two">نورة<span class="fam">عبدالوهاب الخرّاز</span></b></h1>
 
     <div class="when">
       <hr>
@@ -945,10 +946,11 @@ var DATA = {
   newsAfter:  "بحمد الله وتوفيقه",
   eventAfter: "تمّ عقد قران",
   one:   "نورة",
+  oneFam:"عبدالوهاب الخرّاز",  /* يظهر تحت الاسم مباشرةً */
   two:   "سند",
+  twoFam:"عبدالله الفايز",
   join:  "|",            /* الرابط بين الاسمين */
   kashida: 7,            /* مقدار المدّ الكلّي لكل اسم على الغلاف */
-  full:  "سند عبدالله الفايز<i>·</i>نورة عبدالوهاب الخرّاز",
   day:   "الجمعة",
   date:  "١٨ سبتمبر ٢٠٢٦",
   hijri: "٧ ربيع الآخر ١٤٤٨",
@@ -1011,9 +1013,10 @@ $("#d-news").innerHTML  = BEFORE ? DATA.news  : (DATA.newsAfter  || DATA.news);
 var EV_TXT = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
 $("#d-event").textContent = EV_TXT;
 $("#d-event").setAttribute("data-t", EV_TXT);   /* اللمعة تُقصّ على النصّ نفسه */
-$("#d-names").innerHTML = '<b class="one">' + DATA.two + '</b><i>' + DATA.join
-  + '</i><b class="two">' + DATA.one + '</b>';
-$("#d-full").innerHTML  = DATA.full;
+$("#d-names").innerHTML = '<b class="one">' + DATA.two
+  + '<span class="fam">' + DATA.twoFam + '</span></b><i>' + DATA.join
+  + '</i><b class="two">' + DATA.one
+  + '<span class="fam">' + DATA.oneFam + '</span></b>';
 $("#d-date").textContent = (BEFORE && DATA.day ? DATA.day + " " : "") + DATA.date;
 $("#d-hijri").textContent = DATA.hijri || "";
 /* الكتلة مكتوبةٌ في الصفحة أصلاً ليقرأها من تعطّل عنده جافاسكربت، وهنا
