@@ -2041,6 +2041,8 @@ body.gate-done #petals{ z-index:2 !important }
    على النظر، وإضاءةٌ تتبع الزاوية: أسطعُ ما تكون حين تواجه، وأخفتُ حين
    تُولّي ظهرها. */
 #petals{ perspective:620px; perspective-origin:50% 32%; }
+/* وصمامُ أمانٍ: أيُّ تأخيرٍ موجبٍ يرسم إطارَ البداية لا الموضعَ الساكن */
+#petals i, #petals b, #petals u{ animation-fill-mode: backwards }
 #petals u{
   /* الوضوح: العتامةُ ‎١٫٩‎ ضعفًا (وما جاوز الواحدَ يُقصّ من نفسه)،
      والحجمُ ‎١٦٨‎ بدل ‎١٢٨‎ — أي ثلثًا أكبر. */
@@ -2172,20 +2174,37 @@ body.gate-done #petals{ z-index:2 !important }
     }
   });
 
-  /* الانهمار من المنتصف: التأخيرُ يزيد كلّما بعُدت البتلةُ عن ‎50%‎ */
-  function pour(spread) {
+  /* الانهمار من المنتصف — بتأخيرٍ سالبٍ لا موجب.
+
+     كان التأخيرُ موجبًا: ‎far * spread‎. والبتلةُ في أثناء تأخيرٍ موجبٍ
+     لا تُرسم عند بدايةِ مسارها، بل عند موضعِها الساكن — و‎#petals i‎
+     موضعُها الساكنُ ‎top:0‎. فكنّ الاثنتين والعشرين يقفن صفًّا معلّقًا
+     في أعلى الشاشةِ ثلاثَ ثوانٍ لا يتحرّكن، وهو الذي رأيتِه.
+     ثمّ تنطلقُ كلٌّ من ‎−19vh‎، والهبوطُ ‎٣٤–٧٤‎ ثانيةً للمسافةِ كلِّها —
+     أي نحوَ ثلاثِ ‎vh‎ في الثانية — فتمضي عشرُ ثوانٍ والسماءُ خالية.
+     قِيس: عند ‎٥‎ ثوانٍ صفرُ بتلاتٍ في الشاشة، وعند ‎١٢‎ إحدى وعشرون
+     أكثرُهنّ ما تزال في أعلى الإطار.
+
+     فالتأخيرُ الآن سالب: كلُّ بتلةٍ تبدأ وقد قطعت جزءًا من طريقها.
+     والوسطى تسبق البعيدةَ كما كان القصد — لكنّ السبقَ يظهر مسافةً
+     لا انتظارًا: الوسطى أنزلُ، والطرفيّةُ للتوّ داخلة. فالسماءُ
+     مملوءةٌ من اللحظةِ الأولى. */
+  function pour(lead) {
     all.forEach(function (n) {
       var x = parseFloat(n.style.getPropertyValue('--x')) || 50;
       var far = Math.abs(x - 50) / 50;
-      var delay = far * spread + Math.random() * 0.22;
-      n.style.setProperty('--dl', delay.toFixed(2) + 's');
+      var d = parseFloat(n.style.getPropertyValue('--d')) || 48;
+      /* نسبةُ ما قُطع من المسار: ‎0.14‎ هي حافّةُ الشاشةِ العليا
+         (‎−19vh‎ من أصل ‎136vh‎)، فما دونها بتلةٌ لم تدخل بعد. */
+      var prog = (1 - far) * lead + Math.random() * 0.17;
+      n.style.setProperty('--dl', (-(prog * d)).toFixed(2) + 's');
       n.style.animation = 'none';
       void n.offsetWidth;                       /* إعادة تدفّقٍ تُعيد التشغيل */
       n.style.animation = '';
     });
   }
 
-  pour(3.1);                                    /* عند فتح الرابط */
+  pour(0.55);                                   /* عند فتح الرابط */
 
   var again = false;
   function onOpen() {
@@ -2193,7 +2212,7 @@ body.gate-done #petals{ z-index:2 !important }
     var d = document.documentElement, b2 = document.body;
     if (!((d && d.classList.contains('opened')) || (b2 && b2.classList.contains('opened')))) return;
     again = true;
-    pour(2.4);                                  /* وعند فتح البوابة */
+    pour(0.46);                                 /* وعند فتح البوابة */
     /* بعد أن يكمل النصفان انزلاقهما، تنتقل طبقةُ المطر خلف النص */
     setTimeout(function () { document.body.classList.add('gate-done'); }, 4200);
 
