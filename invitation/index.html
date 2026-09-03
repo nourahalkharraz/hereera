@@ -1920,10 +1920,16 @@ html,body{overflow-x:hidden !important;max-width:100% !important}
 #petals b{ will-change:transform }
 #petals u{
   will-change:transform;
-  backface-visibility:hidden;
   transform:translateZ(0);
-  animation-timing-function:cubic-bezier(.42,0,.58,1) !important;
 }
+/* كان هنا ‎cubic-bezier(.42,0,.58,1)‎ — تخفيفٌ عند طرفَي كلِّ خطوة.
+   وكان محتملًا يومَ كانت للتقلّبِ خمسُ خطواتٍ في اثنتينِ وخمسين ثانية.
+   فلمّا صارت تسعَ خطواتٍ في ستٍّ إلى عشر، صار الدورانُ يقف ويثب تسعَ
+   مرّاتٍ في الدورة. الدورانُ المستمرُّ لا يُخفَّف: ‎linear‎.
+   و‎backface-visibility:hidden‎ حُذفت معها — كُتبت أيّامَ ‎scaleX‎ حيث
+   لا ظهرَ للبتلةِ أصلًا، ومع ‎rotateY‎ الكاملةِ تعني إخفاءَ البتلةِ نصفَ
+   الدورة. */
+#petals u{ animation-timing-function:linear !important }
 @media (prefers-reduced-motion:reduce){
   #petals i,#petals b,#petals u{ animation:none !important }
 }
@@ -2040,7 +2046,13 @@ body.gate-done #petals{ z-index:2 !important }
    فالمتصفّحُ يُثخّن حروفَه تثخينًا حسابيًّا يطمس وصلاتِ النسخ. يُردّ
    إلى ‎400‎، ويُرفع الحدُّ عن الاسمينِ إذ لا يحتاجه ما كان بهذا القياس
    — ويبقى على اسمَي الأبوينِ وحدَهما لصغرِهما. */
-#sheet .names b{ font-weight:400 !important; -webkit-text-stroke:0 }
+#sheet .names b{ font-weight:400 !important; -webkit-text-stroke:0 !important }
+/* والعنوانُ مثلُهما: وزنُه ‎700‎ إرثٌ من الكوفيّ، والتثخينُ الحسابيُّ
+   يملأ بطنَ الحاءِ ويطمس العينَ فتُقرأ بقعةً. يُردُّ إلى ‎400‎ ويُرفع
+   عنه الحدُّ — تباينُه ‎٦٫٣٦‎ فلا يحتاج إلى عونٍ — ويُكبَّر قليلًا
+   ليحفظ صدارتَه على الافتتاحِ بالقياسِ لا بالغمقان. */
+#sheet .event{ font-weight:400 !important; -webkit-text-stroke:0 !important;
+  font-size:clamp(25px, 6.8vw, 32px) !important }
 #sheet .names .fam{ font-weight:400 !important; -webkit-text-stroke:.016em currentColor }
 /* والقياسُ: المدُّ الممتدُّ يحتاج ضِعفَ العرضِ المتاح — قِيس ‎١٫٩٩‎ عند
    ‎٣٩٠‎ و‎٢٫٠١‎ عند ‎٣٢٠‎ و‎١٫٩٣‎ عند ‎٧٦٠‎ — فالقياسُ يُنصَّف ليدخل السطرَ
@@ -2289,7 +2301,15 @@ body.gate-done #petals{ z-index:2 !important }
     var d = document.documentElement, b2 = document.body;
     if (!((d && d.classList.contains('opened')) || (b2 && b2.classList.contains('opened')))) return;
     again = true;
-    pour(0.46);                                 /* وعند فتح البوابة */
+    /* كان هنا انهمارٌ ثانٍ عند فتح البوابة. وقد كان بريئًا يومَ كان
+       التأخيرُ موجبًا: البتلاتُ جميعًا فوقَ الإطارِ منتظرات، فإعادةُ
+       التشغيلِ لا تُرى. أمّا وقد صار التأخيرُ سالبًا فكلُّ بتلةٍ في
+       منتصفِ طريقها، و‎pour‎ يكتب لها تأخيرًا جديدًا فيه ‎Math.random‎
+       ثمّ يُعيد تشغيلَ الحركةِ — فتنتقل من موضعِها إلى موضعٍ آخرَ في
+       إطارٍ واحد. قِيس: اثنتانِ وعشرون بتلةً من اثنتينِ وعشرين تقفز،
+       وأكبرُ قفزةٍ ‎٣٦٩‎ بكسلًا. وهي «الحركةُ الغريبة».
+       والسماءُ ممتلئةٌ أصلًا منذ اللحظةِ الأولى، فلا حاجةَ إلى انهمارٍ
+       ثانٍ — يُحذف ولا يُبدَّل. */
     /* بعد أن يكمل النصفان انزلاقهما، تنتقل طبقةُ المطر خلف النص */
     setTimeout(function () { document.body.classList.add('gate-done'); }, 4200);
 
