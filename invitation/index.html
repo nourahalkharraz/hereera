@@ -1667,6 +1667,8 @@ if (BEFORE) { tick(); tickTimer = setInterval(tick, 1000); }
     var w = document.createElement('span'); w.className = 'brose';
     w.setAttribute('aria-hidden', 'true');
     w.appendChild(document.createElement('i'));
+    /* الضوءُ المارّ: عنصرٌ فوقَ الوردةِ داخلَ القناعِ نفسِه */
+    w.appendChild(document.createElement('b'));
     cuts[i].appendChild(w);
   }
 })();
@@ -1943,6 +1945,24 @@ body.dragging .half{ transition:none !important }
   animation:roseturn 46s linear infinite;
 }
 /* الإزاحةُ داخلَ الدوران لا خارجَه: ‎transform‎ واحدةٌ لا تتنازعها قاعدتان. */
+/* ══ ضوءٌ يمرّ ══ اختِير من عيّنةِ الحركات.
+   شعاعٌ أبيضُ ناعمٌ يعبر الوردةَ داخلَ الشعارِ كلَّ اثنتي عشرةَ ثانية،
+   بمزجِ ‎screen‎ فلا يُغطّي بل يُضيء. مقيَّدٌ بالقناعِ نفسِه فلا يظهر
+   إلّا من خلالِ الحرف. وهو أهدأُ ممّا في العيّنة — هناك ضُخِّم ليُرى،
+   وهنا يُحسّ أكثرَ ممّا يُرى: ثُلثا الدورةِ سكون، والعبورُ في الثلث. */
+.brose b{
+  position:absolute; inset:-20% -60%; pointer-events:none;
+  background:linear-gradient(105deg,
+    transparent 40%, rgba(255,255,255,0) 46%, rgba(255,255,255,.62) 50%,
+    rgba(255,255,255,0) 54%, transparent 60%);
+  mix-blend-mode:screen;
+  animation:rosebeam 12s ease-in-out infinite;
+}
+@keyframes rosebeam{
+  0%,64%{ transform:translateX(-48%) }
+  100%  { transform:translateX(48%) }
+}
+@media (prefers-reduced-motion:reduce){ .brose b{ animation:none; opacity:0 } }
 @keyframes roseturn{
   from{ transform:translate(-50%,-50%) rotate(0deg) }
   to  { transform:translate(-50%,-50%) rotate(360deg) }
