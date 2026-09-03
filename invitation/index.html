@@ -2029,6 +2029,43 @@ body.gate-done #petals{ z-index:2 !important }
    الهندسيّةُ ترسم علاماتِه أفقيّةً متلاصقة. أمّا سطرُ المصدر تحتها
    فليس قرآنًا، فيتبع خطَّ الورقة. */
 #sheet .verse p, #sheet .verse p *{ font-family:'AMoshref Naskh', serif !important }
+
+/* ══ المطر: أوضحُ وأجسم ══ بطلبٍ صريح.
+   كان التقلّبُ ‎scaleX‎ وحدَه — ضغطةً مستويةً في بُعدين، اختِيرت يومَها
+   تفاديًا لكلفةِ الطبقةِ الثلاثيّة. والضغطةُ تُضيّق البتلةَ ولا تُدير
+   شيئًا: الحافّتان تضيقان معًا بالقدر نفسه، فتقرؤها العينُ ورقةً
+   تُطوى لا جسمًا يمرّ.
+   الآن ‎perspective‎ على الحاوي و‎rotateY‎ على البتلة: الحافّةُ القريبةُ
+   تكبر والبعيدةُ تصغر في الوقت ذاته — وهذا التفاوتُ وحدَه هو ما يقول
+   للعين إنّ للشيء سُمكًا. ومعه ميلٌ ثابتٌ في ‎X‎ فلا تبقى البتلةُ عموديّةً
+   على النظر، وإضاءةٌ تتبع الزاوية: أسطعُ ما تكون حين تواجه، وأخفتُ حين
+   تُولّي ظهرها. */
+#petals{ perspective:620px; perspective-origin:50% 32%; }
+#petals u{
+  /* الوضوح: العتامةُ ‎١٫٩‎ ضعفًا (وما جاوز الواحدَ يُقصّ من نفسه)،
+     والحجمُ ‎١٦٨‎ بدل ‎١٢٨‎ — أي ثلثًا أكبر. */
+  opacity: calc(var(--o) * 1.9) !important;
+  width: calc(var(--s) * 168px) !important;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  animation-name: ptumble3d !important;
+}
+@keyframes ptumble3d{
+  0%   { transform: rotate(0deg)                      rotateX(var(--rx,18deg)) rotateY(0deg);
+         filter: drop-shadow(0 1px 2px rgba(86,106,96,.22)) brightness(1) }
+  25%  { transform: rotate(calc(var(--rz) * .28))     rotateX(var(--rx,18deg)) rotateY(90deg);
+         filter: drop-shadow(0 1px 2px rgba(86,106,96,.10)) brightness(.86) }
+  50%  { transform: rotate(calc(var(--rz) * .55))     rotateX(var(--rx,18deg)) rotateY(180deg);
+         filter: drop-shadow(0 1px 2px rgba(86,106,96,.22)) brightness(.94) }
+  75%  { transform: rotate(calc(var(--rz) * .80))     rotateX(var(--rx,18deg)) rotateY(270deg);
+         filter: drop-shadow(0 1px 2px rgba(86,106,96,.10)) brightness(.86) }
+  100% { transform: rotate(var(--rz))                 rotateX(var(--rx,18deg)) rotateY(360deg);
+         filter: drop-shadow(0 1px 2px rgba(86,106,96,.22)) brightness(1) }
+}
+/* ومن أطفأ الحركةَ في نظامه تبقى له بتلةٌ ساكنةٌ واضحةٌ لا وامضة */
+@media (prefers-reduced-motion: reduce){
+  #petals u{ animation:none !important; filter:none !important }
+}
 </style>
 <script>
 /* المطر:
