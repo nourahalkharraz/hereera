@@ -2236,7 +2236,10 @@ body.gate-done #petals{ z-index:4 !important }
 <script>
 /* المطر:
    ١) نستنسخ بتلات الطبقة الموجودة فترث فيزياء الهبوط والميل والتقلّب.
-   ٢) نوزّعها توزيعًا طبقيًّا — بتلةٌ لكلّ شريحةٍ من عرض الشاشة — فيقلّ تصادمها.
+   ٢) توزيعُها حرٌّ على عرضِ الشاشة. وكان طبقيًّا — بتلةٌ لكلِّ شريحةٍ
+      لئلّا تتصادم — فحُذف القيدُ بطلبٍ صريح: كان يحبس كلَّ بتلةٍ في
+      شريحةٍ عرضُها ‎٢٫٨٪‎ فلا تجاور أختَها أبدًا، ويُضيّق معه الميلَ
+      الأفقيَّ لئلّا تخرج من شريحتها.
    ٣) «الانهمار»: نبدأ التساقطَ من منتصف الأعلى ثمّ ينتشر يمينًا ويسارًا،
       لأنّ تأخيرَ كلّ بتلةٍ يتناسب مع بُعدها عن المنتصف. يقع مرّتين:
       عند فتح الرابط، وعند فتح البوابة. */
@@ -2254,20 +2257,14 @@ body.gate-done #petals{ z-index:4 !important }
   var s = 20260918;
   var R = function () { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
 
-  var slot = [];
-  for (var j = 0; j < N; j++) slot.push(j);
-  for (var j2 = N - 1; j2 > 0; j2--) {
-    var r = Math.floor(R() * (j2 + 1)), t = slot[j2]; slot[j2] = slot[r]; slot[r] = t;
-  }
-
   all.forEach(function (n, i) {
     var u = n.querySelector('u'), b = n.querySelector('b');
-    var x = 1.5 + (slot[i] + 0.18 + R() * 0.64) * (97 / N);
+    var x = 2 + R() * 96;                    /* حرٌّ على العرضِ كلِّه */
     n.style.setProperty('--x', x.toFixed(2) + '%');
     n.style.setProperty('--d', (34 + R() * 40).toFixed(1) + 's');
     n.style.setProperty('--s', (0.085 + R() * 0.135).toFixed(3));
     if (b) {
-      b.style.setProperty('--sw', (7 + R() * 13).toFixed(0) + 'px');
+      b.style.setProperty('--sw', (18 + R() * 28).toFixed(0) + 'px');  /* كان ٧–٢٠ */
       b.style.setProperty('--sd', (9 + R() * 12).toFixed(1) + 's');
     }
     if (u) {
