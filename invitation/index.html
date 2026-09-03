@@ -2002,9 +2002,16 @@ body.dragging .half{ transition:none !important }
 .revealed #sheet .names .one,
 .revealed #sheet .names .two{
   opacity:1;
-  transition:transform 2.6s cubic-bezier(.28,.02,.12,1) 2s,
-             opacity 1.6s ease 2s !important;
+  transition:transform 2.2s cubic-bezier(.28,.02,.12,1) .9s,
+             opacity 1.1s ease .9s !important;
 }
+/* وبطلبٍ لاحق: لا تُفتح الدعوةُ فتُرى خالية. فالدخولُ يبدأ مبكّرًا عند
+   ‎٠٫٩‎ ثانيةٍ — حين ينكشف وسطُ الورقة — وينتهي عند ‎٣٫١‎، والمسافةُ
+   ‎٤٠vw‎ بدل ‎٦٢‎ فلا يقطع الاسمُ نصفَ طريقِه تحتَ الغطاء. يُرى آتيًا من
+   جهتِه وهو يدخل المنكشفَ، ولا تبقى الورقةُ فارغةً لحظةً ظاهرة. */
+.names .one{ transform:translateX(40vw) !important }
+.names .two{ transform:translateX(-40vw) !important }
+.revealed .names .one, .revealed .names .two{ transform:none !important }
 /* والعنوانُ مثلُهما: وزنُه ‎700‎ إرثٌ من الكوفيّ، والتثخينُ الحسابيُّ
    يملأ بطنَ الحاءِ ويطمس العينَ فتُقرأ بقعةً. يُردُّ إلى ‎400‎ ويُرفع
    عنه الحدُّ — تباينُه ‎٦٫٣٦‎ فلا يحتاج إلى عونٍ — ويُكبَّر قليلًا
@@ -2387,7 +2394,7 @@ body.gate-done #petals{ z-index:4 }
        الشاشة ويصنعان فائضًا أفقيًّا يُقرأ انزياحًا. والانتقالُ الجاري يتفوّق
        حتّى على ‎!important‎، فلا يُكسر إلّا بإلغائه ثمّ تثبيت الوضع النهائيّ.
        يقع بعد مدّة الدخول (٠٫٣٤ تأخير + ٢٫٦ انتقال) فلا يُبتر المشهد. */
-    /* الانزلاقُ يبدأ عند ثانيتينِ وينتهي عند ‎٤٫٦‎، فالتثبيتُ بعدَه */
+    /* الانزلاقُ يبدأ عند ‎٠٫٩‎ ثانيةٍ وينتهي عند ‎٣٫١‎، فالتثبيتُ بعدَه */
     setTimeout(function () {
       var n = document.querySelectorAll('.names .one, .names .two');
       for (var i = 0; i < n.length; i++) {
@@ -2395,7 +2402,7 @@ body.gate-done #petals{ z-index:4 }
         n[i].style.transform = 'none';
         n[i].style.opacity = '1';
       }
-    }, 5400);
+    }, 3600);
   }
   var mo = new MutationObserver(onOpen);
   mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
