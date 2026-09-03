@@ -2057,25 +2057,33 @@ body.gate-done #petals{ z-index:4 }
    على النظر، ودورةٌ كاملةٌ في ‎Y‎، وإضاءةٌ تتبع الزاوية — أسطعُ ما تكون
    مواجِهةً، وأخفتُ على الحرف. وثماني خطواتٍ فلا تقفز الإضاءةُ من طرفٍ
    إلى طرف. والحرفُ عند ‎90°‎ لا ينعدم: المنظورُ يُبقي الحافّتينِ
-   متفاوتتين فيبقى منه عرضٌ قليل. */
+   متفاوتتين فيبقى منه عرضٌ قليل.
+
+   والحركةُ دوريّةٌ لا تنقطع: الدورةُ تُعاد بلا نهاية، فكلُّ ما لا يعود
+   في آخرِها إلى ما كان في أوّلِها يقفز قفزةً عند كلِّ إعادة. ‎rotateY‎
+   تعود (‎360 = 0‎) والإضاءةُ تعود، أمّا الميلُ ‎rotate‎ فكان يصعد من صفرٍ
+   إلى ‎--rz‎ ثمّ يُرَدُّ إلى الصفرِ دفعةً — انتفاضةٌ تبلغ ‎٥٨°‎ كلَّ خمسِ
+   إلى عشرِ ثوانٍ في كلِّ بتلة. صار الميلُ ذهابًا وإيابًا على جيبٍ
+   ‎sin(πp)‎: صفرٌ في الطرفين، وذروتُه ‎--rz‎ في المنتصف — فالعودةُ
+   إلى البدايةِ من داخلِ الحركةِ لا من خارجِها. */
 @keyframes ptumble{
-  0%    { transform:rotate(0deg)                  rotateX(var(--rx,18deg)) rotateY(0deg);
+  0%    { transform:rotate(0deg)                   rotateX(var(--rx,18deg)) rotateY(0deg);
           filter:drop-shadow(0 1.5px 2px rgba(86,106,96,.26)) brightness(1.06) }
-  12.5% { transform:rotate(calc(var(--rz) * .14)) rotateX(var(--rx,18deg)) rotateY(45deg);
+  12.5% { transform:rotate(calc(var(--rz) * .383)) rotateX(var(--rx,18deg)) rotateY(45deg);
           filter:drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.94) }
-  25%   { transform:rotate(calc(var(--rz) * .28)) rotateX(var(--rx,18deg)) rotateY(90deg);
+  25%   { transform:rotate(calc(var(--rz) * .707)) rotateX(var(--rx,18deg)) rotateY(90deg);
           filter:drop-shadow(0 .5px 1px rgba(86,106,96,.08)) brightness(.74) }
-  37.5% { transform:rotate(calc(var(--rz) * .42)) rotateX(var(--rx,18deg)) rotateY(135deg);
+  37.5% { transform:rotate(calc(var(--rz) * .924)) rotateX(var(--rx,18deg)) rotateY(135deg);
           filter:drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.84) }
-  50%   { transform:rotate(calc(var(--rz) * .55)) rotateX(var(--rx,18deg)) rotateY(180deg);
+  50%   { transform:rotate(var(--rz))              rotateX(var(--rx,18deg)) rotateY(180deg);
           filter:drop-shadow(0 1.5px 2px rgba(86,106,96,.24)) brightness(.90) }
-  62.5% { transform:rotate(calc(var(--rz) * .68)) rotateX(var(--rx,18deg)) rotateY(225deg);
+  62.5% { transform:rotate(calc(var(--rz) * .924)) rotateX(var(--rx,18deg)) rotateY(225deg);
           filter:drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.84) }
-  75%   { transform:rotate(calc(var(--rz) * .80)) rotateX(var(--rx,18deg)) rotateY(270deg);
+  75%   { transform:rotate(calc(var(--rz) * .707)) rotateX(var(--rx,18deg)) rotateY(270deg);
           filter:drop-shadow(0 .5px 1px rgba(86,106,96,.08)) brightness(.74) }
-  87.5% { transform:rotate(calc(var(--rz) * .90)) rotateX(var(--rx,18deg)) rotateY(315deg);
+  87.5% { transform:rotate(calc(var(--rz) * .383)) rotateX(var(--rx,18deg)) rotateY(315deg);
           filter:drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.94) }
-  100%  { transform:rotate(var(--rz))             rotateX(var(--rx,18deg)) rotateY(360deg);
+  100%  { transform:rotate(0deg)                   rotateX(var(--rx,18deg)) rotateY(360deg);
           filter:drop-shadow(0 1.5px 2px rgba(86,106,96,.26)) brightness(1.06) }
 }
 /* ومن أطفأ الحركةَ في نظامِه بقيت له بتلاتٌ ساكناتٌ واضحاتٌ لا وامضات */
