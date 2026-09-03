@@ -1075,15 +1075,15 @@ img.mono { height: min(34dvh, 300px); width: auto; }
       <a class="minimap" id="d-map" href="https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7"
          target="_blank" rel="noopener">
         <svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="340" height="150" fill="#F8EEEB"/>
-          <path d="M-10 96 H350" stroke="#F1E4E0" stroke-width="15"/>
-          <path d="M118 -10 V160" stroke="#F1E4E0" stroke-width="13"/>
-          <path d="M-10 40 H350" stroke="#FEFAF9" stroke-width="7"/>
-          <path d="M242 -10 V160" stroke="#FEFAF9" stroke-width="7"/>
-          <path d="M-10 130 H350" stroke="#FEFAF9" stroke-width="5"/>
-          <path d="M62 -10 V160" stroke="#FEFAF9" stroke-width="4"/>
-          <path d="M300 -10 V160" stroke="#FEFAF9" stroke-width="4"/>
-          <g fill="#F1E4E0">
+          <rect width="340" height="150" fill="#EDF2EE"/>
+          <path d="M-10 96 H350" stroke="#DAE4DE" stroke-width="15"/>
+          <path d="M118 -10 V160" stroke="#DAE4DE" stroke-width="13"/>
+          <path d="M-10 40 H350" stroke="#F6FAF7" stroke-width="7"/>
+          <path d="M242 -10 V160" stroke="#F6FAF7" stroke-width="7"/>
+          <path d="M-10 130 H350" stroke="#F6FAF7" stroke-width="5"/>
+          <path d="M62 -10 V160" stroke="#F6FAF7" stroke-width="4"/>
+          <path d="M300 -10 V160" stroke="#F6FAF7" stroke-width="4"/>
+          <g fill="#DAE4DE">
             <rect x="12" y="50" width="38" height="34" rx="3"/>
             <rect x="74" y="50" width="32" height="34" rx="3"/>
             <rect x="132" y="52" width="44" height="30" rx="3"/>
@@ -1091,12 +1091,12 @@ img.mono { height: min(34dvh, 300px); width: auto; }
             <rect x="256" y="106" width="34" height="30" rx="3"/>
             <rect x="14" y="106" width="42" height="30" rx="3"/>
           </g>
-          <circle class="mm-ring a" cx="170" cy="88" r="34" fill="#D5AC9D" opacity=".16"/>
-          <circle class="mm-ring b" cx="170" cy="88" r="20" fill="#D5AC9D" opacity=".22"/>
+          <circle class="mm-ring a" cx="170" cy="88" r="34" fill="#5A8073" opacity=".16"/>
+          <circle class="mm-ring b" cx="170" cy="88" r="20" fill="#5A8073" opacity=".22"/>
           <g class="mm-pin">
             <path d="M170 66 a11.5 11.5 0 0 1 11.5 11.5 c0 8.4 -11.5 20.5 -11.5 20.5
                      s-11.5 -12.1 -11.5 -20.5 A11.5 11.5 0 0 1 170 66z"
-                  fill="#D5AC9D" stroke="#fff" stroke-width="2.4"/>
+                  fill="#5A8073" stroke="#fff" stroke-width="2.4"/>
             <circle cx="170" cy="77.5" r="4" fill="#fff"/>
           </g>
         </svg>
@@ -2046,23 +2046,35 @@ body.gate-done #petals{ z-index:2 !important }
 #petals u{
   /* الوضوح: العتامةُ ‎١٫٩‎ ضعفًا (وما جاوز الواحدَ يُقصّ من نفسه)،
      والحجمُ ‎١٦٨‎ بدل ‎١٢٨‎ — أي ثلثًا أكبر. */
-  opacity: calc(var(--o) * 1.9) !important;
-  width: calc(var(--s) * 168px) !important;
+  opacity: calc(var(--o) * 2.45) !important;
+  width: calc(var(--s) * 192px) !important;
   transform-style: preserve-3d;
   backface-visibility: visible;
   animation-name: ptumble3d !important;
 }
+/* الالتفافُ يُقرأ التفافًا: الوجهُ المواجهُ في ضوئِه الكامل، والحرفُ
+   أخفتُ ما يكون، والظهرُ بينهما. وأُضيفت خطوتانِ عند ‎١٢٫٥٪‎ و‎٦٢٫٥٪‎
+   فلا تقفز الإضاءةُ من طرفٍ إلى طرف. والحرفُ عند ‎٩٠°‎ لا ينعدم — قِيس
+   عرضُه عشرةَ بكسلاتٍ لا صفرًا، لأنّ المنظورَ يُبقي الحافّتينِ متفاوتتين. */
 @keyframes ptumble3d{
-  0%   { transform: rotate(0deg)                      rotateX(var(--rx,18deg)) rotateY(0deg);
-         filter: drop-shadow(0 1px 2px rgba(86,106,96,.22)) brightness(1) }
-  25%  { transform: rotate(calc(var(--rz) * .28))     rotateX(var(--rx,18deg)) rotateY(90deg);
-         filter: drop-shadow(0 1px 2px rgba(86,106,96,.10)) brightness(.86) }
-  50%  { transform: rotate(calc(var(--rz) * .55))     rotateX(var(--rx,18deg)) rotateY(180deg);
-         filter: drop-shadow(0 1px 2px rgba(86,106,96,.22)) brightness(.94) }
-  75%  { transform: rotate(calc(var(--rz) * .80))     rotateX(var(--rx,18deg)) rotateY(270deg);
-         filter: drop-shadow(0 1px 2px rgba(86,106,96,.10)) brightness(.86) }
-  100% { transform: rotate(var(--rz))                 rotateX(var(--rx,18deg)) rotateY(360deg);
-         filter: drop-shadow(0 1px 2px rgba(86,106,96,.22)) brightness(1) }
+  0%     { transform: rotate(0deg)                    rotateX(var(--rx,18deg)) rotateY(0deg);
+           filter: drop-shadow(0 1.5px 2px rgba(86,106,96,.26)) brightness(1.06) }
+  12.5%  { transform: rotate(calc(var(--rz) * .14))   rotateX(var(--rx,18deg)) rotateY(45deg);
+           filter: drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.94) }
+  25%    { transform: rotate(calc(var(--rz) * .28))   rotateX(var(--rx,18deg)) rotateY(90deg);
+           filter: drop-shadow(0 .5px 1px rgba(86,106,96,.08)) brightness(.74) }
+  37.5%  { transform: rotate(calc(var(--rz) * .42))   rotateX(var(--rx,18deg)) rotateY(135deg);
+           filter: drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.84) }
+  50%    { transform: rotate(calc(var(--rz) * .55))   rotateX(var(--rx,18deg)) rotateY(180deg);
+           filter: drop-shadow(0 1.5px 2px rgba(86,106,96,.24)) brightness(.90) }
+  62.5%  { transform: rotate(calc(var(--rz) * .68))   rotateX(var(--rx,18deg)) rotateY(225deg);
+           filter: drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.84) }
+  75%    { transform: rotate(calc(var(--rz) * .80))   rotateX(var(--rx,18deg)) rotateY(270deg);
+           filter: drop-shadow(0 .5px 1px rgba(86,106,96,.08)) brightness(.74) }
+  87.5%  { transform: rotate(calc(var(--rz) * .90))   rotateX(var(--rx,18deg)) rotateY(315deg);
+           filter: drop-shadow(0 1px 2px rgba(86,106,96,.18)) brightness(.94) }
+  100%   { transform: rotate(var(--rz))               rotateX(var(--rx,18deg)) rotateY(360deg);
+           filter: drop-shadow(0 1.5px 2px rgba(86,106,96,.26)) brightness(1.06) }
 }
 /* ومن أطفأ الحركةَ في نظامه تبقى له بتلةٌ ساكنةٌ واضحةٌ لا وامضة */
 @media (prefers-reduced-motion: reduce){
@@ -2156,6 +2168,20 @@ body.gate-done #petals{ z-index:2 !important }
 #sheet .hijri, #sheet .pdet span, #sheet .pnote{ color:#4B7167 !important } /* ٣٫٠ → ٥٫٠ */
 /* هذان على ورقٍ أفتحَ من غيرهما، فيحتاجان درجةً أعمق ليبلغا الحدَّ نفسَه */
 #sheet .verse cite, #sheet .mm-label{ color:#476D61 !important }      /* ٢٫٦ → ٤٫٩ */
+
+/* ══ مسحُ الهالات ══ بطلبٍ صريح.
+   كانت الهالةُ البيضاءُ خلف كلِّ نصٍّ حيلةً لرفعِ التباينِ على نقشِ
+   الجدار: ظلٌّ غامقٌ تحت الحرف، وأربعُ طبقاتٍ كريميّةٍ من خلفه تمسح
+   ما وراءه. وقد بطَل سببُها: التباينُ الآن مرفوعٌ في اللونِ نفسِه
+   فوقَ ‎٤٫٦‎ في كلِّ سطر، والحدُّ الرفيعُ يحدّ الحرفَ من ذاته. فالهالةُ
+   لم تعد تُضيف إلّا ضبابًا حولَ الحروف. تُمسح كلُّها — نصًّا نصًّا،
+   ومعها هالةُ الاسمينِ التي كانت أوسعَ من الجميع. */
+#sheet .bism, #sheet .news, #sheet .date, #sheet .hijri,
+#sheet .count, #sheet .verse p, #sheet .verse cite, #sheet .dua,
+#sheet .pdet, #sheet .pnote, #sheet .fam{ text-shadow:none !important }
+#sheet .names b, #sheet .event{ filter:none !important }
+/* والغلافُ كذلك: سطرا التاريخِ والتلميح */
+.c-meta .d, #hint{ text-shadow:none !important }
 #sheet .count span{ color:#4B6D74 !important }                        /* ٣٫٣ → ٥٫٠ */
 </style>
 <script>
@@ -2197,7 +2223,7 @@ body.gate-done #petals{ z-index:2 !important }
     }
     if (u) {
       u.style.setProperty('--o', (0.11 + R() * 0.21).toFixed(2));
-      u.style.setProperty('--rd', (22 + R() * 34).toFixed(1) + 's');
+      u.style.setProperty('--rd', (5 + R() * 5).toFixed(1) + 's');   /* كان ٢٢–٥٦ ثانية */
       u.style.setProperty('--rz', (-58 + R() * 116).toFixed(0) + 'deg');
       u.style.setProperty('--rx', (6 + R() * 12).toFixed(0) + 'deg');
     }
