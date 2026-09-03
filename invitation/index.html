@@ -2035,8 +2035,13 @@ body.gate-done #petals{ z-index:2 !important }
    بل واحد. والوجهُ رفيعٌ فيُعوَّض بالحدِّ لا بوزنٍ صناعيّ، وبقياسٍ
    يُقاس لا يُحزر: يُضبط أدناه بعد المدّ. */
 #sheet .names b, #sheet .names .fam{ font-family:'AMoshref Naskh', serif !important }
-#sheet .names b{ -webkit-text-stroke:.014em currentColor }
-#sheet .names .fam{ -webkit-text-stroke:.016em currentColor }
+/* ولا وزنَ صناعيًّا عليهما: الوزنُ ‎700‎ ورثاه من قاعدةِ الكوفيّ، وهو
+   في الكوفيِّ وزنٌ حقيقيٌّ مرسوم؛ أمّا هذا الوجهُ فبوزنٍ واحدٍ ‎400‎،
+   فالمتصفّحُ يُثخّن حروفَه تثخينًا حسابيًّا يطمس وصلاتِ النسخ. يُردّ
+   إلى ‎400‎، ويُرفع الحدُّ عن الاسمينِ إذ لا يحتاجه ما كان بهذا القياس
+   — ويبقى على اسمَي الأبوينِ وحدَهما لصغرِهما. */
+#sheet .names b{ font-weight:400 !important; -webkit-text-stroke:0 }
+#sheet .names .fam{ font-weight:400 !important; -webkit-text-stroke:.016em currentColor }
 /* والقياسُ: المدُّ الممتدُّ يحتاج ضِعفَ العرضِ المتاح — قِيس ‎١٫٩٩‎ عند
    ‎٣٩٠‎ و‎٢٫٠١‎ عند ‎٣٢٠‎ و‎١٫٩٣‎ عند ‎٧٦٠‎ — فالقياسُ يُنصَّف ليدخل السطرَ
    على كلِّ عرض. والاسمانِ يبقيان صدارةَ الصفحة: ‎٣٠px‎ في الهاتفِ
