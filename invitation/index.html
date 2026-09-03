@@ -2128,6 +2128,35 @@ body.gate-done #petals{ z-index:2 !important }
 #sheet .pnote{ line-height:1.3 }
 #sheet .names .fam{ margin-top:2px }
 #sheet .news{ margin-top:calc(var(--s3) + 4px) }
+
+/* ══ وضوحُ نصِّ الورقة ══ بطلبٍ صريح.
+   السببُ نفسُه الذي في الغلاف، ومعه ثالثٌ قِيس هنا: التباين.
+   قِيست نسبةُ كلِّ سطرٍ إلى الورقِ تحته فإذا الدرجاتُ الفاتحةُ كلُّها
+   دونَ حدِّ ‎WCAG‎ للنصِّ الصغير (‎٤٫٥‎):
+     مصدرُ الآية ‎٢٫٦١‎ · تسميةُ الخريطة ‎٢٫٦٩‎ · الهجريُّ ‎٢٫٩٨‎ ·
+     تسمياتُ الموعد ‎٣٫١٠‎ · ممنوعُ الأطفال ‎٣٫١٧‎ · أسماءُ العدّاد ‎٣٫٢٧‎ ·
+     الدعاءُ ‎٣٫٥٩‎ · البسملةُ والافتتاحُ ‎٣٫٨٢‎.
+   والغامقةُ كانت سليمةً أصلًا: العنوانُ ‎٦٫٣٦‎ والتاريخُ ‎٦٫٠٨‎ وأرقامُ
+   العدّادِ ‎٦٫١٣‎ والآيةُ ‎٤٫٩٩‎ — فلم تُمسّ، ويبقى التدرّجُ بينها وبين
+   ما دونها كما صُمّم.
+   فالفاتحُ يُعمَّق داخلَ أسرتِه اللونيّةِ نفسِها حتّى يجاوزَ ‎٤٫٥‎،
+   ويُضاف الحدُّ الرفيعُ ‎٠٫٠١٦em‎ الذي جُرّب في الغلاف — لا وزنٌ
+   صناعيٌّ: العائلةُ بلا وزنٍ ثقيل، و‎700‎ يطمس وصلاتِ النسخ.
+   والاسمانِ واسما الأبوينِ خارجَ هذا كلِّه: خطُّهما ‎Reem Kufi‎ ثخينٌ
+   أصلًا، والحدُّ عليه يُسمّنه بلا داعٍ. */
+#sheet .bism, #sheet .news, #sheet .event, #sheet .date, #sheet .hijri,
+#sheet .count, #sheet .count b, #sheet .count span,
+#sheet .verse p, #sheet .verse p *, #sheet .verse cite,
+#sheet .dua, #sheet .pdet, #sheet .pdet b, #sheet .pdet span,
+#sheet .pnote, #sheet .mm-label{
+  -webkit-text-stroke: .016em currentColor;
+}
+/* والتعميقُ: كلُّ لونٍ رُفع إلى ما فوق ‎٤٫٥‎ بالحساب لا بالحدس */
+#sheet .bism, #sheet .news, #sheet .dua{ color:#4B7167 !important }   /* ٣٫٨ → ٤٫٨ */
+#sheet .hijri, #sheet .pdet span, #sheet .pnote{ color:#4B7167 !important } /* ٣٫٠ → ٥٫٠ */
+/* هذان على ورقٍ أفتحَ من غيرهما، فيحتاجان درجةً أعمق ليبلغا الحدَّ نفسَه */
+#sheet .verse cite, #sheet .mm-label{ color:#476D61 !important }      /* ٢٫٦ → ٤٫٩ */
+#sheet .count span{ color:#4B6D74 !important }                        /* ٣٫٣ → ٥٫٠ */
 </style>
 <script>
 /* المطر:
