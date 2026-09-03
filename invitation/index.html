@@ -2009,8 +2009,11 @@ body.dragging .half{ transition:none !important }
    أثناءِ تأخيرٍ موجبٍ ترسم إطارَ البدايةِ فوقَ الحافّة، لا موضعَها
    الساكنَ ‎top:0‎ الذي كان يصفُّهنّ معلّقاتٍ في أعلى الشاشة. */
 
-#petals i{                                   /* ① الهبوط */
-  position:absolute; top:0; left:var(--x);
+#petals i{                                   /* ① الهبوطُ والانتشار */
+  /* المنبتُ واحدٌ لجميعِ البتلات: منتصفُ أعلى الشاشة. ثمّ تتفرّق كلُّ
+     واحدةٍ إلى موضعِها ‎--dx‎ في أثناءِ نزولِها. وكان لكلِّ بتلةٍ عمودٌ
+     ثابتٌ تنزل فيه، فيُقرأ مطرًا موازيًا لا منتشرًا. */
+  position:absolute; top:0; left:50%;
   animation:pfall var(--d) linear var(--dl) infinite backwards;
   will-change:transform;
 }
@@ -2035,9 +2038,15 @@ body.dragging .half{ transition:none !important }
   from{ transform:translate3d(-1.7vw,0,0) }
   to  { transform:translate3d( 1.7vw,0,0) }
 }
+/* الهبوطُ مطّردٌ والانتشارُ متمهّل: المسافةُ الرأسيّةُ عند كلِّ خطوةٍ
+   هي نصيبُها من ‎136vh‎ بالضبط (‎−19 + 0.35×136 = 28‎ وهكذا) فتبقى
+   السرعةُ الرأسيّةُ واحدةً لا تتعجّل ولا تتباطأ. أمّا الأفقيُّ فيقطع
+   ‎٦٢٪‎ من طريقِه في الثلثِ الأوّلِ ثمّ يهدأ — كالمنتشرِ من نبعٍ. */
 @keyframes pfall{
-  from{ transform:translate3d(0,-19vh,0) }
-  to  { transform:translate3d(0,117vh,0) }
+  0%   { transform:translate3d(0,                            -19vh, 0) }
+  35%  { transform:translate3d(calc(var(--dx, 0px) * .62),  28.6vh, 0) }
+  70%  { transform:translate3d(calc(var(--dx, 0px) * .89),  76.2vh, 0) }
+  100% { transform:translate3d(var(--dx, 0px),               117vh, 0) }
 }
 @keyframes psway{
   from{ transform:translate3d(calc(var(--sw) * -1),0,0) }
@@ -2271,7 +2280,10 @@ body.dragging .half{ transition:none !important }
        وتفاوتُ المدّةِ أيضًا هو ما يُفرّق الرفيقتينِ بعد حين. */
     var fall = 40 + (1 - near) * 38;                /* ٤٠ إلى ٧٨ ثانية */
 
+    /* الموضعُ يُكتب انحرافًا عن المنتصفِ لا موضعًا مطلقًا، فهو غايةُ
+       الانتشارِ لا مبدؤه. */
     petal.style.setProperty('--x', x.toFixed(2) + '%');
+    petal.style.setProperty('--dx', (x - 50).toFixed(2) + 'vw');
     petal.style.setProperty('--d', fall.toFixed(1) + 's');
     petal.style.setProperty('--s', size.toFixed(3));
 
