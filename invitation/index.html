@@ -1956,11 +1956,14 @@ body.dragging .half{ transition:none !important }
     transparent 40%, rgba(255,255,255,0) 46%, rgba(255,255,255,.62) 50%,
     rgba(255,255,255,0) 54%, transparent 60%);
   mix-blend-mode:screen;
-  animation:rosebeam 12s ease-in-out infinite;
+  /* الدورةُ ستُّ ثوانٍ: أربعٌ يعبر فيها الشعاعُ من طرفٍ إلى طرف، ثمّ
+     ثانيتانِ خارجَ الحرفِ ساكنًا، ثمّ يعود من أوّله. فبين اختفائِه
+     وظهورِه ثانيتانِ بالضبط، لا أكثر. */
+  animation:rosebeam 6s ease-in-out infinite;
 }
 @keyframes rosebeam{
-  0%,64%{ transform:translateX(-48%) }
-  100%  { transform:translateX(48%) }
+  0%          { transform:translateX(-48%) }
+  66.667%,100%{ transform:translateX( 48%) }
 }
 @media (prefers-reduced-motion:reduce){ .brose b{ animation:none; opacity:0 } }
 @keyframes roseturn{
