@@ -1983,7 +1983,11 @@ body.dragging .half{ transition:none !important }
 
 #petals{
   position:fixed; inset:0; overflow:hidden; pointer-events:none;
-  opacity:0; transition:opacity 2.4s ease 1.2s;
+  /* ظاهرةٌ من اللحظةِ الأولى. كان في الأصلِ ‎opacity:0‎ يرفعه ‎.revealed‎
+     بعد الفتحِ في تدرّجٍ مدّتُه ثانيتانِ ونصف، ثمّ أُبطل ذلك برقعةٍ
+     ‎opacity:1 !important‎ لأنّ المطرَ يُقصد أن يُرى على الغلافِ أيضًا.
+     فالمكتوبُ هنا هو المعمولُ به فعلًا، لا الأصلُ المهجور. */
+  opacity:1;
   /* المنظورُ على الحاوي: بلا هذا يبقى الالتفافُ تسطيحًا هندسيًّا،
      ومعه تكبر الحافّةُ القريبةُ وتصغر البعيدةُ في الوقتِ نفسِه —
      وذلك وحدَه ما يقول للعينِ إنّ للشيءِ سُمكًا. */
@@ -1994,7 +1998,6 @@ body.dragging .half{ transition:none !important }
   contain:layout paint style;
   z-index:11;                 /* على الغلاف: أمامَ البوابة */
 }
-.revealed #petals{ opacity:1 }
 /* وبعدَ الفتح: فوقَ الورقةِ البيضاءِ (‎#sheet‎ عند ‎2‎) وفوقَ الحُبيبات
    (‎#grain‎ عند ‎3‎). ويلزم من ذلك مرورُها على الكلامِ أيضًا، إذ البياضُ
    والنصُّ عنصرٌ واحد. */
@@ -2253,12 +2256,24 @@ body.dragging .half{ transition:none !important }
     var x = 2 + cell * (index + 0.5) + (rnd() - 0.5) * 1.7 * cell;
     x = Math.min(98.5, Math.max(1.5, x));
 
-    /* ② مدّةُ الهبوط: تفاوتُها هو ما يُفرّق الرفيقتينِ بعد حين */
-    var fall = 34 + rnd() * 40;                     /* ثانية */
+    /* ② القُربُ: قدرٌ واحدٌ تتبعه أربعةُ مقادير، فيُقرأ الاختلافُ
+          بُعدًا في المشهدِ لا مجرّدَ اختلافٍ في القياس.
+          ‎near = 0‎ أبعدُ ما تكون، ‎near = 1‎ أقربُ ما تكون.
+          والأُسُّ ‎1.15‎ يميل بالتوزيعِ إلى الصغيرِ ميلًا يسيرًا فتكثر
+          البعيدةُ قليلًا — والميلُ الشديدُ يُفرغ السماءَ من الظاهرات. */
+    var near = Math.pow(rnd(), 1.15);
+
+    /* القياس: أقصاه هو المعمولُ به اليومَ (‎0.22 × 192px ≈ 42px‎)،
+       وأدناه أقلُّ من ثُلثِه — فالتفاوتُ يُرى. */
+    var size = 0.075 + near * 0.145;                /* ١٤ إلى ٤٢ بكسلًا */
+
+    /* الهبوط: القريبةُ أسرعُ والبعيدةُ أبطأ — وهو ما يصنع العمق.
+       وتفاوتُ المدّةِ أيضًا هو ما يُفرّق الرفيقتينِ بعد حين. */
+    var fall = 40 + (1 - near) * 38;                /* ٤٠ إلى ٧٨ ثانية */
 
     petal.style.setProperty('--x', x.toFixed(2) + '%');
     petal.style.setProperty('--d', fall.toFixed(1) + 's');
-    petal.style.setProperty('--s', (0.085 + rnd() * 0.135).toFixed(3));
+    petal.style.setProperty('--s', size.toFixed(3));
 
     /* ③ لحظةُ عبورِ الحافّة: سلّمٌ مخلوطٌ من ‎−11‎ إلى ‎+23‎ ثانية،
           مع ميلٍ يسيرٍ يجعل الوسطى تسبق الطرفيّة، واضطرابٍ يمنع
@@ -2273,11 +2288,13 @@ body.dragging .half{ transition:none !important }
     petal.style.setProperty('--dl', (cross - EDGE * fall).toFixed(2) + 's');
 
     if (tilt) {
-      tilt.style.setProperty('--sw', (18 + rnd() * 28).toFixed(0) + 'px');
+      /* الميلُ الأفقيُّ بالبكسلِ: القريبةُ تقطع مسافةً أوسعَ في العين */
+      tilt.style.setProperty('--sw', (14 + near * 34).toFixed(0) + 'px');
       tilt.style.setProperty('--sd', (9 + rnd() * 12).toFixed(1) + 's');
     }
     if (blade) {
-      blade.style.setProperty('--o',  (0.11 + rnd() * 0.21).toFixed(2));
+      /* والبعيدةُ أخفتُ: هواءُ المسافةِ بينها وبين العين */
+      blade.style.setProperty('--o',  (0.13 + near * 0.20).toFixed(2));
       blade.style.setProperty('--rd', (5 + rnd() * 5).toFixed(1) + 's');
       blade.style.setProperty('--rz', (-58 + rnd() * 116).toFixed(0) + 'deg');
       blade.style.setProperty('--rx', (6 + rnd() * 12).toFixed(0) + 'deg');
