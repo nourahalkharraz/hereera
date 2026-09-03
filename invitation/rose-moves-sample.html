@@ -24,29 +24,29 @@ h1{margin:0;font-size:clamp(28px,7vw,42px);line-height:1.3;-webkit-text-stroke:.
 .beam{display:none}
 
 /* ١ تنفّس */
-[data-k=breath] .hold{animation:breath 8s ease-in-out infinite}
-@keyframes breath{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.06)}}
+[data-k=breath] .hold{animation:breath 4s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:translate(-50%,-50%) scale(.90)}50%{transform:translate(-50%,-50%) scale(1.14)}}
 
 /* ٢ تفتّح */
-[data-k=bloom] .hold{animation:bloom 3s cubic-bezier(.2,.8,.25,1) both}
-[data-k=bloom] .hold i{animation:turn 46s linear infinite, fadein 2.2s ease-out both}
-@keyframes bloom{from{transform:translate(-50%,-50%) scale(.18) rotate(-40deg)}to{transform:translate(-50%,-50%) scale(1) rotate(0)}}
-@keyframes fadein{from{opacity:0}to{opacity:.8}}
+[data-k=bloom] .hold{animation:bloom 7s cubic-bezier(.2,.8,.25,1) infinite}
+@keyframes bloom{0%{transform:translate(-50%,-50%) scale(.12) rotate(-70deg);opacity:0}8%{opacity:1}42%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}78%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}100%{transform:translate(-50%,-50%) scale(.12) rotate(60deg);opacity:0}}
 
 /* ٣ ضوء */
 [data-k=light] .beam{display:block;position:absolute;inset:-20% -60%;pointer-events:none;
-  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.0) 46%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 54%,transparent 60%);
-  animation:sweep 12s ease-in-out infinite;mix-blend-mode:screen}
-@keyframes sweep{0%,70%{transform:translateX(-45%)}100%{transform:translateX(45%)}}
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.0) 44%,rgba(255,255,255,.95) 50%,rgba(255,255,255,0) 56%,transparent 62%);
+  animation:sweep 5s ease-in-out infinite;mix-blend-mode:screen}
+@keyframes sweep{0%,45%{transform:translateX(-48%)}100%{transform:translateX(48%)}}
 
 /* ٤ مع الجهاز */
-[data-k=tilt] .hold{transform:translate(calc(-50% + var(--px,0) * 9%),calc(-50% + var(--py,0) * 9%));transition:transform .18s ease-out}
+[data-k=tilt] .hold{transform:translate(calc(-50% + var(--px,0) * 22%),calc(-50% + var(--py,0) * 22%));transition:transform .22s ease-out}
+[data-k=tilt]:not(.live) .hold{animation:wander 9s ease-in-out infinite}
+@keyframes wander{0%{transform:translate(-72%,-50%)}25%{transform:translate(-50%,-72%)}50%{transform:translate(-28%,-50%)}75%{transform:translate(-50%,-28%)}100%{transform:translate(-72%,-50%)}}
 
 /* ٥ يُمطر */
 .drops{position:absolute;inset:0;pointer-events:none}
-.drop{position:absolute;width:14px;height:14px;background:center/contain no-repeat;left:50%;top:70px;
-  animation:drop 3.4s cubic-bezier(.3,.1,.7,1) forwards}
-@keyframes drop{0%{transform:translate(-50%,0) rotate(0);opacity:0}12%{opacity:.85}100%{transform:translate(calc(-50% + var(--dx)),165px) rotate(var(--rz));opacity:0}}
+.drop{position:absolute;width:26px;height:26px;background:center/contain no-repeat;left:50%;top:70px;
+  animation:drop 3.2s cubic-bezier(.3,.1,.7,1) forwards}
+@keyframes drop{0%{transform:translate(-50%,0) rotate(0) scale(.4);opacity:0}10%{opacity:1;transform:translate(-50%,6px) rotate(20deg) scale(1)}100%{transform:translate(calc(-50% + var(--dx)),170px) rotate(var(--rz));opacity:0}}
 
 .note{margin-top:30px;padding-top:18px;border-top:1px solid var(--hair);font-size:clamp(13px,3.4vw,14.5px);line-height:1.9;color:var(--ink-2)}
 .note b{color:var(--ink);font-weight:400}
@@ -75,7 +75,7 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
         <div class="mono"><div class="hold"><i></i></div><div class="beam"></div></div>
         <div class="drops"></div>
       </div>
-      <h2>١ · تنفّس</h2><p>تكبر وتصغر ‎١٫٠٠ → ١٫٠٦‎ كلَّ ثماني ثوانٍ فوقَ الدوران</p>
+      <h2>١ · تنفّس</h2><p>تكبر وتصغر ‎٠٫٩٠ → ١٫١٤‎ كلَّ أربعِ ثوانٍ — مبالَغٌ فيه هنا ليُرى، ويُهدَّأ في الدعوة</p>
     </article>
     <article class="tile" data-k="bloom">
       <div class="stage">
@@ -83,7 +83,7 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
         <div class="mono"><div class="hold"><i></i></div><div class="beam"></div></div>
         <div class="drops"></div>
       </div>
-      <h2>٢ · تفتّح عند الفتح</h2><p>مرّةً واحدة: تبدأ منضمّةً وتتفتّح في ثلاثِ ثوانٍ — اضغطي الشعارَ لإعادتِها</p>
+      <h2>٢ · تفتّح عند الفتح</h2><p>تتفتّح من مغلقةٍ إلى كاملة. هنا تُعاد كلَّ سبعِ ثوانٍ لتُرى، وفي الدعوةِ تقع مرّةً عند الفتح</p>
     </article>
     <article class="tile" data-k="light">
       <div class="stage">
@@ -91,7 +91,7 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
         <div class="mono"><div class="hold"><i></i></div><div class="beam"></div></div>
         <div class="drops"></div>
       </div>
-      <h2>٣ · ضوءٌ يمرّ</h2><p>شعاعٌ ناعمٌ يعبر الوردةَ كلَّ اثنتي عشرةَ ثانية</p>
+      <h2>٣ · ضوءٌ يمرّ</h2><p>شعاعٌ يعبر الوردةَ كلَّ خمسِ ثوانٍ — قويٌّ هنا ليُرى، ويُخفَّف في الدعوة</p>
     </article>
     <article class="tile" data-k="tilt">
       <div class="stage">
@@ -99,7 +99,7 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
         <div class="mono"><div class="hold"><i></i></div><div class="beam"></div></div>
         <div class="drops"></div>
       </div>
-      <h2>٤ · مع الجهاز</h2><p>الوردةُ تنزاح مع ميلِ الهاتف — والحرفُ نافذةٌ عليها. على الحاسوب: حرّكي الماوس</p>
+      <h2>٤ · مع الجهاز</h2><p>تتجوّل وحدَها حتّى يصلَ مُدخَل: ميلُ الهاتفِ أو الماوس — فتتبعه. الحرفُ نافذةٌ والوردةُ وراءها</p>
     </article>
     <article class="tile" data-k="rain">
       <div class="stage">
@@ -107,7 +107,7 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
         <div class="mono"><div class="hold"><i></i></div><div class="beam"></div></div>
         <div class="drops"></div>
       </div>
-      <h2>٥ · الشعارُ يُمطر</h2><p>بتلةٌ تنفصل من الوردةِ كلَّ حينٍ وتنزل</p>
+      <h2>٥ · الشعارُ يُمطر</h2><p>بتلةٌ تنفصل من الوردةِ كلَّ ثانيةٍ تقريبًا وتنزل من الشعار</p>
     </article>
   </div>
   <p class="note"><span class="rule"></span>
@@ -124,7 +124,8 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
 
   /* ٤ الميل: ماوسٌ على الحاسوب، حسّاسٌ على الهاتف */
   var tl=document.querySelector('[data-k=tilt] .hold');
-  function set(px,py){px=Math.max(-1,Math.min(1,px));py=Math.max(-1,Math.min(1,py));tl.style.setProperty('--px',px.toFixed(3));tl.style.setProperty('--py',py.toFixed(3));}
+  var tileT=document.querySelector('[data-k=tilt]');
+  function set(px,py){ tileT.classList.add('live');px=Math.max(-1,Math.min(1,px));py=Math.max(-1,Math.min(1,py));tl.style.setProperty('--px',px.toFixed(3));tl.style.setProperty('--py',py.toFixed(3));}
   window.addEventListener('pointermove',function(e){set((e.clientX/innerWidth-.5)*2,(e.clientY/innerHeight-.5)*2);},{passive:true});
   function onOri(e){ if(e.gamma==null) return; set(e.gamma/25, (e.beta-45)/25); }
   function arm(){ window.addEventListener('deviceorientation',onOri,true); }
@@ -141,11 +142,11 @@ button.gy{font:inherit;color:var(--ink);background:none;border:1px solid var(--h
   function spawn(){
     var d=document.createElement('span');d.className='drop';
     d.style.backgroundImage='url('+imgs[Math.floor(Math.random()*imgs.length)]+')';
-    d.style.setProperty('--dx',((Math.random()-.5)*70).toFixed(0)+'px');
+    d.style.setProperty('--dx',((Math.random()-.5)*110).toFixed(0)+'px');
     d.style.setProperty('--rz',((Math.random()-.5)*300).toFixed(0)+'deg');
     d.style.top=(58+Math.random()*24)+'px';
     box.appendChild(d); setTimeout(function(){d.remove();},3500);
   }
-  spawn(); setInterval(spawn,2200);
+  spawn(); setInterval(spawn,900);
 })();
 </script>
