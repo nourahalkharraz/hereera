@@ -1051,7 +1051,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
          من DATA في كلّ الأحوال، فإن عُدّل DATA فليُعدَّل هذا معه. -->
     <p class="news" id="d-news">بمشيئة الله وتوفيقه · يسرّنا دعوتكم لحضور</p>
     <p class="event" id="d-event">حفل عقد قران</p>
-    <h1 class="names" id="d-names" aria-label="سند ونورة"><b class="one">سند<span class="fam">عبدالله الفايز</span></b><i>|</i><b class="two">نورة<span class="fam">عبدالوهاب الخرّاز</span></b></h1>
+    <h1 class="names" id="d-names" aria-label="سند ونورة"><b class="one">ســـــــــنـد<span class="fam">عبدالله الفايز</span></b><i>|</i><b class="two">نـــــــــورة<span class="fam">عبدالوهاب الخرّاز</span></b></h1>
 
     <div class="when">
       <hr>
@@ -1158,6 +1158,10 @@ var DATA = {
   one:   "نـــورة",
   oneFam:"عبدالوهاب الخرّاز",  /* يظهر تحت الاسم مباشرةً */
   two:   "ســـند",
+  /* إملاءُ الداخلِ بعد اختيارِ «المدِّ الممتدّ» من ورقةِ النموذج.
+     الغلافُ يبقى على ‎stretchTo‎ و‎kashida‎ كما هو. */
+  twoIn: "ســـــــــنـد",
+  oneIn: "نـــــــــورة",
   twoFam:"عبدالله الفايز",
   join:  "|",            /* الرابط بين الاسمين */
   kashida: 7,            /* مقدار المدّ الكلّي لكل اسم على الغلاف */
@@ -1223,12 +1227,15 @@ $("#d-news").innerHTML  = BEFORE ? DATA.news  : (DATA.newsAfter  || DATA.news);
 var EV_TXT = BEFORE ? DATA.event : (DATA.eventAfter || DATA.event);
 $("#d-event").textContent = EV_TXT;
 $("#d-event").setAttribute("data-t", EV_TXT);   /* اللمعة تُقصّ على النصّ نفسه */
-/* داخل الدعوة بلا مدّ: التطويل في Reem Kufi يبتلع سِنّةَ النون الوسطيّة
-   (تبقى نقطةٌ فوق شريطٍ مسطّح) فيُقرأ «سند» ناقصاً. المدُّ للغلاف وحده. */
+/* كان الداخلُ بلا مدّ، وسببُه أنّ التطويلَ في ‎Reem Kufi‎ يبتلع سِنّةَ
+   النونِ الوسطيّةِ فتبقى نقطةٌ فوق شريطٍ مسطّحٍ ويُقرأ «سند» ناقصاً.
+   وقد زال السببُ بزوالِ الخطّ: الاسمانِ الآن على ‎AMoshref Naskh‎ —
+   خطِّ الورقةِ الباقي — وسِنّةُ النونِ فيه تنجو من المدِّ مهما طال،
+   جُرّب في ورقةِ النموذجِ على خمسِ درجاتٍ فاختيرت أطولُها. */
 function bare(w) { return w.replace(/ـ/g, ""); }
-$("#d-names").innerHTML = '<b class="one">' + bare(DATA.two)
+$("#d-names").innerHTML = '<b class="one">' + DATA.twoIn
   + '<span class="fam">' + DATA.twoFam + '</span></b><i>' + DATA.join
-  + '</i><b class="two">' + bare(DATA.one)
+  + '</i><b class="two">' + DATA.oneIn
   + '<span class="fam">' + DATA.oneFam + '</span></b>';
 $("#d-date").textContent = (BEFORE && DATA.day ? DATA.day + " " : "") + DATA.date;
 $("#d-hijri").textContent = DATA.hijri || "";
@@ -2024,7 +2031,17 @@ body.gate-done #petals{ z-index:2 !important }
    ويُستثنى اسما العروسين وحدَهما فيبقيان على Reem Kufi.
    والغلافُ خارجَ النطاق كلِّه: كلُّ محدِّدٍ هنا مقيَّدٌ بـ‎#sheet‎. */
 #sheet, #sheet *{ font-family:'AMoshref Naskh', serif !important }
-#sheet .names b, #sheet .names .fam{ font-family:'Reem Kufi', system-ui, sans-serif !important }
+/* الاسمانِ والأبوانِ على خطِّ الورقةِ نفسِه — لم يعد في الصفحةِ خطّانِ
+   بل واحد. والوجهُ رفيعٌ فيُعوَّض بالحدِّ لا بوزنٍ صناعيّ، وبقياسٍ
+   يُقاس لا يُحزر: يُضبط أدناه بعد المدّ. */
+#sheet .names b, #sheet .names .fam{ font-family:'AMoshref Naskh', serif !important }
+#sheet .names b{ -webkit-text-stroke:.014em currentColor }
+#sheet .names .fam{ -webkit-text-stroke:.016em currentColor }
+/* والقياسُ: المدُّ الممتدُّ يحتاج ضِعفَ العرضِ المتاح — قِيس ‎١٫٩٩‎ عند
+   ‎٣٩٠‎ و‎٢٫٠١‎ عند ‎٣٢٠‎ و‎١٫٩٣‎ عند ‎٧٦٠‎ — فالقياسُ يُنصَّف ليدخل السطرَ
+   على كلِّ عرض. والاسمانِ يبقيان صدارةَ الصفحة: ‎٣٠px‎ في الهاتفِ
+   مقابل ‎١٣٫٥‎ لاسمَي الأبوينِ و‎٢٤‎ للعنوان. */
+#sheet .names{ font-size: clamp(22px, 7.6vw, 44px) !important }
 /* والآيةُ تبقى على Amiri: هو وجهُ نسخٍ مصمَّمٌ للتشكيل، وخطوطُ العرض
    الهندسيّةُ ترسم علاماتِه أفقيّةً متلاصقة. أمّا سطرُ المصدر تحتها
    فليس قرآنًا، فيتبع خطَّ الورقة. */
