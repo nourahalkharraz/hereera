@@ -2304,6 +2304,22 @@ body.gate-done #petals{ z-index:4 }
 /* والغلافُ كذلك: سطرا التاريخِ والتلميح */
 .c-meta .d, #hint{ text-shadow:none !important }
 #sheet .count span{ color:#4B6D74 !important }                        /* ٣٫٣ → ٥٫٠ */
+/* توحيدُ الجزءِ العلويّ على خطِّ الورقة: كان ‎Amiri‎ يتسرّب إليه مرّتين —
+   في العنوانِ وفي اسمَي الأبوين — فيتنافر نسخانِ متقاربان. العنوانُ
+   يأخذ وزنَه من الحجمِ والحدِّ لا من خطٍّ آخر، واسما الأبوينِ يعودان
+   لخطِّ الورقةِ النظيف. والجزءُ السفليّ (الموعد، المكان، التنويه) يبقى
+   ‎Amiri‎ لأنّه نصُّ معلوماتٍ يُقرأ. */
+#sheet .event{ font-family:'AMoshref Naskh', serif !important; font-weight:500 !important;
+  font-size:clamp(30px, 8.2vw, 38px) !important; -webkit-text-stroke:.016em currentColor !important }
+#sheet .names .fam{ font-family:'AMoshref Naskh', serif !important; font-weight:400 !important;
+  font-size:clamp(14px, 3.7vw, 15.5px) !important; -webkit-text-stroke:.02em currentColor !important }
+/* استقرارُ الوزن: السطرُ التمهيديّ كان أرفعَ وأصغرَ من جيرانه */
+#sheet .news{ font-size:clamp(14.5px, 3.9vw, 16px) !important; -webkit-text-stroke:.02em currentColor !important }
+#sheet .bism{ -webkit-text-stroke:.018em currentColor !important }
+/* تباعدُ الكلماتِ في ‎AMoshref‎ ضيّقٌ أصلًا، فيُوسَّع في الجزءِ العلويّ */
+#sheet .bism, #sheet .news, #sheet .date, #sheet .hijri, #sheet .verse p,
+#sheet .verse cite, #sheet .dua, #sheet .event, #sheet .names .fam{ word-spacing:.14em }
+#sheet .date{ word-spacing:.22em }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
