@@ -1052,7 +1052,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
         </svg>
         <span class="mm-label">افتح الموقع على الخرائط</span>
       </a>
-      <p class="pnote"><span>نرجو أن تكون الأمسية للكبار، ونعتذر بلطفٍ عن اصطحاب الأطفال</span><span>الجوّالات معكم لا نمنعها، لكن منعًا للإحراج نرجو عدم التصوير</span></p>
+      <p class="pnote"><em>تنويه</em><span>الدعوة للكبار فقط، ونعتذر عن استقبال الأطفال</span><span>الجوّالات مسموحة، ونرجو عدم التصوير حرصًا على خصوصية الحضور</span></p>
       <p class="seen" id="d-seen" hidden></p>
     </section>
 
@@ -1121,7 +1121,7 @@ var DATA = {
   time:  "الساعة ٧ مساءً",
   venue: "فيلا عبدالوهاب الخرّاز",
   maps:  "https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7",
-  note:  "<span>نرجو أن تكون الأمسية للكبار، ونعتذر بلطفٍ عن اصطحاب الأطفال</span><span>الجوّالات معكم لا نمنعها، لكن منعًا للإحراج نرجو عدم التصوير</span>",
+  note:  "<em>تنويه</em><span>الدعوة للكبار فقط، ونعتذر عن استقبال الأطفال</span><span>الجوّالات مسموحة، ونرجو عدم التصوير حرصًا على خصوصية الحضور</span>",
   /* عدّادُ من فتح الدعوة. اجعليه "" لإخفائه. المفتاحُ اسمٌ فريدٌ يُحفظ عنده
      الرقمُ في خدمةٍ مجّانيّة — لا تُغيّريه بعد التوزيع وإلّا بدأ العدُّ من صفر. */
   counter: "sanad-noura-2026-opens",
@@ -2030,8 +2030,12 @@ body.dragging .half{ transition:none !important }
    والضوءُ المارُّ فيها — ويبقى الحرفُ وحدَه. */
 .brose{ display:none !important }
 /* بطلبٍ صريح: ملاحظتان بدل «ممنوع الأطفال» — كلُّ واحدةٍ سطرٌ مستقلّ. */
-#sheet .pnote span{ display:block; line-height:1.55 }
-#sheet .pnote span + span{ margin-top:.55em }
+#sheet .pnote{ font-family:'Amiri', serif !important; font-size:clamp(15px, 4vw, 17px) !important;
+  color:#3F5F58 !important; -webkit-text-stroke:.012em currentColor; padding-top:1.1em }
+#sheet .pnote em{ display:block; font-style:normal; font-family:'AMoshref Naskh', serif !important;
+  font-size:.82em; letter-spacing:.06em; color:#6E938A !important; margin-bottom:.55em }
+#sheet .pnote span{ display:block; line-height:1.6 }
+#sheet .pnote span + span{ margin-top:.45em }
 /* الدعاء: كشيدةٌ واحدةٌ في كلِّ سطرٍ — في «المولى» و«الوفاق» — على
    عادةِ النسخِ لا كشيدتانِ متجاورتان. وقياسٌ أكبرُ قليلًا:
    ‎١٨–٢١‎ بدل ‎١٤–١٦٫٥‎. */
