@@ -2020,10 +2020,12 @@ body.dragging .half{ transition:none !important }
   font-size:clamp(25px, 6.8vw, 32px) !important }
 /* بطلبٍ صريح: «حفل عقد قران» بوجهِ الرقعة (Aref Ruqaa) المضمَّنِ أصلًا
    للغلافِ قبل أن يُبدَّل — عنوانٌ قصيرٌ يليقُ به خطُّ عنوان. */
-/* بطلبٍ صريح: خطُّ عناوينَ يصلح أن يتكرّر في باقي الدعوة — Reem Kufi
-   (كوفيٌّ مضمَّنٌ أصلًا). يُنزَّل قياسُه قليلًا لأنّ الكوفيَّ أعرضُ من الرقعة. */
-#sheet .event{ font-family:'Reem Kufi', sans-serif !important; font-weight:700 !important;
-  font-size:clamp(22px, 6vw, 28px) !important; letter-spacing:.01em }
+/* بطلبٍ صريح: لا Reem Kufi. العنوانُ بـ Amiri — نسخٌ مصحفيٌّ مضمَّنٌ أصلًا
+   وعليه اسما الأبوين، فيتّحد به العنوانُ والأسماءُ الصغيرة، ويصلح أن
+   يمتدَّ للعناوينِ الأخرى. حدٌّ خفيفٌ يعوّض غيابَ وزنٍ أثقلَ مضمَّن. */
+#sheet .event{ font-family:'Amiri', serif !important; font-weight:400 !important;
+  font-size:clamp(26px, 7.2vw, 34px) !important; letter-spacing:0;
+  -webkit-text-stroke:.022em currentColor !important }
 /* بطلبٍ صريح: لا وردةَ داخلَ الشعار. تُخفى النافذةُ كلُّها — الزهرةُ
    والضوءُ المارُّ فيها — ويبقى الحرفُ وحدَه. */
 .brose{ display:none !important }
