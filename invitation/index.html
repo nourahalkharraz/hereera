@@ -1025,15 +1025,15 @@ img.mono { height: min(34dvh, 300px); width: auto; }
       <a class="minimap" id="d-map" href="https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7"
          target="_blank" rel="noopener">
         <svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="340" height="150" fill="#EDF2EE"/>
-          <path d="M-10 96 H350" stroke="#DAE4DE" stroke-width="15"/>
-          <path d="M118 -10 V160" stroke="#DAE4DE" stroke-width="13"/>
-          <path d="M-10 40 H350" stroke="#F6FAF7" stroke-width="7"/>
-          <path d="M242 -10 V160" stroke="#F6FAF7" stroke-width="7"/>
+          <rect width="340" height="150" fill="#E2EBE5"/>
+          <path d="M-10 96 H350" stroke="#C6D6CC" stroke-width="15"/>
+          <path d="M118 -10 V160" stroke="#C6D6CC" stroke-width="13"/>
+          <path d="M-10 40 H350" stroke="#F4F8F5" stroke-width="7"/>
+          <path d="M242 -10 V160" stroke="#F4F8F5" stroke-width="7"/>
           <path d="M-10 130 H350" stroke="#F6FAF7" stroke-width="5"/>
           <path d="M62 -10 V160" stroke="#F6FAF7" stroke-width="4"/>
           <path d="M300 -10 V160" stroke="#F6FAF7" stroke-width="4"/>
-          <g fill="#DAE4DE">
+          <g fill="#CBDAD1">
             <rect x="12" y="50" width="38" height="34" rx="3"/>
             <rect x="74" y="50" width="32" height="34" rx="3"/>
             <rect x="132" y="52" width="44" height="30" rx="3"/>
@@ -1041,12 +1041,12 @@ img.mono { height: min(34dvh, 300px); width: auto; }
             <rect x="256" y="106" width="34" height="30" rx="3"/>
             <rect x="14" y="106" width="42" height="30" rx="3"/>
           </g>
-          <circle class="mm-ring a" cx="170" cy="88" r="34" fill="#5A8073" opacity=".16"/>
-          <circle class="mm-ring b" cx="170" cy="88" r="20" fill="#5A8073" opacity=".22"/>
+          <circle class="mm-ring a" cx="170" cy="88" r="36" fill="#4B7167" opacity=".20"/>
+          <circle class="mm-ring b" cx="170" cy="88" r="21" fill="#4B7167" opacity=".28"/>
           <g class="mm-pin">
             <path d="M170 66 a11.5 11.5 0 0 1 11.5 11.5 c0 8.4 -11.5 20.5 -11.5 20.5
                      s-11.5 -12.1 -11.5 -20.5 A11.5 11.5 0 0 1 170 66z"
-                  fill="#5A8073" stroke="#fff" stroke-width="2.4"/>
+                  fill="#3F5F58" stroke="#fff" stroke-width="2.6"/>
             <circle cx="170" cy="77.5" r="4" fill="#fff"/>
           </g>
         </svg>
@@ -2037,8 +2037,27 @@ body.dragging .half{ transition:none !important }
 /* قاعدةُ ‎#sheet *‎ تفرض خطَّ البطاقة على السطرين نفسيهما لا على الفقرة
    وحدَها، فيُسمّى الخطُّ على السطرين صراحةً: خطُّ «حفل عقد قران». */
 #sheet .pnote span, #sheet .pnote em{ font-family:'Amiri', serif !important }
-#sheet .pnote span{ display:block; line-height:1.6 }
+/* ══ بطلبٍ صريح ══ التنويهُ نقاطًا، والخريطةُ أبرز، و«الموعد» و«المكان» أبرز. */
+#sheet .pnote{ display:flex; flex-direction:column; align-items:center }
+#sheet .pnote em{ align-self:center }
+#sheet .pnote span{ display:block; line-height:1.6; text-align:right; position:relative;
+  padding-right:1.15em; width:100%; max-width:21em }
+#sheet .pnote span::before{ content:'•'; position:absolute; right:0; top:0; color:#5A8073 }
 #sheet .pnote span + span{ margin-top:.45em }
+/* الخريطة: ألوانٌ أعمق في الرسم نفسه، وإطارٌ وظلٌّ أوضح، وارتفاعٌ أكبر قليلًا،
+   وسطرُها بخطّ العنوان. */
+#sheet .minimap{ border:1.5px solid rgba(75,113,103,.45) !important;
+  box-shadow:0 10px 28px rgba(63,95,88,.20), 0 2px 6px rgba(63,95,88,.10) !important }
+#sheet .minimap svg{ height:clamp(126px, 34vw, 168px) !important }
+#sheet .mm-label{ font-family:'Amiri', serif !important; font-size:15px !important;
+  color:#3F5F58 !important; background:rgba(255,255,255,.82) !important; padding:11px 12px !important;
+  -webkit-text-stroke:.012em currentColor }
+/* «الموعد» و«المكان»: خطُّ العنوان، أكبرُ وأغمقُ، وتحتَ كلٍّ منهما خطٌّ قصير. */
+#sheet .pdet span{ font-family:'Amiri', serif !important; font-size:15.5px !important;
+  color:#3F5F58 !important; display:inline-block; padding-bottom:3px; margin-bottom:8px;
+  border-bottom:1px solid rgba(75,113,103,.55); -webkit-text-stroke:.012em currentColor }
+#sheet .pdet b{ font-family:'Amiri', serif !important; font-size:clamp(16px, 4.3vw, 18.5px) !important;
+  -webkit-text-stroke:.014em currentColor }
 /* الدعاء: كشيدةٌ واحدةٌ في كلِّ سطرٍ — في «المولى» و«الوفاق» — على
    عادةِ النسخِ لا كشيدتانِ متجاورتان. وقياسٌ أكبرُ قليلًا:
    ‎١٨–٢١‎ بدل ‎١٤–١٦٫٥‎. */
