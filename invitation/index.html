@@ -1052,7 +1052,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
         </svg>
         <span class="mm-label">افتح الموقع على الخرائط</span>
       </a>
-      <p class="pnote">ممنوع الأطفال</p>
+      <p class="pnote"><span>نرجو أن تكون الأمسية للكبار، ونعتذر بلطفٍ عن اصطحاب الأطفال</span><span>الجوّالات معكم لا نمنعها، لكن منعًا للإحراج نرجو عدم التصوير</span></p>
       <p class="seen" id="d-seen" hidden></p>
     </section>
 
@@ -1121,7 +1121,7 @@ var DATA = {
   time:  "الساعة ٧ مساءً",
   venue: "فيلا عبدالوهاب الخرّاز",
   maps:  "https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7",
-  note:  "ممنوع الأطفال",
+  note:  "<span>نرجو أن تكون الأمسية للكبار، ونعتذر بلطفٍ عن اصطحاب الأطفال</span><span>الجوّالات معكم لا نمنعها، لكن منعًا للإحراج نرجو عدم التصوير</span>",
   /* عدّادُ من فتح الدعوة. اجعليه "" لإخفائه. المفتاحُ اسمٌ فريدٌ يُحفظ عنده
      الرقمُ في خدمةٍ مجّانيّة — لا تُغيّريه بعد التوزيع وإلّا بدأ العدُّ من صفر. */
   counter: "sanad-noura-2026-opens",
@@ -1197,7 +1197,7 @@ if (BEFORE) {
   $("#d-at").textContent    = DATA.time  || "";
   $("#d-venue").textContent = DATA.venue || "";
   if (DATA.maps) $("#d-map").href = DATA.maps; else $("#d-map").remove();
-  if (DATA.note) noteEl.textContent = DATA.note;
+  if (DATA.note) noteEl.innerHTML = DATA.note;
   else noteEl.parentNode.removeChild(noteEl);
   placeEl.hidden = !(DATA.time || DATA.venue || DATA.maps);
 } else {
@@ -2024,6 +2024,9 @@ body.dragging .half{ transition:none !important }
 /* بطلبٍ صريح: لا وردةَ داخلَ الشعار. تُخفى النافذةُ كلُّها — الزهرةُ
    والضوءُ المارُّ فيها — ويبقى الحرفُ وحدَه. */
 .brose{ display:none !important }
+/* بطلبٍ صريح: ملاحظتان بدل «ممنوع الأطفال» — كلُّ واحدةٍ سطرٌ مستقلّ. */
+#sheet .pnote span{ display:block; line-height:1.55 }
+#sheet .pnote span + span{ margin-top:.55em }
 /* الدعاء: كشيدةٌ واحدةٌ في كلِّ سطرٍ — في «المولى» و«الوفاق» — على
    عادةِ النسخِ لا كشيدتانِ متجاورتان. وقياسٌ أكبرُ قليلًا:
    ‎١٨–٢١‎ بدل ‎١٤–١٦٫٥‎. */
