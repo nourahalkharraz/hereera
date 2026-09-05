@@ -1015,7 +1015,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
       <cite id="d-verse-src">سورة الرّوم — الآية ٢١</cite>
     </blockquote>
 
-    <p class="dua" id="d-dua">سائلـــــين المولـــــى أن يُتمّم علينـــــا بخيـــــر<br>وأن يديـــــم علينـــــا المحبـــــة والوفـــــاق</p>
+    <p class="dua" id="d-dua">سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبّة والوفاق</p>
 
     <section class="place" id="d-place">
       <div class="pdet">
@@ -1133,7 +1133,7 @@ var DATA = {
   iso:   "2026-09-18T19:00:00+03:00",   /* بداية الحفل — للعدّاد وزرّ التقويم */
   verse: "﴿ وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",   /* المقطع الذي يسع سطراً واحداً بحجمٍ مقروء */
   verseSrc: "سورة الرّوم — الآية ٢١",
-  dua:   "سائلـــــين المولـــــى أن يُتمّم علينـــــا بخيـــــر<br>وأن يديـــــم علينـــــا المحبـــــة والوفـــــاق"
+  dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبّة والوفاق"
 };
 /* ═══════════════════════════════════════════ */
 
@@ -2366,6 +2366,23 @@ body.gate-done #petals{ z-index:4 }
 /* والقوسانِ المزهّرانِ ‎﴿ ﴾‎ ليسا في ‎Tajawal‎ — يرسمهما قوسَين عاديَّين —
    فيبقيان على ‎Amiri‎ وحدَهما */
 #sheet .verse p span:first-child, #sheet .verse p span:last-child{ font-family:'Amiri', serif !important }
+/* تنسيقُ النصوص على ‎Tajawal‎: سلّمٌ واحدٌ للأحجام والأوزان — عنوانٌ
+   ثقيلٌ واحد، تواريخُ وعناوينُ فرعيّةٌ بوزن ‎٥٠٠‎ وتباعدِ حروفٍ خفيف،
+   ونصوصُ قراءةٍ بوزن ‎٣٠٠‎ وسطورٍ مرتاحة. والمدّاتُ حُذفت من الدعاء:
+   في خطٍّ هندسيٍّ تصير خطوطًا جامدة لا مدًّا. */
+#sheet .bism{ font-size:clamp(14.5px, 3.9vw, 16px) !important; letter-spacing:.02em; line-height:1.7 }
+#sheet .news{ font-size:clamp(13px, 3.5vw, 14.5px) !important; letter-spacing:.02em; line-height:1.8; color:#5F847A !important }
+#sheet .event{ font-size:clamp(25px, 6.9vw, 32px) !important; letter-spacing:.02em; line-height:1.35 }
+#sheet .date{ font-size:clamp(16px, 4.3vw, 18px) !important; letter-spacing:.03em }
+#sheet .hijri{ font-size:12.5px !important; letter-spacing:.04em; margin-top:4px }
+#sheet .count b{ letter-spacing:.02em } #sheet .count span{ font-size:12px !important; letter-spacing:.06em }
+#sheet .verse p{ font-size:clamp(18px, 4.9vw, 20.5px) !important; line-height:1.9; word-spacing:.08em }
+#sheet .verse cite{ font-size:12.5px !important; letter-spacing:.05em }
+#sheet .dua{ font-size:clamp(15px, 4.1vw, 16.5px) !important; line-height:2.05; letter-spacing:.015em; word-spacing:.06em }
+#sheet .pdet span, #sheet .mm-label, #sheet .pnote em{ letter-spacing:.06em; font-size:14px !important }
+#sheet .pdet b{ font-size:clamp(15.5px, 4.2vw, 17px) !important; letter-spacing:.02em }
+#sheet .pnote{ font-size:clamp(13px, 3.6vw, 14px) !important }
+#sheet .pnote span{ line-height:1.8; letter-spacing:.01em }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
