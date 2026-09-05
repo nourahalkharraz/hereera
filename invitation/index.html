@@ -999,8 +999,8 @@ img.mono { height: min(34dvh, 300px); width: auto; }
     <!-- ما بين الوسوم أدناه هو ما يُقرأ إن تعطّل جافاسكربت: صيغةُ الدعوة
          لا صيغةُ ما بعد الحفل، لأنّ الدعوة هي التي تُوزَّع. يكتبها جافاسكربت
          من DATA في كلّ الأحوال، فإن عُدّل DATA فليُعدَّل هذا معه. -->
-    <p class="news" id="d-news">بمشيئة الله وتوفيقه · يسرّنا دعوتكم لحضور</p>
-    <p class="event" id="d-event">حفل عقد قران</p>
+    <p class="news" id="d-news">بمشيئة الله وتوفيقه · يسرّنا دعوتكم</p>
+    <p class="event" id="d-event">لحضــــــــــــور حفــــــــــــل عقــــــــــــد قــــــــــــران</p>
     <h1 class="names" id="d-names" aria-label="سند ونورة"><b class="one">ســـــــــنـد<span class="fam">عَبْدُاللهِ الفَايِـــز</span></b><i>|</i><b class="two">نـــــــــورة<span class="fam">عَبْدُالوَهَّـــابِ الخَرَّاز</span></b></h1>
 
     <div class="when">
@@ -1015,7 +1015,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
       <cite id="d-verse-src">سورة الرّوم — الآية ٢١</cite>
     </blockquote>
 
-    <p class="dua" id="d-dua">سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبّة والوفاق</p>
+    <p class="dua" id="d-dua">سائليـــن المولــى أن يُتمّم علينــا بخيــر<br>وأن يديــــــم علينــــــا المحبــــة والوفــــــاق</p>
 
     <section class="place" id="d-place">
       <div class="pdet">
@@ -1101,8 +1101,8 @@ img.mono { height: min(34dvh, 300px); width: auto; }
 var DATA = {
   /* الدعوة تعرف بنفسها أين هي من الموعد: قبله تدعو، وبعده تُعلن.
      الرابط واحد — يُوزَّع اليوم، ويتحوّل ليلة الحفل بلا تدخّل. */
-  news:  "بمشيئة الله وتوفيقه · يسرّنا دعوتكم لحضور",
-  event: "حفل عقد قران",
+  news:  "بمشيئة الله وتوفيقه · يسرّنا دعوتكم",
+  event: "لحضــــــــــــور حفــــــــــــل عقــــــــــــد قــــــــــــران",
   newsAfter:  "بحمد الله وتوفيقه",
   eventAfter: "تمّ عقد قران",
   one:   "نـــورة",
@@ -1133,7 +1133,7 @@ var DATA = {
   iso:   "2026-09-18T19:00:00+03:00",   /* بداية الحفل — للعدّاد وزرّ التقويم */
   verse: "﴿ وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾",   /* المقطع الذي يسع سطراً واحداً بحجمٍ مقروء */
   verseSrc: "سورة الرّوم — الآية ٢١",
-  dua:   "سائلين المولى أن يُتمّم علينا بخير<br>وأن يديم علينا المحبّة والوفاق"
+  dua:   "سائليـــن المولــى أن يُتمّم علينــا بخيــر<br>وأن يديــــــم علينــــــا المحبــــة والوفــــــاق"
 };
 /* ═══════════════════════════════════════════ */
 
@@ -2415,6 +2415,14 @@ body.gate-done #petals{ z-index:4 }
 #sheet .pnote span{ width:auto; max-width:none; text-align:center; padding-right:0; line-height:2; letter-spacing:.05em }
 #sheet .pnote span::before{ content:none }
 #sheet .pnote span + span{ margin-top:.35em }
+/* كما في المثال: كلُّ كتلةٍ سطرانِ متساويا العرض، والسطرُ الأقصرُ يُبسَط
+   حتى يساوي الأطول؛ وحجمٌ واحدٌ لكلِّ نصوصِ القراءة. */
+#sheet .news, #sheet .event, #sheet .dua, #sheet .pnote span, #sheet .pdet b, #sheet .date{
+  font-size:clamp(13.5px, 3.7vw, 15px) !important; letter-spacing:.06em; line-height:2.1 }
+#sheet .news{ margin-top:26px } #sheet .event{ margin-top:0 }
+#sheet .pnote span{ width:auto; max-width:none; text-align:center }
+#sheet .when hr{ display:none } #sheet .when{ margin-top:40px }
+#sheet .verse cite{ margin-top:14px }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
