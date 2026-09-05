@@ -1052,7 +1052,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
         </svg>
         <span class="mm-label">افتح الموقع على الخرائط</span>
       </a>
-      <p class="pnote"><em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموحة، ونرجو عدم التصوير حفاظًا على الخصوصية</span></p>
+      <p class="pnote"><em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموحة، ونرجو عدم التصوير<br>حفاظًا على الخصوصية</span></p>
       <p class="seen" id="d-seen" hidden></p>
     </section>
 
@@ -1121,7 +1121,7 @@ var DATA = {
   time:  "الساعة ٧ مساءً",
   venue: "فيلا عبدالوهاب الخرّاز",
   maps:  "https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7",
-  note:  "<em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموحة، ونرجو عدم التصوير حفاظًا على الخصوصية</span>",
+  note:  "<em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموحة، ونرجو عدم التصوير<br>حفاظًا على الخصوصية</span>",
   /* عدّادُ من فتح الدعوة. اجعليه "" لإخفائه. المفتاحُ اسمٌ فريدٌ يُحفظ عنده
      الرقمُ في خدمةٍ مجّانيّة — لا تُغيّريه بعد التوزيع وإلّا بدأ العدُّ من صفر. */
   counter: "sanad-noura-2026-opens",
@@ -2340,6 +2340,32 @@ body.gate-done #petals{ z-index:4 }
 /* بطلبٍ صريح: الاسمان أقصرُ قليلًا. المدُّ رسمةٌ واحدةٌ في الخطّ لا تُقصَّر
    وحدها، فيُصغَّر الاسمُ كلُّه ثمانيةً بالمئة ويقصر المدُّ معه. */
 #sheet .names{ font-size:clamp(20px, 7vw, 40px) !important }
+/* بطلبٍ صريح: ‎Tajawal‎ — خطُّ ورقةِ الدعوةِ الزرقاء — يعود لكلِّ نصوصِ
+   الداخل، ما عدا اسمَي العروسين واسمَي الأبوين. الحدودُ التي كانت تعوّض
+   رِقّةَ ‎AMoshref‎ تُرفع، فـ‎Tajawal‎ يحمل وزنَه بنفسه. */
+#sheet, #sheet *{ font-family:'Tajawal', system-ui, sans-serif !important; -webkit-text-stroke:0 !important }
+#sheet .names b{ font-family:'AMoshref Names', 'AMoshref Naskh', serif !important }
+#sheet .names .fam{ font-family:'AMoshref Naskh', serif !important; -webkit-text-stroke:.02em currentColor !important }
+#sheet .bism{ font-weight:300 !important }
+#sheet .news{ font-weight:300 !important; font-size:clamp(13.5px, 3.6vw, 15px) !important }
+#sheet .event{ font-weight:500 !important; font-size:clamp(24px, 6.6vw, 31px) !important; letter-spacing:.01em }
+#sheet .date{ font-weight:500 !important } #sheet .hijri{ font-weight:300 !important }
+#sheet .verse p{ font-weight:300 !important } #sheet .verse cite{ font-weight:300 !important }
+#sheet .dua{ font-weight:300 !important }
+#sheet .pdet span, #sheet .mm-label, #sheet .pnote em{ font-weight:500 !important }
+#sheet .pdet b{ font-weight:500 !important } #sheet .pnote span{ font-weight:300 !important }
+/* القواعدُ الأقدمُ تسمّي خطَّها على العناصرِ نفسِها بأولويّةٍ أعلى من
+   ‎#sheet *‎، فتُسمّى هنا واحدةً واحدةً */
+#sheet .event, #sheet .pnote, #sheet .pnote span, #sheet .pnote em, #sheet .mm-label,
+#sheet .pdet, #sheet .pdet span, #sheet .pdet b, #sheet .verse p, #sheet .verse p *,
+#sheet .verse cite, #sheet .dua, #sheet .news, #sheet .bism, #sheet .date, #sheet .hijri,
+#sheet .count, #sheet .count *{ font-family:'Tajawal', system-ui, sans-serif !important }
+/* ‎Tajawal‎ أعرضُ من ‎Amiri‎، فالملاحظةُ الثانية لا تدخل سطرًا واحدًا على
+   الهاتف؛ تُترك تلتفّ تحت بدايةِ النصّ لا تحت النقطة. */
+#sheet .pnote span{ width:auto; max-width:100% }
+/* والقوسانِ المزهّرانِ ‎﴿ ﴾‎ ليسا في ‎Tajawal‎ — يرسمهما قوسَين عاديَّين —
+   فيبقيان على ‎Amiri‎ وحدَهما */
+#sheet .verse p span:first-child, #sheet .verse p span:last-child{ font-family:'Amiri', serif !important }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
