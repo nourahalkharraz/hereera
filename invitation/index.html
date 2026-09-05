@@ -2325,8 +2325,14 @@ body.gate-done #petals{ z-index:4 }
 #sheet .pnote em{ display:inline-block; font-size:15.5px !important; letter-spacing:0;
   color:#3F5F58 !important; padding-bottom:3px; margin-bottom:10px;
   border-bottom:1px solid rgba(75,113,103,.55); -webkit-text-stroke:.012em currentColor }
-#sheet .pnote span{ text-align:center; padding-right:0; max-width:none; line-height:1.65 }
-#sheet .pnote span::before{ content:none }
+/* بطلبٍ صريح: تبقى نقاطًا، لكن مرتّبة. الشبكةُ تجعل عرضَ كلِّ ملاحظةٍ
+   عرضَ أطولِها، فتصطفّ النقاطُ على خطٍّ واحد، وتتوسّط الكتلةُ الصفحةَ
+   بدل أن تلتصق بالحافّة ويبقى الفراغُ كلُّه يسارَها. */
+#sheet .pnote{ display:grid; justify-content:center; justify-items:start }
+#sheet .pnote em{ justify-self:center }
+#sheet .pnote span{ display:block; width:max-content; max-width:100%; text-align:right;
+  position:relative; padding-right:1.1em; line-height:1.65 }
+#sheet .pnote span::before{ content:'•'; position:absolute; right:0; top:0; color:#5A8073 }
 #sheet .pnote span + span{ margin-top:.5em }
 </style>
 <script>
