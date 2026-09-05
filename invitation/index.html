@@ -2388,6 +2388,33 @@ body.gate-done #petals{ z-index:4 }
 #sheet .verse p, #sheet .verse p *, #sheet .bism{ font-family:'Amiri', serif !important; font-weight:400 !important; letter-spacing:0 }
 #sheet .verse p{ font-size:clamp(19px, 5.2vw, 22px) !important; line-height:1.95; word-spacing:.05em; -webkit-text-stroke:.012em currentColor !important }
 #sheet .bism{ font-size:clamp(16px, 4.4vw, 18px) !important; -webkit-text-stroke:.01em currentColor !important }
+/* على مثالِ الدعوةِ المرجعيّة: كلُّ النصوصِ صغيرةٌ خفيفةٌ بلونٍ واحد، الأسماءُ
+   وحدَها كبيرةٌ خطّيّة، مسافاتٌ سخيّةٌ بين الكتل، ولا عناوينَ ثقيلةَ ولا
+   خطوطَ تحتيّةَ ولا نقاط. الآيةُ والبسملةُ على خطِّهما المصحفيّ. */
+#sheet{ --ink:#4B6D66 }
+#sheet .news, #sheet .event, #sheet .date, #sheet .hijri, #sheet .verse cite, #sheet .dua,
+#sheet .pdet span, #sheet .pdet b, #sheet .pnote, #sheet .pnote span, #sheet .pnote em,
+#sheet .mm-label, #sheet .count b, #sheet .count span{ color:var(--ink) !important; font-weight:300 !important }
+#sheet .news{ font-size:clamp(13px, 3.5vw, 14.5px) !important; letter-spacing:.08em; line-height:2; margin-top:22px }
+#sheet .event{ font-size:clamp(14px, 3.8vw, 15.5px) !important; letter-spacing:.14em; line-height:2; margin-top:2px }
+#sheet .names{ margin-top:26px !important }
+#sheet .when{ margin-top:34px } #sheet .when hr{ opacity:.35; width:36px }
+#sheet .date{ font-size:clamp(14px, 3.8vw, 15.5px) !important; letter-spacing:.1em }
+#sheet .hijri{ font-size:12px !important; letter-spacing:.1em; opacity:.85 }
+#sheet .count{ margin-top:22px; opacity:.9 } #sheet .count b{ font-weight:300 !important; font-size:clamp(18px, 5vw, 21px) !important }
+#sheet .count span{ font-size:11px !important; letter-spacing:.14em }
+#sheet .verse{ margin-top:36px } #sheet .verse cite{ font-size:11.5px !important; letter-spacing:.12em; margin-top:10px }
+#sheet .dua{ margin-top:30px; font-size:clamp(13.5px, 3.7vw, 15px) !important; letter-spacing:.06em; line-height:2.1 }
+#sheet .place{ margin-top:36px }
+#sheet .pdet span{ font-size:11.5px !important; letter-spacing:.16em; border-bottom:0 !important; padding-bottom:0; margin-bottom:6px; opacity:.85 }
+#sheet .pdet b{ font-size:clamp(14px, 3.8vw, 15.5px) !important; letter-spacing:.04em }
+#sheet .minimap{ margin-top:22px; border-color:rgba(75,113,103,.22) !important; box-shadow:0 6px 18px rgba(63,95,88,.10) !important }
+#sheet .mm-label{ font-size:12.5px !important; letter-spacing:.1em; background:rgba(255,255,255,.7) !important }
+#sheet .pnote{ margin-top:34px; font-size:clamp(12.5px, 3.4vw, 13.5px) !important; display:flex !important; flex-direction:column; align-items:center }
+#sheet .pnote em{ font-size:11.5px !important; letter-spacing:.16em; border-bottom:0; padding-bottom:0; margin-bottom:10px; opacity:.85 }
+#sheet .pnote span{ width:auto; max-width:none; text-align:center; padding-right:0; line-height:2; letter-spacing:.05em }
+#sheet .pnote span::before{ content:none }
+#sheet .pnote span + span{ margin-top:.35em }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
