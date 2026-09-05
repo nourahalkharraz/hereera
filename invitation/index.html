@@ -2454,6 +2454,10 @@ body.gate-done #petals{ z-index:4 }
 #sheet .place{ margin-top:38px !important }     /* التفاصيل قسم جديد */
 #sheet .minimap{ margin-top:14px !important }   /* الخريطة تابعة للمكان */
 #sheet .pnote{ margin-top:32px !important }     /* التنويه ذيل مستقل */
+
+/* سفاري يطبّق letter-spacing على العربية فيفكّك الحروف ويُظهرها كمدّات وفراغات؛
+   كروم يتجاهله فلم يظهر عندي. يُصفّر في كل الداخل. */
+#sheet, #sheet *{ letter-spacing:0 !important; word-spacing:normal !important }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
