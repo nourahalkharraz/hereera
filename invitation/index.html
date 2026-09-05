@@ -2320,6 +2320,14 @@ body.gate-done #petals{ z-index:4 }
 #sheet .bism, #sheet .news, #sheet .date, #sheet .hijri, #sheet .verse p,
 #sheet .verse cite, #sheet .dua, #sheet .event, #sheet .names .fam{ word-spacing:.14em }
 #sheet .date{ word-spacing:.22em }
+/* التنويه بأسلوبِ «الموعد» و«المكان» لا بأسلوبِ قائمةٍ منقوطة: عنوانٌ
+   متوسّطٌ بخطٍّ تحته كعنوانيهما، والملاحظتان تحته متوسّطتان بلا نقاط. */
+#sheet .pnote em{ display:inline-block; font-size:15.5px !important; letter-spacing:0;
+  color:#3F5F58 !important; padding-bottom:3px; margin-bottom:10px;
+  border-bottom:1px solid rgba(75,113,103,.55); -webkit-text-stroke:.012em currentColor }
+#sheet .pnote span{ text-align:center; padding-right:0; max-width:none; line-height:1.65 }
+#sheet .pnote span::before{ content:none }
+#sheet .pnote span + span{ margin-top:.5em }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
