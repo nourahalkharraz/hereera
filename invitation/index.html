@@ -1052,7 +1052,7 @@ img.mono { height: min(34dvh, 300px); width: auto; }
         </svg>
         <span class="mm-label">افتح الموقع على الخرائط</span>
       </a>
-      <p class="pnote"><em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموح بها، ونرجو عدم التصوير<br>حفاظًا على خصوصية الحضور</span></p>
+      <p class="pnote"><em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموحة، ونرجو عدم التصوير حفاظًا على الخصوصية</span></p>
       <p class="seen" id="d-seen" hidden></p>
     </section>
 
@@ -1121,7 +1121,7 @@ var DATA = {
   time:  "الساعة ٧ مساءً",
   venue: "فيلا عبدالوهاب الخرّاز",
   maps:  "https://maps.app.goo.gl/8Xcf46zcDeMCyVUS7",
-  note:  "<em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموح بها، ونرجو عدم التصوير<br>حفاظًا على خصوصية الحضور</span>",
+  note:  "<em>تنويه</em><span>الدعوة خاصة بالكبار، ونعتذر عن استقبال الأطفال</span><span>الهواتف مسموحة، ونرجو عدم التصوير حفاظًا على الخصوصية</span>",
   /* عدّادُ من فتح الدعوة. اجعليه "" لإخفائه. المفتاحُ اسمٌ فريدٌ يُحفظ عنده
      الرقمُ في خدمةٍ مجّانيّة — لا تُغيّريه بعد التوزيع وإلّا بدأ العدُّ من صفر. */
   counter: "sanad-noura-2026-opens",
@@ -2334,6 +2334,9 @@ body.gate-done #petals{ z-index:4 }
   position:relative; padding-right:1.1em; line-height:1.65 }
 #sheet .pnote span::before{ content:'•'; position:absolute; right:0; top:0; color:#5A8073 }
 #sheet .pnote span + span{ margin-top:.5em }
+/* بطلبٍ صريح: الملاحظةُ الثانية سطرٌ واحد. قِيست: ‎٢٨٢px‎ عند ‎١٤٫٥px‎
+   والمتاحُ ‎٣٠٤‎ على ‎٣٩٠‎ و‎٢٨١‎ على ‎٣٦٠‎، فالحجمُ يتدرّج مع العرض. */
+#sheet .pnote{ font-size:clamp(13.5px, 3.75vw, 14.5px) !important }
 </style>
 <script>
 /* ══════════ مطرُ الورد ══════════ كُتب من جديدٍ بعد أن تراكمت عليه
