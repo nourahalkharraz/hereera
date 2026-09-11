@@ -1,0 +1,882 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14140f">
+<title>مفاتيحي — API Keeper</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%97%9D%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+<style>
+/* ── theme tokens ─────────────────────────────────────────────────────────
+   Vault / brass identity: warm near-neutral grounds, a brass accent for
+   actions, a teal secondary, and traffic-light semantics for request state. */
+:root {
+  --bg: #f4f1ea;
+  --surface: #ffffff;
+  --surface-2: #efeae0;
+  --line: #e2dccf;
+  --ink: #211d16;
+  --ink-2: #6d6553;
+  --ink-3: #9a917d;
+  --brass: #9c6a12;
+  --brass-soft: #f0e2c6;
+  --teal: #0d7c6b;
+  --active: #1a8a4a;
+  --pending: #b7791f;
+  --idle: #9a917d;
+  --danger: #c0392b;
+  --shadow: 0 14px 40px rgba(60, 45, 15, .12);
+  --radius: 16px;
+}
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    --bg: #14130e;
+    --surface: #1d1b14;
+    --surface-2: #262319;
+    --line: #332f22;
+    --ink: #f0ebdf;
+    --ink-2: #b0a68e;
+    --ink-3: #7c745f;
+    --brass: #e0a44c;
+    --brass-soft: #3a2f18;
+    --teal: #34baa4;
+    --active: #35c46e;
+    --pending: #e0a44c;
+    --idle: #7c745f;
+    --danger: #e5675a;
+    --shadow: 0 14px 40px rgba(0, 0, 0, .5);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14130e;
+  --surface: #1d1b14;
+  --surface-2: #262319;
+  --line: #332f22;
+  --ink: #f0ebdf;
+  --ink-2: #b0a68e;
+  --ink-3: #7c745f;
+  --brass: #e0a44c;
+  --brass-soft: #3a2f18;
+  --teal: #34baa4;
+  --active: #35c46e;
+  --pending: #e0a44c;
+  --idle: #7c745f;
+  --danger: #e5675a;
+  --shadow: 0 14px 40px rgba(0, 0, 0, .5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Tahoma', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg); color: var(--ink);
+  min-height: 100vh; line-height: 1.5;
+  padding: 0 0 40px;
+}
+.wrap { max-width: 940px; margin: 0 auto; padding: 0 16px; }
+.numeric { font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+a { color: inherit; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ── header ── */
+header {
+  position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top);
+}
+.head-in { display: flex; align-items: center; gap: 12px; padding: 13px 16px; max-width: 940px; margin: 0 auto; }
+.logo { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 18px; letter-spacing: -.2px; }
+.logo .mark {
+  width: 30px; height: 30px; flex: none; border-radius: 9px;
+  background: linear-gradient(140deg, var(--brass), color-mix(in srgb, var(--brass) 60%, #000));
+  display: grid; place-items: center; font-size: 16px;
+}
+.logo small { display: block; font-size: 10.5px; font-weight: 600; color: var(--ink-3); letter-spacing: .3px; margin-top: 1px; }
+.grow { flex: 1; }
+.icon-btn {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  border-radius: 10px; padding: 8px 11px; font-size: 13px; font-weight: 700;
+}
+.icon-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+
+/* ── tabs ── */
+.tabs { display: flex; gap: 6px; padding: 10px 16px 0; max-width: 940px; margin: 0 auto; }
+.tab {
+  border: none; background: none; color: var(--ink-3);
+  font-size: 14px; font-weight: 700; padding: 9px 4px 12px; position: relative;
+}
+.tab.on { color: var(--ink); }
+.tab.on::after {
+  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 3px;
+  border-radius: 3px 3px 0 0; background: var(--brass);
+}
+.tab .count {
+  font-size: 11px; background: var(--surface-2); color: var(--ink-2);
+  border-radius: 20px; padding: 1px 7px; margin-inline-start: 5px;
+}
+
+/* ── search + filters ── */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 12px; }
+.search { flex: 1; min-width: 180px; position: relative; }
+.search input {
+  width: 100%; padding: 12px 14px; font-size: 15px; font-family: inherit;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink);
+}
+.search input:focus { outline: none; border-color: var(--brass); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: 999px;
+}
+.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* ── provider grid ── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.card {
+  border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius);
+  padding: 16px; text-align: start; display: flex; flex-direction: column; gap: 10px;
+  transition: border-color .15s, transform .05s;
+}
+.card:hover { border-color: var(--brass); }
+.card:active { transform: scale(.995); }
+.card-top { display: flex; align-items: center; gap: 11px; }
+.badge {
+  width: 42px; height: 42px; flex: none; border-radius: 11px; display: grid; place-items: center;
+  font-size: 21px; font-weight: 800; color: #fff;
+}
+.card h3 { font-size: 15.5px; font-weight: 800; }
+.card .cat { font-size: 11.5px; color: var(--ink-3); font-weight: 600; margin-top: 1px; }
+.card p { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
+.tagrow { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.tag {
+  font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 7px;
+  background: var(--surface-2); color: var(--ink-2);
+}
+.tag.free { background: color-mix(in srgb, var(--active) 16%, transparent); color: var(--active); }
+.tag.instant { background: color-mix(in srgb, var(--teal) 18%, transparent); color: var(--teal); }
+.tag.review { background: color-mix(in srgb, var(--pending) 20%, transparent); color: var(--pending); }
+.tag.saved { background: var(--brass-soft); color: var(--brass); }
+
+/* status dot on saved providers */
+.stat-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.stat-dot.active { background: var(--active); }
+.stat-dot.pending { background: var(--pending); }
+.stat-dot.requested { background: var(--idle); }
+
+.empty { text-align: center; color: var(--ink-3); font-size: 14px; padding: 60px 20px; line-height: 1.8; }
+
+/* ── sheet / modal ── */
+#scrim { position: fixed; inset: 0; background: rgba(20, 15, 5, .55); z-index: 50; display: none; }
+#scrim.open { display: block; }
+#sheet {
+  position: fixed; z-index: 60; background: var(--surface); box-shadow: var(--shadow);
+  inset-inline: 0; bottom: 0; max-height: 94vh; overflow-y: auto;
+  border-radius: 22px 22px 0 0; transform: translateY(101%); transition: transform .24s ease;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+#sheet.open { transform: translateY(0); }
+@media (min-width: 680px) {
+  #sheet {
+    inset: 50% auto auto 50%; transform: translate(-50%, -46%) scale(.98);
+    inset-inline: auto; width: 620px; max-width: calc(100vw - 32px);
+    max-height: 88vh; border-radius: 20px; opacity: 0; transition: opacity .18s, transform .18s;
+  }
+  #sheet.open { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+.sheet-head {
+  position: sticky; top: 0; background: var(--surface); z-index: 2;
+  display: flex; align-items: center; gap: 12px; padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.sheet-head h2 { font-size: 18px; font-weight: 800; flex: 1; }
+.sheet-body { padding: 18px 20px; }
+
+.section-label {
+  font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+  color: var(--ink-3); margin: 20px 0 10px;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* steps */
+.step { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.step:last-child { border-bottom: none; }
+.step-n {
+  width: 24px; height: 24px; flex: none; border-radius: 50%; font-size: 12.5px; font-weight: 800;
+  background: var(--surface-2); color: var(--ink-2); display: grid; place-items: center;
+}
+.step-b { flex: 1; }
+.step-b .st { font-size: 14px; font-weight: 600; }
+.step-b .sd { font-size: 12.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.55; }
+.open-btn {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 9px;
+  background: var(--brass); color: #fff; border: none; border-radius: 10px;
+  padding: 9px 15px; font-size: 13.5px; font-weight: 800;
+}
+.open-btn:hover { filter: brightness(1.06); }
+.open-btn .ext { font-size: 11px; opacity: .85; }
+
+.note-box {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 14px; font-size: 12.5px; color: var(--ink-2); line-height: 1.65; margin-top: 6px;
+}
+.note-box.warn { border-color: color-mix(in srgb, var(--pending) 45%, transparent); }
+
+/* credential fields */
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+.field .in-row { display: flex; gap: 8px; }
+.field input, .field textarea, .field select {
+  flex: 1; width: 100%; padding: 11px 12px; font-size: 14px; font-family: inherit;
+  border: 1px solid var(--line); border-radius: 11px; background: var(--surface); color: var(--ink);
+}
+.field textarea { min-height: 60px; resize: vertical; }
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--brass); }
+.field input.secret { letter-spacing: 1px; }
+.mini {
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-2);
+  border-radius: 9px; padding: 0 12px; font-size: 12px; font-weight: 700; flex: none;
+}
+.mini:hover { color: var(--ink); }
+
+.status-seg { display: flex; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+.status-seg button {
+  flex: 1; border: none; background: var(--surface); color: var(--ink-2);
+  padding: 10px 6px; font-size: 12.5px; font-weight: 700; display: flex; align-items: center;
+  justify-content: center; gap: 6px;
+}
+.status-seg button.on { color: var(--ink); background: var(--surface-2); }
+.status-seg button.on .stat-dot { box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 12%, transparent); }
+
+.btn {
+  width: 100%; border: none; border-radius: 12px; padding: 13px; font-size: 14.5px;
+  font-weight: 800; font-family: inherit;
+}
+.btn.primary { background: var(--brass); color: #fff; }
+.btn.ghost { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.btn.danger-ghost { background: none; color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent); }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+
+/* vault saved card */
+.saved-card {
+  border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px; text-align: start; width: 100%;
+  display: flex; align-items: center; gap: 12px;
+}
+.saved-card:hover { border-color: var(--brass); }
+.saved-card .badge { width: 38px; height: 38px; font-size: 18px; border-radius: 10px; }
+.saved-meta { flex: 1; min-width: 0; }
+.saved-meta .sn { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.saved-meta .sm { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.status-pill {
+  font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 20px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.status-pill.active { background: color-mix(in srgb, var(--active) 15%, transparent); color: var(--active); }
+.status-pill.pending { background: color-mix(in srgb, var(--pending) 18%, transparent); color: var(--pending); }
+.status-pill.requested { background: var(--surface-2); color: var(--ink-2); }
+
+/* toast */
+#toast {
+  position: fixed; inset-inline: 0; bottom: 24px; z-index: 90; display: flex; justify-content: center;
+  pointer-events: none; padding: 0 16px;
+}
+#toast div {
+  background: var(--ink); color: var(--bg); font-size: 13.5px; font-weight: 700;
+  padding: 11px 18px; border-radius: 12px; box-shadow: var(--shadow);
+  opacity: 0; transform: translateY(10px); transition: .22s;
+}
+#toast.show div { opacity: 1; transform: translateY(0); }
+
+.disclaimer {
+  font-size: 11.5px; color: var(--ink-3); line-height: 1.7; text-align: center;
+  margin: 26px auto 0; max-width: 640px; padding: 0 8px;
+}
+</style>
+
+<header>
+  <div class="head-in">
+    <div class="logo">
+      <span class="mark">🗝️</span>
+      <div>مفاتيحي<small>مساعد الحصول على مفاتيح API</small></div>
+    </div>
+    <div class="grow"></div>
+    <button class="icon-btn" id="theme-btn" title="الثيم">◐</button>
+    <button class="icon-btn" id="menu-btn" title="نسخ احتياطي">⋯</button>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-tab="browse">المزوّدون</button>
+    <button class="tab" data-tab="vault">مفاتيحي <span class="count" id="vault-count">0</span></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- browse -->
+  <section id="view-browse">
+    <div class="toolbar">
+      <div class="search"><input id="q" type="search" placeholder="ابحثي عن خدمة… (Pinterest، OpenAI، …)" autocomplete="off"></div>
+    </div>
+    <div class="chips" id="cats"></div>
+    <div class="grid" id="provider-grid"></div>
+    <p class="disclaimer">
+      كل مفاتيحك تُحفظ على هذا الجهاز فقط (داخل المتصفح) ولا تُرسل لأي مكان.
+      هذه الأداة تفتح لك الصفحات الرسمية وتنظّم مفاتيحك — التسجيل وأخذ المفتاح يتم بنفسك على موقع المزوّد.
+    </p>
+  </section>
+
+  <!-- vault -->
+  <section id="view-vault" hidden>
+    <div id="vault-list"></div>
+  </section>
+</main>
+
+<div id="scrim"></div>
+<div id="sheet">
+  <div class="sheet-head">
+    <h2 id="sheet-title"></h2>
+    <button class="icon-btn" id="sheet-close">✕</button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
+
+<div id="toast"><div></div></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   Provider catalog. Each entry is a curated recipe: where to go, in order, to
+   obtain credentials, plus which secret fields the provider hands back. URLs
+   are the real developer portals; steps are the manual actions you take there.
+   ════════════════════════════════════════════════════════════════════════ */
+var CATS = [
+  ["all", "الكل"], ["ai", "ذكاء اصطناعي"], ["social", "تواصل اجتماعي"],
+  ["dev", "مطوّرون"], ["media", "وسائط"], ["data", "بيانات"], ["comms", "مراسلة"]
+];
+
+var PROVIDERS = [
+  {
+    id: "pinterest", name: "Pinterest", cat: "social", color: "#E60023", emoji: "P",
+    cost: "free", review: "review",
+    desc: "نشر وقراءة الـ Pins واللوحات عبر Pinterest API.",
+    steps: [
+      { t: "سجّلي الدخول بحسابك على Pinterest", d: "لازم يكون حساب فعّال. للوصول الكامل قد يطلبون حساب Business (مجاني التحويل).", url: "https://www.pinterest.com/login/" },
+      { t: "افتحي بوابة المطوّرين وأنشئي تطبيق", d: "اضغطي Connect app / Create app، واكتبي اسم التطبيق ووصفه ورابط موقعك.", url: "https://developers.pinterest.com/apps/" },
+      { t: "فعّلي الصلاحيات (Scopes) اللي تحتاجينها", d: "مثل boards:read و pins:write. بعضها يحتاج مراجعة من Pinterest.", url: "https://developers.pinterest.com/docs/getting-started/set-up-app/" },
+      { t: "انسخي المفاتيح", d: "من صفحة التطبيق: App ID و App secret، ثم أنشئي Access token.", url: "https://developers.pinterest.com/apps/" }
+    ],
+    fields: [
+      { k: "app_id", label: "App ID" },
+      { k: "app_secret", label: "App secret", secret: true },
+      { k: "token", label: "Access token", secret: true }
+    ],
+    note: "الوصول الكامل (Standard access) يمرّ بمراجعة بشرية من Pinterest وقد تأخذ أيام. الوصول التجريبي (Trial) يشتغل فوراً على حسابك."
+  },
+  {
+    id: "openai", name: "OpenAI", cat: "ai", color: "#10A37F", emoji: "AI",
+    cost: "paid", review: "instant",
+    desc: "نماذج GPT عبر واجهة OpenAI. المفتاح فوري.",
+    steps: [
+      { t: "سجّلي الدخول لمنصة OpenAI", d: "بنفس حساب ChatGPT أو أنشئي حساب.", url: "https://platform.openai.com/login" },
+      { t: "أضيفي وسيلة دفع", d: "الـ API مدفوع بالاستخدام؛ لازم بطاقة قبل ما يشتغل المفتاح.", url: "https://platform.openai.com/settings/organization/billing/overview" },
+      { t: "أنشئي المفتاح", d: "Create new secret key — انسخيه فوراً، ما يظهر مرة ثانية.", url: "https://platform.openai.com/api-keys" }
+    ],
+    fields: [ { k: "api_key", label: "Secret key (sk-…)", secret: true } ],
+    note: "المفتاح يظهر مرة واحدة فقط. انسخيه والصقيه هنا قبل ما تقفلين الصفحة."
+  },
+  {
+    id: "anthropic", name: "Anthropic (Claude)", cat: "ai", color: "#C15F3C", emoji: "C",
+    cost: "paid", review: "instant",
+    desc: "نماذج Claude عبر Anthropic API. المفتاح فوري.",
+    steps: [
+      { t: "سجّلي الدخول لـ Anthropic Console", d: "أنشئي حساب إن ما عندك.", url: "https://console.anthropic.com/login" },
+      { t: "أضيفي رصيد", d: "الـ API مسبق الدفع؛ أضيفي مبلغ صغير للبداية.", url: "https://console.anthropic.com/settings/billing" },
+      { t: "أنشئي المفتاح", d: "Create Key وانسخيه فوراً.", url: "https://console.anthropic.com/settings/keys" }
+    ],
+    fields: [ { k: "api_key", label: "API key (sk-ant-…)", secret: true } ],
+    note: "المفتاح يظهر مرة واحدة."
+  },
+  {
+    id: "gemini", name: "Google Gemini", cat: "ai", color: "#4285F4", emoji: "G",
+    cost: "free", review: "instant",
+    desc: "نماذج Gemini. فيه طبقة مجانية سخية والمفتاح فوري.",
+    steps: [
+      { t: "افتحي Google AI Studio", d: "سجّلي الدخول بحساب Google.", url: "https://aistudio.google.com/" },
+      { t: "أنشئي المفتاح", d: "Get API key ← Create API key. فوري.", url: "https://aistudio.google.com/app/apikey" }
+    ],
+    fields: [ { k: "api_key", label: "API key (AIza…)", secret: true } ],
+    note: "أسرع مفتاح ذكاء اصطناعي — بدون بطاقة للطبقة المجانية."
+  },
+  {
+    id: "telegram", name: "Telegram Bot", cat: "comms", color: "#229ED9", emoji: "T",
+    cost: "free", review: "instant",
+    desc: "توكن بوت تيليجرام عبر BotFather داخل التطبيق نفسه.",
+    steps: [
+      { t: "افتحي محادثة BotFather", d: "من تطبيق تيليجرام. الرابط يفتح المحادثة مباشرة.", url: "https://t.me/BotFather" },
+      { t: "أرسلي /newbot واتبعي الخطوات", d: "اختاري اسم للبوت واسم مستخدم ينتهي بـ bot.", url: "" },
+      { t: "انسخي التوكن", d: "BotFather يرسل لك التوكن مباشرة بعد الإنشاء.", url: "" }
+    ],
+    fields: [ { k: "token", label: "Bot token", secret: true }, { k: "username", label: "اسم البوت (@…)" } ],
+    note: "كل شي داخل تطبيق تيليجرام — بدون موقع ولا مراجعة."
+  },
+  {
+    id: "x", name: "X (Twitter)", cat: "social", color: "#111111", emoji: "X",
+    cost: "free", review: "review",
+    desc: "قراءة ونشر التغريدات عبر X API.",
+    steps: [
+      { t: "سجّلي الدخول لبوابة مطوّري X", d: "بحسابك على X.", url: "https://developer.twitter.com/en/portal/dashboard" },
+      { t: "اطلبي وصول (Sign up) واملئي النموذج", d: "يسألونك عن سبب الاستخدام — اكتبيه بوضوح.", url: "https://developer.twitter.com/en/portal/petition/essential/basic-info" },
+      { t: "أنشئي App وانسخي المفاتيح", d: "API Key و Secret، وأنشئي Access token & secret.", url: "https://developer.twitter.com/en/portal/projects-and-apps" }
+    ],
+    fields: [
+      { k: "api_key", label: "API key", secret: true },
+      { k: "api_secret", label: "API secret", secret: true },
+      { k: "bearer", label: "Bearer token", secret: true }
+    ],
+    note: "الطبقة المجانية محدودة، وبعض الوصول يمرّ بمراجعة. الأسعار تتغيّر — راجعي شروطهم."
+  },
+  {
+    id: "meta", name: "Meta (Facebook / Instagram)", cat: "social", color: "#0866FF", emoji: "M",
+    cost: "free", review: "review",
+    desc: "واجهات فيسبوك وإنستغرام وواتساب عبر Meta for Developers.",
+    steps: [
+      { t: "سجّلي الدخول لـ Meta for Developers", d: "بحساب فيسبوك، وفعّلي وضع المطوّر.", url: "https://developers.facebook.com/" },
+      { t: "أنشئي App", d: "My Apps ← Create App، واختاري نوع الاستخدام.", url: "https://developers.facebook.com/apps/" },
+      { t: "أضيفي المنتج (Instagram / WhatsApp) وانسخي المفاتiح", d: "App ID و App secret و Access token من الإعدادات.", url: "https://developers.facebook.com/apps/" }
+    ],
+    fields: [
+      { k: "app_id", label: "App ID" },
+      { k: "app_secret", label: "App secret", secret: true },
+      { k: "token", label: "Access token", secret: true }
+    ],
+    note: "الوصول لبيانات حقيقية غالباً يمرّ بمراجعة تطبيق (App Review) وقد يطلب توثيق العمل."
+  },
+  {
+    id: "github", name: "GitHub", cat: "dev", color: "#24292F", emoji: "GH",
+    cost: "free", review: "instant",
+    desc: "توكن وصول شخصي للتحكم بالمستودعات والإجراءات.",
+    steps: [
+      { t: "سجّلي الدخول لـ GitHub", d: "", url: "https://github.com/login" },
+      { t: "أنشئي Fine-grained token", d: "حدّدي المستودعات والصلاحيات ومدة الصلاحية.", url: "https://github.com/settings/personal-access-tokens/new" },
+      { t: "انسخي التوكن", d: "يظهر مرة واحدة فقط.", url: "" }
+    ],
+    fields: [ { k: "token", label: "Personal access token (github_pat_…)", secret: true } ],
+    note: "التوكن يظهر مرة واحدة. اختاري أقل صلاحيات تكفي حاجتك."
+  },
+  {
+    id: "google_cloud", name: "Google Cloud (Maps / YouTube …)", cat: "dev", color: "#1A73E8", emoji: "☁",
+    cost: "free", review: "instant",
+    desc: "مفتاح لخدمات Google: الخرائط، YouTube، الترجمة، وغيرها.",
+    steps: [
+      { t: "افتحي Google Cloud Console", d: "سجّلي الدخول وأنشئي مشروع (Project) جديد.", url: "https://console.cloud.google.com/projectcreate" },
+      { t: "فعّلي الـ API اللي تبينها", d: "مثل Maps JavaScript API أو YouTube Data API من مكتبة الـ APIs.", url: "https://console.cloud.google.com/apis/library" },
+      { t: "أنشئي بيانات الاعتماد (API key)", d: "Credentials ← Create credentials ← API key.", url: "https://console.cloud.google.com/apis/credentials" }
+    ],
+    fields: [ { k: "api_key", label: "API key (AIza…)", secret: true } ],
+    note: "قيّدي المفتاح (Restrict key) على الـ API والنطاق المطلوب فقط، حمايةً له."
+  },
+  {
+    id: "stripe", name: "Stripe", cat: "dev", color: "#635BFF", emoji: "S",
+    cost: "free", review: "instant",
+    desc: "مدفوعات. مفاتيح الاختبار فورية بدون تفعيل حساب.",
+    steps: [
+      { t: "سجّلي الدخول لـ Stripe", d: "أنشئي حساب إن ما عندك.", url: "https://dashboard.stripe.com/login" },
+      { t: "انسخي مفاتيح الاختبار", d: "وضع Test — Publishable key و Secret key. فورية.", url: "https://dashboard.stripe.com/test/apikeys" }
+    ],
+    fields: [
+      { k: "pub_key", label: "Publishable key (pk_test_…)" },
+      { k: "secret_key", label: "Secret key (sk_test_…)", secret: true }
+    ],
+    note: "المفاتيح الحيّة (Live) تحتاج تفعيل الحساب ببيانات نشاطك."
+  },
+  {
+    id: "discord", name: "Discord", cat: "social", color: "#5865F2", emoji: "D",
+    cost: "free", review: "instant",
+    desc: "بوتات Discord عبر بوابة المطوّرين.",
+    steps: [
+      { t: "افتحي Discord Developer Portal", d: "سجّلي الدخول بحساب Discord.", url: "https://discord.com/developers/applications" },
+      { t: "New Application ثم Bot", d: "أنشئي تطبيق، ثم من تبويب Bot اضغطي Add Bot.", url: "" },
+      { t: "انسخي التوكن", d: "Reset Token ← Copy. يظهر مرة واحدة.", url: "" }
+    ],
+    fields: [ { k: "token", label: "Bot token", secret: true }, { k: "app_id", label: "Application ID" } ],
+    note: "لا تشاركين التوكن أبداً — من يملكه يتحكم بالبوت."
+  },
+  {
+    id: "reddit", name: "Reddit", cat: "social", color: "#FF4500", emoji: "R",
+    cost: "free", review: "instant",
+    desc: "قراءة ونشر عبر Reddit API.",
+    steps: [
+      { t: "سجّلي الدخول لـ Reddit", d: "", url: "https://www.reddit.com/login/" },
+      { t: "أنشئي تطبيق", d: "Create app / Create another app ← اختاري نوع script.", url: "https://www.reddit.com/prefs/apps" },
+      { t: "انسخي المعرّف والسر", d: "client id تحت اسم التطبيق، و secret بجانبه.", url: "" }
+    ],
+    fields: [ { k: "client_id", label: "client id" }, { k: "client_secret", label: "client secret", secret: true } ],
+    note: "استخدام الـ API الشخصي مجاني ضمن حدود معيّنة."
+  },
+  {
+    id: "unsplash", name: "Unsplash", cat: "media", color: "#111111", emoji: "U",
+    cost: "free", review: "instant",
+    desc: "صور مجانية عالية الجودة عبر Unsplash API.",
+    steps: [
+      { t: "سجّلي الدخول لمطوّري Unsplash", d: "", url: "https://unsplash.com/developers" },
+      { t: "New Application ووافقي على الشروط", d: "املئي اسم ووصف التطبيق.", url: "https://unsplash.com/oauth/applications" },
+      { t: "انسخي Access Key", d: "من صفحة التطبيق.", url: "" }
+    ],
+    fields: [ { k: "access_key", label: "Access Key", secret: true }, { k: "secret_key", label: "Secret Key", secret: true } ],
+    note: "وضع Demo يعطي 50 طلب/ساعة — كافي للتجربة؛ الإنتاج يحتاج مراجعة بسيطة."
+  },
+  {
+    id: "newsapi", name: "NewsAPI", cat: "data", color: "#C4302B", emoji: "N",
+    cost: "free", review: "instant",
+    desc: "أخبار من مصادر عالمية. مفتاح فوري.",
+    steps: [
+      { t: "سجّلي حساب", d: "بالبريد فقط.", url: "https://newsapi.org/register" },
+      { t: "انسخي المفتاح", d: "يظهر مباشرة في لوحة الحساب.", url: "https://newsapi.org/account" }
+    ],
+    fields: [ { k: "api_key", label: "API key", secret: true } ],
+    note: "الطبقة المجانية للتطوير فقط (غير تجاري)."
+  },
+  {
+    id: "alphavantage", name: "Alpha Vantage", cat: "data", color: "#1E9E6A", emoji: "α",
+    cost: "free", review: "instant",
+    desc: "أسعار الأسهم والعملات والسلع. مفتاح فوري بلا تسجيل.",
+    steps: [
+      { t: "افتحي صفحة المفتاح المجاني", d: "اكتبي بريدك واضغطي GET FREE API KEY.", url: "https://www.alphavantage.co/support/#api-key" }
+    ],
+    fields: [ { k: "api_key", label: "API key", secret: true } ],
+    note: "الطبقة المجانية محدودة بعدد طلبات في الدقيقة/اليوم."
+  },
+  {
+    id: "twilio", name: "Twilio", cat: "comms", color: "#F22F46", emoji: "Tw",
+    cost: "paid", review: "instant",
+    desc: "رسائل SMS ومكالمات وواتساب.",
+    steps: [
+      { t: "سجّلي الدخول لـ Twilio", d: "أنشئي حساب تجريبي (فيه رصيد مجاني للبداية).", url: "https://www.twilio.com/login" },
+      { t: "انسخي بيانات الاعتماد", d: "Account SID و Auth Token من لوحة التحكم.", url: "https://console.twilio.com/" }
+    ],
+    fields: [ { k: "sid", label: "Account SID" }, { k: "auth_token", label: "Auth Token", secret: true } ],
+    note: "الحساب التجريبي يرسل للأرقام الموثّقة فقط حتى تفعّلينه."
+  }
+];
+
+/* ── storage: keys live only in this browser; optional export ── */
+var store = (function () {
+  var mem = {}, ls = null;
+  try { ls = window.localStorage; ls.setItem("__p", "1"); ls.removeItem("__p"); }
+  catch (e) { ls = null; }
+  return {
+    get: function (k) { try { return ls ? ls.getItem(k) : (mem[k] || null); } catch (e) { return null; } },
+    set: function (k, v) { try { if (ls) { ls.setItem(k, v); return; } } catch (e) {} mem[k] = String(v); }
+  };
+})();
+
+var VKEY = "apikeeper.vault.v1";
+function loadVault() { try { return JSON.parse(store.get(VKEY) || "{}"); } catch (e) { return {}; } }
+function saveVault(v) { store.set(VKEY, JSON.stringify(v)); }
+var vault = loadVault();
+
+var STATUS = {
+  requested: "لم أطلبه بعد", pending: "بانتظار الموافقة", active: "فعّال"
+};
+
+/* ── helpers ── */
+var $ = function (s, r) { return (r || document).querySelector(s); };
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
+var provOf = function (id) { for (var i = 0; i < PROVIDERS.length; i++) if (PROVIDERS[i].id === id) return PROVIDERS[i]; return null; };
+
+var toastT;
+function toast(msg) {
+  $("#toast div").textContent = msg;
+  $("#toast").classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(function () { $("#toast").classList.remove("show"); }, 2400);
+}
+
+/* ── theme ── */
+function applyTheme(t) {
+  if (t) document.documentElement.setAttribute("data-theme", t);
+  store.set("apikeeper.theme", t || "");
+}
+(function () { var t = store.get("apikeeper.theme"); if (t) applyTheme(t); })();
+$("#theme-btn").onclick = function () {
+  var cur = document.documentElement.getAttribute("data-theme");
+  var isDark = cur === "dark" || (!cur && matchMedia("(prefers-color-scheme: dark)").matches);
+  applyTheme(isDark ? "light" : "dark");
+};
+
+/* ── render: catalog ── */
+var activeCat = "all", query = "";
+function renderCats() {
+  var box = $("#cats"); box.innerHTML = "";
+  CATS.forEach(function (c) {
+    var b = el('<button class="chip' + (activeCat === c[0] ? " on" : "") + '">' + esc(c[1]) + "</button>");
+    b.onclick = function () { activeCat = c[0]; renderCats(); renderGrid(); };
+    box.appendChild(b);
+  });
+}
+function matches(p) {
+  if (activeCat !== "all" && p.cat !== activeCat) return false;
+  if (!query) return true;
+  var q = query.toLowerCase();
+  return p.name.toLowerCase().indexOf(q) >= 0 || p.desc.toLowerCase().indexOf(q) >= 0 || p.id.indexOf(q) >= 0;
+}
+function renderGrid() {
+  var g = $("#provider-grid"); g.innerHTML = "";
+  var list = PROVIDERS.filter(matches);
+  if (!list.length) {
+    g.innerHTML = '<p class="empty">ما لقينا خدمة بهذا الاسم.<br>جرّبي اسم ثاني، أو استخدمي «مزوّد مخصّص» من زر ⋯.</p>';
+    return;
+  }
+  list.forEach(function (p) {
+    var saved = vault[p.id];
+    var badge = '<span class="badge" style="background:' + p.color + '">' + esc(p.emoji) + "</span>";
+    var tags = [
+      p.cost === "free" ? '<span class="tag free">مجاني</span>' :
+        p.cost === "paid" ? '<span class="tag">مدفوع</span>' : '<span class="tag free">طبقة مجانية</span>',
+      p.review === "instant" ? '<span class="tag instant">مفتاح فوري</span>' : '<span class="tag review">قد يحتاج مراجعة</span>'
+    ];
+    if (saved) tags.push('<span class="tag saved">محفوظ ✓</span>');
+    var dot = saved ? '<span class="stat-dot ' + saved.status + '"></span>' : "";
+    var card = el(
+      '<button class="card">' +
+      '<div class="card-top">' + badge +
+      '<div><h3>' + dot + " " + esc(p.name) + '</h3><div class="cat">' + catName(p.cat) + "</div></div></div>" +
+      "<p>" + esc(p.desc) + "</p>" +
+      '<div class="tagrow">' + tags.join("") + "</div></button>"
+    );
+    card.onclick = function () { openProvider(p.id); };
+    g.appendChild(card);
+  });
+}
+function catName(id) { for (var i = 0; i < CATS.length; i++) if (CATS[i][0] === id) return CATS[i][1]; return id; }
+
+$("#q").oninput = function () { query = this.value.trim(); renderGrid(); };
+
+/* ── provider sheet ── */
+function openProvider(id) {
+  var p = provOf(id);
+  if (!p) return;
+  var saved = vault[id] || { status: "requested", fields: {}, note: "" };
+  $("#sheet-title").textContent = p.name;
+  var body = $("#sheet-body");
+
+  var stepsHtml = p.steps.map(function (s, i) {
+    var btn = s.url
+      ? '<button class="open-btn" data-url="' + esc(s.url) + '">افتحي الصفحة <span class="ext">↗</span></button>' : "";
+    return '<div class="step"><div class="step-n">' + (i + 1) + "</div><div class=\"step-b\">" +
+      '<div class="st">' + esc(s.t) + "</div>" +
+      (s.d ? '<div class="sd">' + esc(s.d) + "</div>" : "") + btn + "</div></div>";
+  }).join("");
+
+  var fieldsHtml = p.fields.map(function (f) {
+    var val = (saved.fields && saved.fields[f.k]) || "";
+    return '<div class="field"><label>' + esc(f.label) + "</label><div class=\"in-row\">" +
+      '<input data-field="' + f.k + '" class="' + (f.secret ? "secret" : "") + '" ' +
+      'type="' + (f.secret ? "password" : "text") + '" value="' + esc(val) + '" ' +
+      'placeholder="الصقي القيمة هنا" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+      (f.secret ? '<button class="mini reveal" type="button">إظهار</button>' : "") +
+      '<button class="mini copyf" type="button">نسخ</button></div></div>';
+  }).join("");
+
+  var statusHtml =
+    '<div class="status-seg" id="status-seg">' +
+    ["requested", "pending", "active"].map(function (s) {
+      return '<button data-s="' + s + '"' + (saved.status === s ? ' class="on"' : "") + ">" +
+        '<span class="stat-dot ' + s + '"></span>' + esc(STATUS[s]) + "</button>";
+    }).join("") + "</div>";
+
+  body.innerHTML =
+    (p.note ? '<div class="note-box warn">' + esc(p.note) + "</div>" : "") +
+    '<div class="section-label">الخطوات</div>' + stepsHtml +
+    '<div class="section-label">مفاتيحك</div>' + fieldsHtml +
+    '<div class="field"><label>ملاحظة (اختياري)</label><textarea data-note placeholder="مثلاً: للحساب الرئيسي، أو تاريخ التجديد">' + esc(saved.note || "") + "</textarea></div>" +
+    '<div class="section-label">الحالة</div>' + statusHtml +
+    '<button class="btn primary" id="save-btn" style="margin-top:16px">حفظ في مفاتيحي</button>' +
+    (vault[id] ? '<button class="btn danger-ghost" id="del-btn" style="margin-top:10px">حذف من مفاتيحي</button>' : "");
+
+  // open external pages
+  Array.prototype.forEach.call(body.querySelectorAll(".open-btn"), function (b) {
+    b.onclick = function () { window.open(b.getAttribute("data-url"), "_blank", "noopener"); };
+  });
+  // reveal / copy
+  Array.prototype.forEach.call(body.querySelectorAll(".reveal"), function (b) {
+    b.onclick = function () {
+      var inp = b.parentNode.querySelector("input");
+      var show = inp.type === "password";
+      inp.type = show ? "text" : "password"; b.textContent = show ? "إخفاء" : "إظهار";
+    };
+  });
+  Array.prototype.forEach.call(body.querySelectorAll(".copyf"), function (b) {
+    b.onclick = function () {
+      var inp = b.parentNode.querySelector("input");
+      copy(inp.value); toast(inp.value ? "تم النسخ ✓" : "الحقل فاضي");
+    };
+  });
+  // status segment
+  var chosen = saved.status;
+  Array.prototype.forEach.call(body.querySelectorAll("#status-seg button"), function (b) {
+    b.onclick = function () {
+      chosen = b.getAttribute("data-s");
+      Array.prototype.forEach.call(body.querySelectorAll("#status-seg button"), function (x) {
+        x.classList.toggle("on", x === b);
+      });
+    };
+  });
+
+  $("#save-btn", body).onclick = function () {
+    var fields = {};
+    Array.prototype.forEach.call(body.querySelectorAll("[data-field]"), function (inp) {
+      var v = inp.value.trim(); if (v) fields[inp.getAttribute("data-field")] = v;
+    });
+    vault[id] = { status: chosen, fields: fields, note: (body.querySelector("[data-note]").value || "").trim(), updated: Date.now() };
+    saveVault(vault); closeSheet(); renderGrid(); renderVault(); updateCount();
+    toast("تم الحفظ في مفاتيحي ✓");
+  };
+  var del = $("#del-btn", body);
+  if (del) del.onclick = function () {
+    delete vault[id]; saveVault(vault); closeSheet(); renderGrid(); renderVault(); updateCount();
+    toast("تم الحذف");
+  };
+
+  openSheet();
+}
+
+/* ── vault view ── */
+function renderVault() {
+  var list = $("#vault-list");
+  var ids = Object.keys(vault);
+  if (!ids.length) {
+    list.innerHTML = '<p class="empty">ما فيه مفاتيح محفوظة بعد.<br>افتحي أي مزوّد من تبويب «المزوّدون»، خذي المفتاح، واحفظيه هنا.</p>';
+    return;
+  }
+  ids.sort(function (a, b) { return (vault[b].updated || 0) - (vault[a].updated || 0); });
+  list.innerHTML = "";
+  ids.forEach(function (id) {
+    var p = provOf(id) || { name: id, color: "#888", emoji: "?", fields: [] };
+    var s = vault[id];
+    var nFields = Object.keys(s.fields || {}).length;
+    var card = el(
+      '<button class="saved-card">' +
+      '<span class="badge" style="background:' + p.color + '">' + esc(p.emoji) + "</span>" +
+      '<div class="saved-meta"><div class="sn">' + esc(p.name) +
+      '<span class="status-pill ' + s.status + '"><span class="stat-dot ' + s.status + '"></span>' + esc(STATUS[s.status]) + "</span></div>" +
+      '<div class="sm">' + nFields + " مفتاح محفوظ" + (s.note ? " · " + esc(s.note) : "") + "</div></div>" +
+      '<span class="icon-btn" style="pointer-events:none">فتح</span></button>'
+    );
+    card.onclick = function () { openProvider(id); };
+    list.appendChild(card);
+  });
+}
+function updateCount() {
+  var n = Object.keys(vault).length;
+  $("#vault-count").textContent = n;
+}
+
+/* ── sheet plumbing ── */
+function openSheet() { $("#scrim").classList.add("open"); $("#sheet").classList.add("open"); }
+function closeSheet() { $("#scrim").classList.remove("open"); $("#sheet").classList.remove("open"); }
+$("#sheet-close").onclick = closeSheet;
+$("#scrim").onclick = closeSheet;
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSheet(); });
+
+/* ── tabs ── */
+Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (b) {
+  b.onclick = function () {
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("on", x === b); });
+    var t = b.getAttribute("data-tab");
+    $("#view-browse").hidden = t !== "browse";
+    $("#view-vault").hidden = t !== "vault";
+    if (t === "vault") renderVault();
+  };
+});
+
+/* ── clipboard ── */
+function copy(text) {
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function () {}); return; }
+  var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+  ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta);
+}
+
+/* ── backup / custom provider menu ── */
+$("#menu-btn").onclick = function () {
+  $("#sheet-title").textContent = "الخيارات";
+  $("#sheet-body").innerHTML =
+    '<div class="section-label">مزوّد غير موجود بالقائمة</div>' +
+    '<div class="note-box">أي خدمة ما لقيتيها فوق: أضيفيها بنفسك — اسم + رابط صفحة المفاتيح + الحقول اللي تبين تحفظينها.</div>' +
+    '<button class="btn ghost" id="add-custom" style="margin-top:12px">➕ إضافة مزوّد مخصّص</button>' +
+    '<div class="section-label">نسخة احتياطية</div>' +
+    '<div class="note-box">مفاتيحك محفوظة في هذا المتصفح فقط. صدّريها كملف لتنقليها لجهاز ثاني أو تحتفظين بنسخة.</div>' +
+    '<div class="btn-row"><button class="btn ghost" id="exp">⬇ تصدير</button><button class="btn ghost" id="imp">⬆ استيراد</button></div>' +
+    '<button class="btn danger-ghost" id="wipe" style="margin-top:10px">مسح كل المفاتيح من الجهاز</button>' +
+    '<input type="file" id="imp-file" accept="application/json" hidden>';
+
+  $("#add-custom").onclick = openCustom;
+  $("#exp").onclick = function () {
+    var blob = new Blob([JSON.stringify({ app: "apikeeper", exported: Date.now(), vault: vault, custom: CUSTOM }, null, 2)], { type: "application/json" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "my-api-keys.json"; a.click();
+    toast("تم التصدير — احفظي الملف في مكان آمن");
+  };
+  $("#imp").onclick = function () { $("#imp-file").click(); };
+  $("#imp-file").onchange = function () {
+    var f = this.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var data = JSON.parse(r.result);
+        if (data.vault) { Object.keys(data.vault).forEach(function (k) { vault[k] = data.vault[k]; }); saveVault(vault); }
+        if (data.custom) { data.custom.forEach(addCustomProvider); saveCustom(); }
+        renderGrid(); renderVault(); updateCount(); closeSheet(); toast("تم الاستيراد ✓");
+      } catch (e) { toast("الملف غير صالح"); }
+    };
+    r.readAsText(f);
+  };
+  $("#wipe").onclick = function () {
+    if (confirm("مسح كل المفاتيح المحفوظة من هذا الجهاز؟ لا يمكن التراجع.")) {
+      vault = {}; saveVault(vault); renderGrid(); renderVault(); updateCount(); closeSheet(); toast("تم المسح");
+    }
+  };
+  openSheet();
+};
+
+function openCustom() {
+  $("#sheet-title").textContent = "مزوّد مخصّص";
+  $("#sheet-body").innerHTML =
+    '<div class="field"><label>اسم الخدمة</label><input id="c-name" placeholder="مثلاً: Spotify"></div>' +
+    '<div class="field"><label>رابط صفحة المفاتيح</label><input id="c-url" type="url" placeholder="https://…" dir="ltr"></div>' +
+    '<div class="field"><label>أسماء المفاتيح (كل واحد بسطر)</label><textarea id="c-fields" placeholder="Client ID&#10;Client Secret"></textarea></div>' +
+    '<button class="btn primary" id="c-save" style="margin-top:8px">إضافة</button>';
+  $("#c-save").onclick = function () {
+    var name = $("#c-name").value.trim(), url = $("#c-url").value.trim();
+    if (!name) { toast("اكتبي اسم الخدمة"); return; }
+    var fields = ($("#c-fields").value || "").split("\n").map(function (x) { return x.trim(); }).filter(Boolean)
+      .map(function (label, i) { return { k: "f" + i, label: label, secret: true }; });
+    if (!fields.length) fields = [{ k: "key", label: "API key", secret: true }];
+    var prov = {
+      id: "custom_" + Date.now(), name: name, cat: "dev", color: "#6b6152", emoji: name[0].toUpperCase(),
+      cost: "free", review: "instant", desc: "مزوّد أضفتِه بنفسك.",
+      steps: url ? [{ t: "افتحي صفحة المفاتيح وخذي المفتاح", d: "", url: url }] : [{ t: "خذي المفتاح من الخدمة", d: "", url: "" }],
+      fields: fields, note: "", custom: true
+    };
+    addCustomProvider(prov); saveCustom();
+    renderGrid(); closeSheet(); toast("تمت الإضافة ✓"); openProvider(prov.id);
+  };
+  openSheet();
+}
+
+/* custom providers persist too */
+var CKEY = "apikeeper.custom.v1";
+var CUSTOM = (function () { try { return JSON.parse(store.get(CKEY) || "[]"); } catch (e) { return []; } })();
+function saveCustom() { store.set(CKEY, JSON.stringify(CUSTOM)); }
+function addCustomProvider(p) {
+  if (provOf(p.id)) return;
+  CUSTOM.push(p); PROVIDERS.push(p);
+}
+CUSTOM.forEach(function (p) { if (!provOf(p.id)) PROVIDERS.push(p); });
+
+/* ── boot ── */
+renderCats(); renderGrid(); updateCount();
+</script>
