@@ -49,7 +49,7 @@ STYLE: layered paper-cut art, matte cardstock, soft top-left light, the same cra
 One long thin ribbon strip of cut paper lying in a gentle shallow curve, slightly twisted once in the middle so both faces show, pale blue HEX #A7B9CE and #BACAE0 ONLY with a thin darker edge HEX #849BB6 ONLY. Both ends cut straight across. Horizontal, wide 6:1, the ribbon spans almost the full width. Isolated on a pure white background #FFFFFF, flat, no texture, no shadow on the background.
 No bow, no knot, no envelope, no swan, no gold, no shine. No text, no letters, no numbers.
 ```
-**الحالة:** ينتظر قرار نورة (توليد أو إزالة الشريطة).
+**الحالة:** البرومبت أُرسل لنورة ٢٢ أكتوبر، ينتظر التوليد.
 
 ## ٢. الظرف ثلاثي الأبعاد والبطاقة
 
@@ -99,6 +99,23 @@ No baroque scrolls, no acanthus leaves, no pearls, no beads, no gold, no plaster
 No text, no letters, no numbers.
 Square 1:1.
 ```
+
+### مطلوب: فاصل الختام (بديل الخط المرسوم بالكود)
+فوق «بحضوركم تكتمل فرحتنا» في آخر شاشة يوجد خط منحنٍ بمعيّن صغير مرسوم بالكود (`.p-curve`). البديل من نفس عائلة زاوية القصب والريش. هذا في الداخل، فتركيبه بعد موافقة نورة.
+```
+STYLE: layered paper-cut relief, soft matte cream paper with pale blue paper edges, gentle soft shadows between the paper layers, the same craft as a paper-cut reed and feather corner ornament.
+
+One slim horizontal divider: a single thin paper-cut reed stalk curving gently from left to right, with one small swan feather resting at its center and two tiny curling paper water-wave strips beside it. Both ends thin into fine finished tips, nothing cut off by the image border, white margin all around. Light, airy, balanced, lots of empty space, delicate, not heavy.
+
+Colors: #E8D9C8, #AFBBC9, #AEC2D3 ONLY.
+Background: plain pure white #FFFFFF, flat, no texture, no shadow on the background.
+No baroque scrolls, no acanthus leaves, no pearls, no beads, no diamond shape, no gold, no frame.
+No text, no letters, no numbers.
+Wide 6:1.
+```
+**الحالة:** البرومبت أُرسل لنورة ٢٢ أكتوبر، ينتظر التوليد.
+
+**صورة المشاركة (`bl-og.jpg`):** لا تحتاج توليدًا. تُركّب من القطع المولّدة نفسها (البحيرة والبجعتان والظرف) بمقاس 1200×630، بعد موافقة نورة.
 
 ## ٥. خارجي
 | الملف | الغرض | الأبعاد | الحالة |
