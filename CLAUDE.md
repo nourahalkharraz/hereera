@@ -63,3 +63,5 @@
 - `invitation/trial-dress.html` — تجربة لونية بخلفية أوف وايت سكّري
 - `invitation/versions/blue.html` — أرشيف النسخة الزرقاء قبل التعديلات
 - `invitation/tools/vectorize-monogram.py` — تحويل الشعار إلى مسارات
+- `InvitationStudio/` — استوديو الدعوات: تعليماته في `InvitationStudio/CLAUDE.md`، والتفضيلات العامة، وسجلات كل مشروع
+- `InvitationStudio/projects/reem-graduation/` — دعوة تخرّج ريم العلي (نسخة من الرابط الحيّ + السجلات + الفحص)

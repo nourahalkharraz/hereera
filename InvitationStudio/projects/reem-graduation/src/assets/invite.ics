@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Nourah//Invite//AR
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:reem-grad-2026@invite
+DTSTAMP:20261013T120000Z
+DTSTART:20261218T163000Z
+DTEND:20261218T200000Z
+SUMMARY:حفل تخرّج ريم العلي
+LOCATION:قاعة الماسة، حي حطين، طريق الملك فهد، الرياض
+DESCRIPTION:تتشرّف عائلة العلي بدعوتكم لحفل تخرّج ريم — الاستقبال ٧:٣٠ مساءً
+END:VEVENT
+END:VCALENDAR
