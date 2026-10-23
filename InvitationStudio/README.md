@@ -1,11 +1,11 @@
 # استوديو الدعوات
 
-تعليمات العمل الكاملة في `CLAUDE.md` (نص نورة، مع ملحق عن حالة البيئة).
+تعليمات العمل الكاملة في `PROMPT-TEMPLATE.md` في جذر المستودع. `CLAUDE.md` هنا يحيل إليها، ومعه ملحق عن حالة البيئة.
 
 ## البنية
 ```
 InvitationStudio/
-  CLAUDE.md                  تعليمات الاستوديو
+  CLAUDE.md                  إحالة إلى PROMPT-TEMPLATE.md + ملحق البيئة
   global-preferences/
     preferences.md           قواعد عامة صريحة + مرشّحات غير مؤكدة
     preference-history.md    سجل كل تغيير
