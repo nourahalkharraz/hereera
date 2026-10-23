@@ -31,15 +31,18 @@
 - **الأزرار والأيقونات:** إطار مزدوج بخط شعري بلا تعبئة، وأيقونات محفورة.
 - **يختلف عن البقية:** خطي مسطح تمامًا بلا ظلال، وأكاديمي.
 
-## ج. ليل ديكو
-- **الفكرة:** حفل مسائي بروح الآرت ديكو. هندسة مراوح وأقواس متدرّجة ونجوم بخط شمباني مطفي على أزرق الليل.
-- **الألوان:** `#141B2D` ليل، `#22304F` كحلي عميق، `#CDB98F` شمباني، `#E9E1CF` لؤلؤي، `#7C8DB0` أزرق الغسق.
-- **المواد:** ورق داكن مطفي، وخطوط شمبانية مطفية بلا لمعان معدني.
-- **الزخرفة:** مراوح شمسية، أقواس متدرّجة، نجوم صغيرة، شيفرون.
-- **الخطوط:** Reem Kufi للأسماء (كوفي هندسي)، El Messiri للواجهة، Cormorant Garamond للاتيني.
-- **الخلفية والتكوين:** أرضية داكنة بنقشة مراوح باهتة، تناظر عمودي قوي، قوس يؤطّر الاسم.
-- **الأزرار والأيقونات:** إطار بحواف متدرّجة، وأيقونات هندسية خطية.
-- **يختلف عن البقية:** الوحيد بأرضية داكنة، وهندسي حاد.
+## ج. وشاح التخرّج (بدل «ليل ديكو»، ٢٣ أكتوبر)
+- **السبب من الموجز:** أدوات الحفل نفسها قماش: وشاح التخرّج، والروب، وشرّابة القبعة. الهوية تأخذ مادتها منها.
+- **الفكرة:** تطريز يدوي ناعم على كتان طبيعي، كأن الدعوة قطعة مطرّزة بخيوط حرير.
+- **الألوان:** `#EFE8DC` كتان عاجي، `#2E3A55` خيط كحلي، `#8FA3BC` خيط أزرق مغبر، `#9AA68C` خيط ميرمية، `#C9A99A` خيط وردي ترابي.
+- **المواد:** كتان بنسيج ظاهر، غرزة الساتان، غرزة السلسلة، عُقد فرنسية صغيرة.
+- **الزخرفة:** شرّابة التخرّج، غصن ياسمين، خطوط غرز متصلة، طوق التطريز.
+- **الخطوط:** Aref Ruqaa للأسماء (خط يد يناسب الصنعة اليدوية)، El Messiri للنص، Cormorant Garamond مائل للاتيني.
+- **الخلفية والتكوين:** نسيج كتان كامل، والاسم داخل طوق تطريز دائري كأنه قطعة في إطارها، تكوين مركزي ناعم.
+- **الأزرار والأيقونات:** إطار زر بغرزة متقطعة، وأيقونات مطرّزة بغرزة الساتان.
+- **يختلف عن البقية:** الوحيد بمادة قماش وخيط، وأثره يدوي ملموس.
+
+> **مسحوبة: «ليل ديكو».** سُحبت ٢٣ أكتوبر قبل توليدها. لم تأتِ من الموجز ولا من ذوق نورة، بل من مثال الآرت ديكو في `PROMPT-TEMPLATE.md` ومن ربط تلقائي بين «حفل مسائي» والديكو. نصّها في سجل git.
 
 ## د. نجد الحديثة
 - **الفكرة:** حفل في الرياض بلغة عمارة نجد الطينية. مثلثات الشرفات، والفتحات الصغيرة، وسعف النخل، بأشكال مسطحة نظيفة.
@@ -77,15 +80,15 @@ Colors: #F4EFE4, #1F2A44, #6E7F99, #8A6F55, #D8CFC0 ONLY.
 No gold, no shading gradients, no shadows. This is a board of separate design elements, not an invitation, not a certificate layout, not a mockup. No text, no letters, no numbers. Square 1:1.
 ```
 
-### ج. ليل ديكو
+### ج. وشاح التخرّج
 ```
-STYLE: Art Deco flat graphic illustration, crisp geometric linework, stepped shapes and sunburst fans, matte champagne line on deep midnight paper, 1920s poster craft. NO photorealism, NO 3D, NO puffy stickers, NO cartoon, NO thick white outlines, NO bright candy colors.
+STYLE: refined hand-embroidery look on natural linen, rendered as a clean flat illustration: delicate silk-thread satin stitch, chain stitch and tiny French knots, heirloom needlework. NO photorealism, NO 3D render, NO puffy stickers, NO cartoon, NO thick white outlines, NO bright candy colors.
 
 A visual identity board, flat lay on a plain pure white background #FFFFFF: a 3×3 grid of nine separate items with wide even spacing, nothing touching, each item isolated.
-1) five round colour swatch chips in a row. 2) a square sample of the background surface: matte midnight paper with a faint sunburst fan pattern. 3) the main symbol: a graduation cap with a tassel drawn as a geometric Art Deco emblem. 4) a corner ornament for a top-left corner: a stepped geometric corner with a small fan. 5) a horizontal divider: symmetric chevrons with a small diamond at the center. 6) an empty button frame with stepped corners. 7) a geometric line calendar icon. 8) a geometric line location pin icon. 9) a small eight-point star burst.
+1) five round colour swatch chips in a row. 2) a square sample of the background surface: natural linen with a visible fine weave. 3) the main symbol: a graduation cap with a tassel embroidered in satin stitch. 4) a corner ornament for a top-left corner: an embroidered jasmine sprig. 5) a horizontal divider: a line of running stitch with a small cluster of French knots at its center. 6) an empty pill-shaped button frame outlined in running stitch. 7) an embroidered calendar icon. 8) an embroidered location pin icon. 9) a small empty round embroidery hoop.
 
-Colors: #141B2D, #22304F, #CDB98F, #E9E1CF, #7C8DB0 ONLY.
-No shiny metallic gold, no glitter, no glow. This is a board of separate design elements, not an invitation, not a poster layout, not a mockup. No text, no letters, no numbers. Square 1:1.
+Colors: #EFE8DC, #2E3A55, #8FA3BC, #9AA68C, #C9A99A ONLY.
+No gold thread, no sequins, no beads, no lace. This is a board of separate design elements, not an invitation, not a fabric layout, not a mockup. No text, no letters, no numbers. Square 1:1.
 ```
 
 ### د. نجد الحديثة
